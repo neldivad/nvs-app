@@ -1,0 +1,433 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Design tokens — mirrors DESIGN.md verbatim. Do not improvise values here.
+   Each token has a manuscript (:root, light) and a focus (.dark, default) value,
+   both copied from the DESIGN.md frontmatter. If you change one, change both —
+   in DESIGN.md first, then here.
+   ─────────────────────────────────────────────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));
+
+/* Frameless title-bar drag regions (used by TitleBar). */
+.app-drag { -webkit-app-region: drag; }
+.app-no-drag { -webkit-app-region: no-drag; }
+
+:root {
+  /* manuscript — warm paper (light) */
+  color-scheme: light;
+
+  /* --measure: the ONE prose column width shared by every write + preview surface (block-write, markdown
+     write/source via cmTheme, and the rendered previews), so switching tabs never reflows the column. */
+  --measure: 42rem; /* 672px — the manuscript/preview measure (was max-w-2xl) */
+
+  --canvas: #faf7f2;
+  --panel: #f3efe7;
+  --panel-soft: #ece7dc;
+  --border: #e4ddd0;
+  --border-soft: #ece7dc;
+
+  --foreground: #2b2723;
+  --prose: #3d3833;
+  --muted-foreground: #6f675c;
+  --faint: #857b6b; /* was #a89e8f — ~2.4:1 on cream (invisible); this is ~3.9:1, still clearly the faint tier */
+
+  --thread: #4f46e5;
+  --thread-bg: #eef2ff;
+  --thread-foreground: #ffffff;
+  --character: #0e7490;
+  --character-bg: #ecfeff;
+  --character-foreground: #ffffff;
+  --lore: #b45309;
+  --lore-bg: #fffbeb;
+  --lore-foreground: #ffffff;
+  --flag: #be123c;
+  --flag-bg: #fff1f2;
+  --flag-foreground: #ffffff;
+
+  --ok: #16a34a;
+  --warn: #b45309;
+  --ring: #4f46e5;
+
+  /* arc facets — the six character-state categories (distinct from the change palette) */
+  --facet-alignment: #7c3aed;
+  --facet-knowledge: #0284c7;
+  --facet-power: #d97706;
+  --facet-relationship: #db2777;
+  --facet-objective: #059669;
+  --facet-secret: #c026d3;
+
+  /* Preview speaker cycle — up to 10 discrete, theme-aware hues. #1–9 REFERENCE existing tokens (facets +
+     accents), so they resolve per-theme at use time (light/dark) with no duplication; #10 is a dedicated
+     orange (no distinct token existed) and gets its own .dark value. speakerColor() hashes a name to a slot. */
+  --speaker-1: var(--character);          /* teal */
+  --speaker-2: var(--facet-power);        /* amber */
+  --speaker-3: var(--facet-alignment);    /* violet */
+  --speaker-4: var(--facet-relationship); /* pink */
+  --speaker-5: var(--facet-objective);    /* green */
+  --speaker-6: var(--thread);             /* indigo */
+  --speaker-7: var(--facet-knowledge);    /* blue */
+  --speaker-8: var(--facet-secret);       /* magenta */
+  --speaker-9: var(--flag);               /* rose */
+  --speaker-10: #ea580c;                  /* orange (dedicated) */
+
+  --radius: 8px;
+}
+
+.dark {
+  /* focus — warm dark (default, applied on <html class="dark">) */
+  color-scheme: dark;
+
+  --canvas: #1b1714;
+  --panel: #221d19;
+  --panel-soft: #2a241f;
+  --border: #332c26;
+  --border-soft: #2a241f;
+
+  --foreground: #ece4d8;
+  --prose: #d6cdc0;
+  --muted-foreground: #9a8f80;
+  --faint: #6b6258;
+
+  --thread: #818cf8;
+  --thread-bg: #211f3d;
+  --thread-foreground: #16132b;
+  --character: #45c8c0;
+  --character-bg: #0e302f;
+  --character-foreground: #07201f;
+  --lore: #fbbf24;
+  --lore-bg: #33280c;
+  --lore-foreground: #241d06;
+  --flag: #fb7185;
+  --flag-bg: #3a1620;
+  --flag-foreground: #240b11;
+
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --ring: #818cf8;
+
+  --facet-alignment: #a78bfa;
+  --facet-knowledge: #38bdf8;
+  --facet-power: #fbbf24;
+  --facet-relationship: #f472b6;
+  --facet-objective: #34d399;
+  --facet-secret: #e879f9;
+
+  --speaker-10: #fb923c; /* orange — the one speaker hue with no theme-aware token to reference (#1–9 auto-adapt) */
+}
+
+/* ── Tailwind token bridge (utility names → CSS vars) ──────────────────────── */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-panel-soft: var(--panel-soft);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+
+  --color-foreground: var(--foreground);
+  --color-prose: var(--prose);
+  --color-muted: var(--panel-soft);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
+
+  --color-thread: var(--thread);
+  --color-thread-bg: var(--thread-bg);
+  --color-thread-foreground: var(--thread-foreground);
+  --color-character: var(--character);
+  --color-character-bg: var(--character-bg);
+  --color-character-foreground: var(--character-foreground);
+  --color-lore: var(--lore);
+  --color-lore-bg: var(--lore-bg);
+  --color-lore-foreground: var(--lore-foreground);
+  --color-flag: var(--flag);
+  --color-flag-bg: var(--flag-bg);
+  --color-flag-foreground: var(--flag-foreground);
+
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-ring: var(--ring);
+
+  --color-facet-alignment: var(--facet-alignment);
+  --color-facet-knowledge: var(--facet-knowledge);
+  --color-facet-power: var(--facet-power);
+  --color-facet-relationship: var(--facet-relationship);
+  --color-facet-objective: var(--facet-objective);
+  --color-facet-secret: var(--facet-secret);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* The writing-surface font — defaults to the app font; an enabled `ui` extension (e.g. a serif font
+     extension) overrides this single var on <html> via the ui-contribution applier. */
+  --font-editor: var(--font-sans);
+}
+
+* {
+  border-color: var(--border);
+}
+
+/* Block-editor line-number gutter — muted, and hidden until the container reveals it (`.reveal-linenums`, toggled
+   on left-edge hover). Mirrors the CodeMirror gutter treatment (cmTheme) so Source + Write feel the same. */
+.nvs-linegutter {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.reveal-linenums .nvs-linegutter {
+  opacity: 0.5;
+}
+
+/* Clicking a linter issue jumps to the offending block in Write and flashes it RED (`--flag`), so the eye lands
+   on it, then fades. Rounded so the tint reads as a highlight, not a full-width band. */
+.lint-jump-flash {
+  border-radius: 6px;
+  animation: lint-jump-flash 1.6s ease-out;
+}
+@keyframes lint-jump-flash {
+  0%,
+  25% {
+    background-color: color-mix(in srgb, var(--flag) 26%, transparent);
+    box-shadow: inset 0 0 0 1.5px var(--flag);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px transparent;
+  }
+}
+
+/* The manuscript surface uses --font-editor (swappable by a `ui` font extension); the block editor is a
+   ProseMirror instance, the read views carry the .nvs-manuscript class. */
+.ProseMirror,
+.nvs-manuscript {
+  font-family: var(--font-editor);
+}
+
+/* In-scene find (tiptapSearch) — matches amber, the current one indigo, mirroring the CodeMirror find so
+   ⌘F reads the same in every editor. Tokens → flips light/dark. */
+.nvs-find {
+  background-color: var(--lore-bg);
+  box-shadow: 0 0 0 1px var(--lore);
+  border-radius: 2px;
+}
+.nvs-find-active {
+  background-color: var(--thread-bg);
+  box-shadow: 0 0 0 1px var(--thread);
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Typography scale — the SINGLE SOURCE OF TRUTH for type SHAPE (size/weight/case/
+   tracking/leading), mirroring DESIGN.md §Typography. Use these instead of hand-
+   picking text-[Npx]/font-* per component, so panels can't drift (that drift is
+   why headers were 10px in some panels and 11px in others). COLOR stays separate —
+   compose with text-foreground / -muted-foreground / -faint for the ink role.
+   ─────────────────────────────────────────────────────────────────────────── */
+.type-app-title     { font-size: 18px; font-weight: 600; line-height: 1.2; }
+.type-panel-heading { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.type-card-title    { font-size: 14px; font-weight: 600; line-height: 1.35; }
+.type-body-md       { font-size: 14px; font-weight: 400; line-height: 1.5; }
+.type-body-sm       { font-size: 13px; font-weight: 400; line-height: 1.45; }
+.type-caption       { font-size: 12px; font-weight: 400; line-height: 1.4; }
+.type-label         { font-size: 11px; font-weight: 600; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.04em; }
+.type-micro         { font-size: 10px; font-weight: 400; line-height: 1.4; } /* dense meta / chips (below the doc scale, but the UI needs it) */
+.type-mono-sm       { font-size: 12px; font-family: var(--font-mono); }
+
+/* Dual-thumb range (two overlaid inputs share one track) — only the thumbs are interactive. */
+.dual-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  pointer-events: none;
+}
+.dual-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  height: 13px;
+  width: 13px;
+  border-radius: 9999px;
+  background: var(--thread);
+  border: 2px solid var(--panel);
+  cursor: pointer;
+}
+.dual-range::-moz-range-thumb {
+  pointer-events: auto;
+  height: 13px;
+  width: 13px;
+  border-radius: 9999px;
+  background: var(--thread);
+  border: 2px solid var(--panel);
+  cursor: pointer;
+}
+.dual-range:focus {
+  outline: none;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  user-select: none; /* app chrome; the editor surface re-enables selection */
+}
+
+/* ── Dev: component-boundary overlay (toggle with Ctrl/Cmd+Alt+D) ───────────── */
+html.debug-regions [data-region] {
+  outline: 1px dashed var(--thread);
+  outline-offset: -1px;
+}
+/* Anchor the label only on statically-positioned regions — forcing `position: relative` on an
+   already `.absolute`/`.fixed` region (a Fab, a FloatWindow) would clobber its positioning. */
+html.debug-regions [data-region]:not(.fixed):not(.absolute) {
+  position: relative;
+}
+html.debug-regions [data-region]::before {
+  content: attr(data-region);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--thread-foreground);
+  background: var(--thread);
+  border-bottom-right-radius: 3px;
+  pointer-events: none;
+}
+
+/* Shared BASE COMPONENTS (RailHeader · RailTabs · SidebarRow · SidebarHeader · NavRow …) — ride the same
+   Ctrl/Cmd+Alt+D overlay in a distinct green accent, so at a glance you can see which rails are built from
+   the SAME base (two rails both boxed "SidebarRow" = unified; a bare un-boxed header = still hand-rolled).
+   Uses ::after (regions use ::before) so an element that is both a region and a comp shows both labels. */
+html.debug-regions [data-comp] {
+  outline: 1px solid var(--ok);
+  outline-offset: -2px;
+}
+html.debug-regions [data-comp]:not(.fixed):not(.absolute) {
+  position: relative;
+}
+html.debug-regions [data-comp]::after {
+  content: attr(data-comp);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 51;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--canvas);
+  background: var(--ok);
+  border-top-right-radius: 3px;
+  pointer-events: none;
+}
+
+/* ── Dev: fine-grained PART overlay (toggle with Ctrl/Cmd+Alt+P) ─────────────
+   A lighter, finer companion to the region overlay: outlines + labels every
+   `[data-part="…"]` so the author can point at an exact sub-block to edit
+   ("edit the part labelled spine-row"). Uses the character accent to read as
+   distinct from the thread-colored region boxes. */
+html.debug-parts [data-part] {
+  outline: 1px dashed var(--character);
+  outline-offset: -1px;
+}
+html.debug-parts [data-part]:not(.fixed):not(.absolute) {
+  position: relative;
+}
+html.debug-parts [data-part]::before {
+  content: attr(data-part);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 50;
+  padding: 1px 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  color: var(--canvas);
+  background: var(--character);
+  border-bottom-left-radius: 3px;
+  pointer-events: none;
+}
+
+/* ── React Flow (Timeline canvas) — bind its chrome to our theme tokens ──────
+   React Flow ships its own light palette; remap its `--xy-*` variables to the
+   design tokens so the Controls, MiniMap, edges + handles match both modes.
+   Don't set these colors inline on the components — keep them here. */
+.react-flow {
+  --xy-background-color: var(--canvas);
+  --xy-edge-stroke: var(--faint);
+  --xy-edge-stroke-selected: var(--thread);
+  --xy-connectionline-stroke: var(--thread);
+  --xy-attribution-background-color: transparent;
+}
+.react-flow .react-flow__controls {
+  box-shadow: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.react-flow .react-flow__controls-button {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  fill: var(--muted-foreground);
+}
+.react-flow .react-flow__controls-button:hover {
+  background: var(--panel-soft);
+  fill: var(--foreground);
+}
+.react-flow .react-flow__minimap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.react-flow .react-flow__attribution {
+  display: none;
+}
+
+/* ── Scrollbar — hairline, recedes ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--faint);
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+
+/* Story-ladder chips (BOOK · VOLUME · ACT · CHAPTER …). Each carries its per-level hue via the `--chip` custom
+   property. The 400-level hues read as text on the dark canvas but wash out on the light cream — so light mode
+   darkens the text and firms up the fill (color-mix, theme-aware) instead of hand-maintaining a 2nd palette. */
+.ladder-chip {
+  color: var(--chip);
+  background-color: color-mix(in srgb, var(--chip) 14%, transparent);
+  border-color: color-mix(in srgb, var(--chip) 42%, transparent);
+}
+:root:not(.dark) .ladder-chip {
+  color: color-mix(in srgb, var(--chip), #000 45%);
+  background-color: color-mix(in srgb, var(--chip) 24%, #fff);
+  border-color: color-mix(in srgb, var(--chip), #000 18%);
+}

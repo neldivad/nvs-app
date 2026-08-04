@@ -1,0 +1,17 @@
+{
+  "id": "serif-manuscript",
+  "name": "Serif Manuscript",
+  "description": "Writes your manuscript in a classic book serif. An ambient UI extension — no process, no data access, just a font. Toggle it on or off; disable to snap back to the default.",
+  "version": "0.1.0",
+  "kind": "ui",
+  "engineApi": 1,
+  "contributes": {
+    "editorFont": {
+      "family": "Georgia",
+      "stack": "'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, Cambria, 'Times New Roman', serif"
+    }
+  },
+  "capabilities": {
+    "required": []
+  }
+}

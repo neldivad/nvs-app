@@ -1,0 +1,70 @@
+appId: studio.novelvisual.app
+productName: Novel Visual Studio
+copyright: Copyright © 2026 neldivad
+
+# Version-LESS, URL-clean asset names, so `releases/latest/download/novel-visual-studio-x64.AppImage` is a
+# STABLE link that never breaks when the version bumps (ext distinguishes AppImage/deb/exe/dmg). Takes effect
+# on the next build; the /download page + releases README should use these stable names once one ships.
+artifactName: ${name}-${arch}.${ext}
+
+directories:
+  buildResources: resources
+  output: release/${version}
+
+files:
+  - out/**
+  - package.json
+  # dependency sourcemaps are dead weight in the asar (~2k files) — nothing of OURS maps (out/ emits none)
+  - "!**/*.map"
+
+# Native modules (better-sqlite3) are rebuilt against Electron's ABI via postinstall.
+asarUnpack:
+  - "**/*.node"
+
+# Read-only assets shipped beside the app:
+#  - schema/         the SQL migrations the engine applies at startup
+#  - sample-project/ the first-run seed; copied into a user's chosen folder on demand
+extraResources:
+  - from: src/engine/schema
+    to: schema
+  - from: resources/sample-project
+    to: sample-project
+  - from: resources/demos
+    to: demos
+  # Bundled sample extensions (the extension host's BUNDLED_DIRS) — the sprint timer (active) and the
+  # serif-manuscript ui/font extension (ambient). Without these the packaged app's store is empty.
+  - from: resources/sample-extension
+    to: sample-extension
+  - from: resources/sample-ui-extension
+    to: sample-ui-extension
+  # File-based Claude-plugin skills (bundled into the generated plugin zip by mcp/plugin.ts). Each
+  # <name>/SKILL.md ships as nvs/skills/<name>/SKILL.md — e.g. nvs-conversation-report.
+  - from: resources/plugin-skills
+    to: plugin-skills
+  # The headless MCP server bundle (built by `npm run mcp:build`, which the dist scripts run first) — lets
+  # Claude Code / Desktop drive the engine with no window. mcpHeadlessInfo() resolves it here when packaged.
+  - from: out/headless/mcp.cjs
+    to: headless/mcp.cjs
+
+mac:
+  category: public.app-category.productivity
+  target:
+    - dmg
+    - zip
+  # Unsigned beta — signing/notarization comes later (P5).
+  identity: null
+
+win:
+  target:
+    - nsis
+
+linux:
+  category: Office
+  maintainer: neldivad <support@nelworks.com>  # role address on the publisher domain (monitored); required for .deb
+  target:
+    - AppImage
+    - deb
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

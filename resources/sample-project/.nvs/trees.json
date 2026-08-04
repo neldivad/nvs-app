@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "activeId": "default",
+  "variants": [
+    {
+      "id": "default",
+      "name": "Timeline 1",
+      "adjacency": {
+        "ch01-a01-s000": [
+          "ch01-a01-s001"
+        ],
+        "ch01-a01-s001": [
+          "ch01-a01-s002"
+        ]
+      }
+    }
+  ]
+}

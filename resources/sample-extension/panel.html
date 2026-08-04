@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <!-- The extension's OWN Content-Security-Policy. The host loads this in a sandboxed iframe (null origin, no
+       network, no parent access); this locks it down further to inline style/script + nothing else. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline';" />
+  <style>
+    :root { color-scheme: dark light; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: transparent; color: #e9e9ee;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wrap { text-align: center; user-select: none; }
+    .main { font-size: 34px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.05; }
+    .main.alarm { font-size: 17px; color: #f5b74d; }
+    .label { margin-top: 2px; font-size: 10px; letter-spacing: .09em; text-transform: uppercase; opacity: .5; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="main" class="main">—:—</div>
+    <div id="label" class="label">writing sprint</div>
+  </div>
+  <script>
+    // The EXTENSION renders itself. The host forwards { state, event } (event = the extension's own lastEvent
+    // payload) via postMessage — it never interprets it. Delete this file and the timer has no face; the app is none the wiser.
+    const main = document.getElementById('main')
+    const label = document.getElementById('label')
+    const clock = (s) => Math.floor(s / 60) + ':' + String(Math.max(0, s % 60)).padStart(2, '0')
+    window.addEventListener('message', (e) => {
+      const { state, event } = e.data || {}
+      const ev = event || {}
+      if (state === 'done' || ev.kind === 'alarm') {
+        main.className = 'main alarm'
+        main.textContent = ev.message || '🔔 Sprint over!'
+        label.textContent = ''
+      } else if (typeof ev.remaining === 'number') {
+        main.className = 'main'; main.textContent = clock(ev.remaining); label.textContent = 'remaining'
+      } else if (typeof ev.seconds === 'number') {
+        main.className = 'main'; main.textContent = clock(ev.seconds); label.textContent = 'writing sprint'
+      } else if (state === 'crashed' || state === 'unresponsive') {
+        main.className = 'main alarm'; main.textContent = 'stopped'; label.textContent = ''
+      }
+    })
+    parent.postMessage({ type: 'panel-ready' }, '*') // handshake: host may hold events until we're listening
+  </script>
+</body>
+</html>

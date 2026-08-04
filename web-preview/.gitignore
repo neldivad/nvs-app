@@ -1,0 +1,4 @@
+dist/
+dist-web/
+public/snapshot.json
+*.cjs

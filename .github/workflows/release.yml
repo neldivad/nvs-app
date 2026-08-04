@@ -1,0 +1,86 @@
+# Release CI — builds Windows + macOS + Linux installers in the cloud and publishes them as a GitHub Release
+# ON THIS SAME REPO. You never need a Windows or Mac machine: GitHub hosts one runner per OS, each builds its
+# own installer with electron-builder, and the `publish` job collects them into one release.
+#
+# HOW TO CUT A RELEASE:
+#   1. bump `version` in package.json, commit.
+#   2. `git tag v0.1.1 && git push origin v0.1.1`   ← the tag triggers this workflow.
+#
+# NO TOKEN SETUP NEEDED. Because the source and the releases live in the same public repo, the publish job
+# uses the automatic `GITHUB_TOKEN` (granted by `permissions: contents: write` below) — there is no Personal
+# Access Token or second repo to configure. This is the whole payoff of a single public repo.
+#
+# SIGNING (deferred): builds are UNSIGNED for now — Windows shows a SmartScreen warning, macOS is
+# Gatekeeper-blocked (right-click → Open). Add a Windows Authenticode cert + Apple notarization later; the
+# matrix stays the same, you just add the signing env vars per OS.
+
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch: # lets you run it manually from the Actions tab for testing
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false # one OS failing shouldn't kill the others' builds
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `npm run dist` = mcp:build → electron-vite build → electron-builder. electron-builder builds for the
+      # runner's own OS (AppImage+deb on Linux, nsis .exe on Windows, dmg+zip on macOS) and rebuilds the native
+      # better-sqlite3 for the Electron ABI automatically.
+      - name: Build installers
+        run: npm run dist
+
+      - name: Collect installers + update feed
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          if-no-files-found: error
+          path: |
+            release/**/*.AppImage
+            release/**/*.deb
+            release/**/*.exe
+            release/**/*.dmg
+            release/**/*.zip
+            release/**/*.blockmap
+            release/**/latest*.yml
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # lets the automatic GITHUB_TOKEN create/upload the Release on this repo
+    steps:
+      - name: Download all OS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist-artifacts
+          merge-multiple: true # flatten every OS's files into one folder
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # automatic, repo-scoped — no PAT needed
+        run: |
+          TAG="${GITHUB_REF_NAME:-manual-$(date +%s)}"
+          FILES=$(find dist-artifacts -type f)
+          echo "Publishing $TAG with:"; echo "$FILES"
+          # create the release if it doesn't exist, else just add/overwrite the assets
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --title "Novel Visual Studio $TAG" \
+            --notes "Automated build. Linux (AppImage/.deb), Windows (.exe), macOS (.dmg). Unsigned beta." \
+            $FILES \
+          || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber $FILES

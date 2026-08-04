@@ -1,0 +1,14 @@
+{
+  "id": "sprint-timer",
+  "name": "Writing Sprint Timer",
+  "description": "A goofy proof-of-seam: counts down a writing sprint out-of-process, reads your scenes at start and end (read:scenes/1), and rings when time is up with how many words you wrote.",
+  "version": "0.2.0",
+  "kind": "integration",
+  "engineApi": 1,
+  "run": { "type": "subprocess", "entry": "main.cjs" },
+  "panel": "panel.html",
+  "capabilities": {
+    "required": ["read:scenes/1"],
+    "optional": []
+  }
+}

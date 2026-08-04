@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# electron-vite build output
+out/
+dist/
+release/
+*.tsbuildinfo
+
+# the engine writes a co-located analysis dir beside any opened project;
+# if a sample project is opened in-repo, never commit its derived data
+.novel-scribe/
+# …except the bundled demo analysis, which ships with the app (read-only first run)
+!resources/demos/**/.novel-scribe/
+!resources/demos/**/.novel-scribe/**
+# …but ui-state.json is per-user UI choices (tags, roster filter), not demo content — don't commit
+resources/demos/**/.novel-scribe/ui-state.json
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# env / secrets (the real key lives in the OS keychain via safeStorage, never on disk)
+.env
+.env.local
+*.local
+
+# logs
+*.log
+npm-debug.log*
+
+# playwright e2e output
+test-results/
+
+# Local-only design assets (moved out of tracking 2026-08-03; images kept on disk, not in repo)
+internal/design/_local/

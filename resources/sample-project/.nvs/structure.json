@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "world": [
+    {
+      "key": "character",
+      "label": "Characters",
+      "folder": "characters",
+      "tracked": true,
+      "description": "A person in the story — someone who acts, speaks, wants, and changes over time."
+    },
+    {
+      "key": "location",
+      "label": "Locations",
+      "folder": "locations",
+      "tracked": true,
+      "description": "A place the story happens in — a setting that gathers meaning as events accumulate there."
+    },
+    {
+      "key": "item",
+      "label": "Items",
+      "folder": "items",
+      "tracked": true,
+      "description": "An object the plot turns on — not a prop, but *the* ring, *the* letter, *the* heirloom.",
+      "arc": {
+        "archetype": "object",
+        "facets": [
+          {
+            "key": "custody",
+            "blurb": "who holds or controls it"
+          },
+          {
+            "key": "state",
+            "blurb": "its condition — poisoned, forged, broken, repaired"
+          },
+          {
+            "key": "location",
+            "blurb": "where it physically is"
+          },
+          {
+            "key": "function",
+            "blurb": "a CHANGE in how it is used in the plot — NOT a description of its purpose (that belongs on its page)"
+          }
+        ]
+      }
+    },
+    {
+      "key": "faction",
+      "label": "Factions",
+      "folder": "factions",
+      "tracked": true,
+      "description": "An organization or group that acts as one — a house, order, company, or force with its own goals.",
+      "arc": {
+        "archetype": "agent",
+        "facets": [
+          {
+            "key": "power",
+            "blurb": "military or political strength"
+          },
+          {
+            "key": "standing",
+            "blurb": "reputation, legitimacy, public standing"
+          },
+          {
+            "key": "allegiance",
+            "blurb": "who it is aligned with or against"
+          },
+          {
+            "key": "territory",
+            "blurb": "what it holds or controls"
+          }
+        ]
+      }
+    },
+    {
+      "key": "lore",
+      "label": "Lore",
+      "folder": "lore",
+      "tracked": false,
+      "description": "Background the world declares — history, rules, cosmology. Reference knowledge, not a thing that appears in scenes."
+    },
+    {
+      "key": "information",
+      "label": "Information",
+      "folder": "information",
+      "tracked": false,
+      "description": "A declared piece of information — a secret, a fact, a revelation-in-waiting: what it IS and why it matters. Its movement (who learns it, when) is tracked by an anchored Custody topic."
+    }
+  ],
+  "scene": [
+    {
+      "key": "chapter",
+      "label": "Chapters",
+      "container": true,
+      "description": "A chapter — the usual home for a run of scenes."
+    }
+  ]
+}
