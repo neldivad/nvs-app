@@ -28,9 +28,9 @@ resources/sample-project/   a bundled example NVS project — the first-run seed
 
 - **Dataset conversion** — turning transcript-like sources into NVS-format projects lives in **nvs-parser**
   (a converter + agentic conversion skills + the quality oracle). The **runtime schema + ingest enforcement**
-  are owned **here** (see [internal/decisions.md](internal/decisions.md) D1/D2); the **descriptive on-disk
+  are owned **here** (see internal/decisions.md D1/D2); the **descriptive on-disk
   convention** is `nvs-parser/references/nvs-format.md` (see
-  [internal/conversion-and-docs-architecture.md](internal/conversion-and-docs-architecture.md)).
+  internal/conversion-and-docs-architecture.md).
 - **Authoring a story** is the *end-user's* activity, done inside their own project folder. The bundled
   example at `resources/sample-project/` carries its own `CLAUDE.md` + skills showing how that works — that
   guidance is sample content, not instructions for building this app.

@@ -92,7 +92,7 @@ npm run typecheck | npm run lint | npm test
 - **P4** IDE features — go-to-character, find-references, relationship graph, the coherence "Problems" panel.
 - **P5** packaging — signing/notarization, CI matrix.
 
-Decisions and their rationale are logged in [internal/decisions.md](internal/decisions.md).
+Decisions and their rationale are logged in internal/decisions.md.
 
 ## Where domain truth lives
 
