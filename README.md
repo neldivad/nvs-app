@@ -39,11 +39,13 @@ You write the scenes. A tireless little guy in the sidebar holds the entire plot
 > did I ever pay off the cursed sword thing? Whose child does this belong to? Did I just accidentally made those characters commit incest? 
 > open a 4th notepad to keep track of my other 3 notepads
 > goodreads review: "plot holes you could drive a truck through"
-> mfw i am the truck
+> MFW i am the truck
 ```
 
 Past a certain size **nobody** holds the whole forest, every open thread, every character's drift, every unpaid
-setup. 
+setup.
+
+There's a reason why most long running series turns bad past season 4. The original writer got fired, finished his contract, and now a new intern inherits the universe and retconns everything.
 
 Redditors will say it is a skill issue when it is a RAM issue. Your head was never the right place to store the plot and your universe's wiki.
 
@@ -60,7 +62,7 @@ Redditors will say it is a skill issue when it is a RAM issue. Your head was nev
 ```
 
 **Keep the plot in the machine's memory, not yours.** You do the steering (the choices only you can make); the AI
-does the tracking (the bookkeeping no human should have to). One does not simply memorize 302 scenes — so don't.
+does the tracking (the bookkeeping no human should have to). One does not simply memorize 302 scenes so don't.
 
 > the long, serious, no-memes version of the vision lives in **[VISION.md](VISION.md)** for the intellectuals and man of culture.
 
@@ -69,20 +71,18 @@ does the tracking (the bookkeeping no human should have to). One does not simply
 The content the world makes now is **dialogue-shaped, not prose-shaped.** NVS is built different for the people
 writing it:
 
-- **📖 Novelists & fiction gigachads** — write scenes, let the reader keep the books: open vs paid-off threads,
-  who drifted from who they were, what a character shouldn't know yet, the beat that hard-contradicts chapter two.
-- **🎬 Screenwriters** — [Fountain](https://fountain.io) is the *native unit*, not a cursed export. Works on a
-  feature or a full series bible without turning your machine into a space heater.
-- **🎥 AI-video & script creators** — a screenplay is basically already a video prompt (a shot, a line, an action,
-  a cut). Write in Fountain and it converts to a video-model prompt with almost no translation. Turn a raw
-  transcript into clean, structured scenes an agent can actually read. it's giving pipeline.
+- **📖 Novelists & fiction writers**: you write scenes, let the reader track your drafts. Check the threads that was opened, paid-off. Learn which character drifted from who they were. Build suspense or mystery by tracking what a character shouldn't know yet, learn if your most recent chapter has any contradictions you should fix before starting the next.  
+- **🎬 Screenwriters** — [Fountain](https://fountain.io) is the *native unit*, not a cursed export. Just write each scene like how you write for a single cut for your film director, with a better UX instead of repeating the shape with Microsoft Word.
+- **🎥 AI-video & script creators**: a screenplay is basically already a video prompt (a shot, a line, an action,
+  a cut). Write in Fountain and it converts to a video-model prompt with almost no translation. Your export will be a clean, structured scenes an agent can actually read and generate high quality video frames. 
+- **Someone who listens to a podcast or interviews**: You think NVS is just a toy for fiction writers? It works on any content shaped like a dialogue. You can use NVS to find out who is talking the most, topics people are getting into, and topics that didn't get closed because the speakers got distracted. This isn't YET how normal people analyzes transcript, but eventually it may be the new way to do it. 
 
 ---
 
-## the receipts
+## Examples and Showcase
 
 > **every single image below is a live analysis of a real 302-scene _Genshin Impact_ project** (+ one from
-> _Romance of the Three Kingdoms_). these are NOT mockups. no Figma was harmed. the lore is DEEP.
+> _Romance of the Three Kingdoms_). these are NOT mockups. We don't do Figma impressions, or AI-generate the renderings and artist impression like some Saudi real estate project.
 
 <table>
   <tr>
@@ -119,29 +119,27 @@ writing it:
   </tr>
 </table>
 
-That last one — **custody** — is the "who knows the secret / who's holding the thing" tracker. It's the One Ring
-except it's a horse, and NVS never loses track of who has it. Dramatic irony, but you can actually *see* it. 
+**Custody** — is the "who knows the secret / who's holding the thing" tracker. It's the One Ring, except it's a horse, and NVS never loses track of who has it. 
 
 This is your skill in engineering mystery or suspense.  
 
-## what it does (the boring-but-important bullets)
+## what it does
 
-- **Write in Markdown.** Scenes are dialogue-led `.md` files; a world bible sits alongside. Files are the
-  product — open them in any editor, `git commit` them, they're yours forever. no lock-in, no rugpull.
+- **Write in Markdown.** Scenes are dialogue-led `.md` files; a Wiki or Fandom-like folder to track the truth of your characters sits alongside. Files are the product that you can open in ANY editor. Your project don't get lock-in to our ecosystem, and we never rugpull your life's work.
 - **A reader keeps the books.** The in-process engine reads each scene and keeps ledgers: threads, cast presence,
-  coherence, reveals. Ask *what have I left hanging? who knew by now? did she drift?* and you get instant answers.
-- **Local-first & private, actually.** Everything runs on your machine. Analysis lives in a `.nvs/` folder next
+  coherence, reveals. This backend produces the magic when you ask AI *what have I left hanging? who knew by now? did she drift?* and you get instant answers.
+- **Local-first & private.** Everything runs on your machine. Analysis lives in a `.nvs/` folder next
   to your story. When you turn on AI, your prose goes to the provider **you** pick (OpenAI / OpenRouter /
-  Anthropic / local Ollama) with **your** key — key lives in the OS keychain, never on disk, never through us.
-  we literally do not have a server to spy on you with. it's just you and Claude / GPT.
+  Anthropic / local Ollama) with **your** key. Your key lives in the OS keychain, never on disk, never through us.
+  we literally do not have a server to spy on you with. it's just you and Claude / GPT / Deepseek.
 
 ---
 
 ## Download
 
-**NVS is cross-platform** — Linux, Windows, and macOS, all built by the same pipeline (one cloud runner per OS).
+**NVS is cross-platform**. Linux, Windows, and macOS, all built by the same pipeline (one cloud runner per OS).
 All builds are **unsigned beta**, so each OS throws a scary-looking first-run warning you can click past (steps
-below). it's fine. we promise. (it's open source, read the code if you're paranoid.)
+below). If you think its a virus, trust me bro its not. (it's open source, read the code if you're paranoid.)
 
 ### 🐧 Linux
 
@@ -174,16 +172,21 @@ curl -L -o nvs.deb \
 
 Look, we already knew this is gonna happen. Writers block happens when you see a blank screen and you hate your life for not being able to write something. 
 
-The in-app **Store** pulls from **[nvs-datasets](https://github.com/neldivad/nvs-datasets)** — classical and popular stories you probably know, already in NVS format. Download one, it opens with every rail live, zero conversion. Poke at *Alice in
-Wonderland* or *Journey to the West* and see how the machine read a whole book and how it matched with your experience after finishing the book.
+The in-app **Store** pulls from **[nvs-datasets](https://github.com/neldivad/nvs-datasets)** and you get classical and popular stories you probably know, already in NVS format. 
 
-Hopefully, this is enough to convince you the capabilities of NVS and save you from skill issue. 
+Check out stories you already know, like *Alice in Wonderland* or *Journey to the West* and see how the machine read a whole book and how it matched with your experience.
+
+Hopefully, this is enough to convince you the capabilities of NVS and a quick start on how you want to work on YOUR OWN project. 
 
 ---
 
 ## first prompts to paste into the AI
 
-Bring your own model, open a project, and ask any of these into the right-rail chat (`[…]` = a name from your story):
+You might be skeptical with how this AI feature works. This is the "try it and you see" moment. 
+
+For this part, you should at least know how to sign up for an AI API key from Openai, Anthropic, or Openrouter. If you are just a writer, you are not missing out too much on this feature. 
+
+Anyway, bring your own model, open a project, and ask any of these into the right-rail chat (`[…]` = a name from your story):
 
 - *"What are the main plot threads, and which are still open?"*
 - *"Summarize everything that's happened up to chapter 5."*
@@ -193,7 +196,7 @@ Bring your own model, open a project, and ask any of these into the right-rail c
 - *"Based on my corkboard, what have I planned but haven't written yet?"*
 - *"Turn this text into NVS scenes and character pages."* -- paste a raw draft or transcript
 
-Anything it wants to change becomes a **Task** you review first. nothing gets yeeted into your files without a yes.
+Anything it wants to change becomes a **Task** you review first. nothing gets into your files without a "yes".
 
 ---
 
@@ -265,7 +268,7 @@ AI is opt-in and **off by default.** Switch it on only if/when you want the fanc
 3. Start writing. Alternatively, agree to all terms and conditions, then write.
 
 That's genuinely it. Still stuck? Paste this repo's link into ChatGPT/Claude and go *"yo how do I use this on my
-pc"* and it'll hand-hold you through it. living in the future is free.
+pc"* and it'll hand-hold you through it. Living in the future is free.
 
 > **"Is my writing private?"**
 
@@ -297,12 +300,15 @@ format, novel → screen → generated video.
 
 > **"Does this work for visual novels?"**
 
-Yes! Branching dialogue, a huge cast, routes, who-knows-what-when — literally NVS's home turf.
+Yes! Branching dialogue, a huge cast, routes, who-knows-what-when. This is literally NVS's home turf.
+
+> **"What is a .nvs file?**
+
+It is nothing special. It contains the JSONs and DB files most machines already understands. We don't hide binaries or DRM within to brick anyone's computer. We wrap it those common files in .nvs because WE THINK you probably won't need those generated artifacts in any other application other than ours, so your project won't surprise you with lots of folders. 
 
 > **"So what *can* I throw at it?"**
 
-Novels, screenplays, visual novels, podcasts, interviews, YouTube scripts, that 3-hour Discord VC you
-transcribed — anything **dialogue-shaped**. If it's people talking, NVS reads it.
+Novels, screenplays, visual novels, podcasts, interviews, YouTube scripts, that 3-hour Discord VC you transcribed — anything **dialogue-shaped**. If it's people talking, NVS reads it.
 
 > **"Do I have to pay? what's the catch?"**
 
@@ -312,7 +318,7 @@ blocks -- for that, DM support@nelworks.com or my Twitter inbox. everyone else: 
 
 > **"Your software is alpha, am I gonna lose my work if it gets taken down?"**
 
-Your writing is **plain markdown files on your own disk.** If NVS spontaneously combusted tomorrow, your story is
+Your writing is **plain markdown files on your own disk.** If NVS explodes and get nuked off the internet tomorrow, your story is
 still just files in a folder that open in any editor. The analysis DB is the disposable part, nuke it and it
 rebuilds. Your words are never held hostage.
 
