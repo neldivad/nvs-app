@@ -12,7 +12,7 @@ Write dialogue-driven scenes as Markdown; a tireless reader holds the whole stor
 
 [![Latest release](https://img.shields.io/github/v/release/neldivad/nvs-app?label=release&color=6E56CF)](https://github.com/neldivad/nvs-app/releases/latest)
 [![Linux](https://img.shields.io/badge/Linux-available-2ea043?logo=linux&logoColor=white)](#-linux)
-[![Windows · macOS](https://img.shields.io/badge/Windows%20·%20macOS-building-e3a008)](#-windows--macos)
+[![Windows · macOS](https://img.shields.io/badge/Windows%20·%20macOS-available-2ea043)](#-windows--macos)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/QpggZnAHEY)
 
@@ -82,8 +82,9 @@ promised, who drifted — and check the machine's account of the story against y
 
 ## Download
 
-**NVS is cross-platform.** Linux installers are available now; Windows and macOS are built by the same release
-pipeline and publish right here.
+**NVS is cross-platform** — Linux, Windows, and macOS installers are all built by the same release pipeline
+(one cloud runner per OS) and published right here. All builds are **unsigned beta**, so each OS shows a
+first-run warning you can click past (noted below).
 
 ### 🐧 Linux
 
@@ -102,13 +103,15 @@ curl -L -o nvs.deb \
   && sudo dpkg -i nvs.deb
 ```
 
-### 🪟 Windows &nbsp;·&nbsp; 🍎 macOS
+### 🪟 Windows
 
-**Cross-platform and on the way.** The Windows `.exe` and macOS `.dmg` are built by the **same release pipeline**
-as the Linux installers — each OS builds on its own cloud runner — and they publish **right here** with an
-upcoming release. Click **👀 Watch → Custom → Releases** at the top of this repo, or join the
-**[Discord](https://discord.gg/QpggZnAHEY)**, to know the moment your build is up. (Builds are unsigned beta:
-Windows shows a SmartScreen warning; macOS opens via right-click → Open.)
+**[⬇ Download the installer (.exe)](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x64.exe)**
+— unsigned beta, so SmartScreen shows a warning on first launch: click **More info → Run anyway**.
+
+### 🍎 macOS (Apple Silicon)
+
+**[⬇ Download the .dmg](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-arm64.dmg)**
+— unsigned beta, so Gatekeeper blocks the first open: **right-click the app → Open**, then confirm.
 
 ### 📚 Start with a real project
 
