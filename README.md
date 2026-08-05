@@ -8,117 +8,144 @@
 # Novel Visual Studio
 
 **A plain-text screenplay studio with an AI reader built in.**
-Write dialogue-driven scenes as Markdown; a tireless reader holds the whole story so you don't have to.
+You write the scenes. A tireless little guy in the sidebar holds the entire plot in his head so your brain doesn't have to.
 
 [![Latest release](https://img.shields.io/github/v/release/neldivad/nvs-app?label=release&color=6E56CF)](https://github.com/neldivad/nvs-app/releases/latest)
 [![Linux](https://img.shields.io/badge/Linux-available-2ea043?logo=linux&logoColor=white)](#-linux)
 [![Windows · macOS](https://img.shields.io/badge/Windows%20·%20macOS-available-2ea043)](#-windows--macos)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/QpggZnAHEY)
+[![Discord](https://img.shields.io/badge/Discord-join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/QpggZnAHEY)
 
-[**⬇ Download**](#download) · [Why it exists](#the-idea) · [Product page](https://www.getqed.app/nvs) · [Example works](https://github.com/neldivad/nvs-datasets) · [How you can help](#how-you-can-help)
+[**⬇ Download**](#download) · [why tho](#the-idea) · [Product page](https://www.getqed.app/nvs) · [Free classics to open](https://github.com/neldivad/nvs-datasets) · [join the discord](https://discord.gg/QpggZnAHEY)
 
 </div>
 
-![Writing a 302-scene story in NVS — the story tree, dialogue blocks, and the AI working in the margin](assets/genshin-editor.png)
+![Writing a 302-scene story in NVS — story tree, dialogue blocks, and the AI working in the margin](assets/genshin-editor.png)
 
-> **Status: working alpha.** The editor, the analysis panels (threads · cast · coherence · relationships ·
-> timeline · custody), AI extraction, and the Claude MCP plugin are all built and usable. The
-> [Fountain](https://fountain.io) format and the on-disk `.nvs/` shape are still settling, so expect rough edges.
+> **Status: working alpha.** Editor, the analysis rails (threads · cast · coherence · relationships · timeline ·
+> custody), AI extraction, and the Claude MCP plugin are all real and usable. The [Fountain](https://fountain.io)
+> format and the on-disk `.nvs/` shape are still cooking, so expect the occasional rough edge. we ball anyway.
 
 ---
 
-## Who it's for
+## the problem (you already know this feel)
 
-The story people make now is **dialogue-shaped, not prose-shaped** — and NVS is built for the people writing it:
+```text
+> be me
+> writing my epic 300k-word fantasy saga, absolute cinema
+> chapter 3: introduce mysterious hooded stranger, casually drop 6 plot threads
+> chapter 41: wait who was the hooded guy?
+> does my main character know about the betrayal yet?? or is that next arc
+> did I ever pay off the cursed sword thing? Whose child does this belong to? Did I just accidentally made those characters commit incest? 
+> open a 4th notepad to keep track of my other 3 notepads
+> goodreads review: "plot holes you could drive a truck through"
+> mfw i am the truck
+```
 
-- **📖 Novelists & fiction writers** — write scenes in plain Markdown and let the reader keep the books: which
-  plot threads are still open, who's drifted from who they were, what a character shouldn't know yet, the beat
-  that contradicts chapter two. Keep the plot in the machine's memory, not yours.
-- **🎬 Screenwriters** — [Fountain](https://fountain.io) is the native unit, not an export. Scene headings,
-  dialogue, and action are first-class, and the same rails (cast presence, relationship arcs, a real timeline)
-  work on a feature or a series bible.
-- **🎥 AI-video & script creators** — a screenplay is already a video prompt: a shot, a line, an action, a cut.
-  Write in Fountain and your work converts to a video-model prompt with almost no translation. Turn a transcript
-  or a rough draft into clean, structured scenes an agent (or a generation pipeline) can actually read.
+Past a certain size **nobody** holds the whole forest, every open thread, every character's drift, every unpaid
+setup. 
 
-## The idea
+Redditors will say it is a skill issue when it is a RAM issue. Your head was never the right place to store the plot and your universe's wiki.
 
-**A human can't hold the whole forest, and neither can an agent.** Past a certain size, nobody keeps every open
-thread, every character's drift, every unpaid setup in their head — and when a story outgrows the context window,
-a straight-through read stops working for a model too. So NVS splits the job the way it actually divides:
+## the fix
 
-- **The AI does the tracking** — reads every scene and keeps ledgers (threads, cast, coherence, reveals),
-  surfacing the *one* thing that matters right now.
-- **The human does the steering** — rails, a timeline, a relationship graph, jump-to-character: a non-linear
-  **map of the story** you navigate to skim, pivot, and drill. The same map lets an agent read a work too large
-  to hold in one pass.
+```text
+> download NVS (free, local, no account, no "sign up for our newsletter")
+> write scenes in plain markdown like a normal human being
+> the little guy in the margin reads everything. never sleeps. never forgets. never asks for a raise
+> "yo king, 3 threads still open and Karen is NOT supposed to know about the murder yet"
+> continuity errors: caught by you, before they're caught by 400 people on reddit
+> mfw the machine holds the plot and my monke brain is finally free
+> TFW your audience never complains your "story is so ass". 
+```
 
-That shared surface is also what makes the AI's work **auditable**: open a rail, see who's present, what's
-promised, who drifted — and check the machine's account of the story against your own. Same page, same truth.
+**Keep the plot in the machine's memory, not yours.** You do the steering (the choices only you can make); the AI
+does the tracking (the bookkeeping no human should have to). One does not simply memorize 302 scenes — so don't.
 
-> The longer version — the vision and the bet underneath it — is in **[VISION.md](VISION.md)**.
+> the long, serious, no-memes version of the vision lives in **[VISION.md](VISION.md)** for the intellectuals and man of culture.
 
-## What it does
+## who's this for
 
-- **Write in Markdown.** Scenes are dialogue-led `.md` files; a world bible (characters, locations, lore) sits
-  alongside. Files are the product — open them in any editor, commit them to git.
-- **A reader keeps the books.** The in-process engine reads each scene and keeps ledgers: plot threads (open vs
-  paid-off), cast presence over time, coherence (contradictions / drift), and reveals.
-- **Ask, don't reread.** Panels answer *what have I left hanging? who knew by now? did she drift from her page?*
-  from the ledgers — instant, and (for the deterministic half) free.
-- **Local-first & private.** Everything runs on your machine. Analysis lives in a `.nvs/` folder beside your
-  story. When AI extraction is enabled, your prose goes to the provider *you* choose (OpenAI / OpenRouter /
-  Anthropic / local Ollama) with your own key — the key lives in the OS keychain, never on disk, never through us.
+The content the world makes now is **dialogue-shaped, not prose-shaped.** NVS is built different for the people
+writing it:
 
-> **Every image below is a live analysis of a real, 302-scene _Genshin Impact_ story project** — not mockups.
+- **📖 Novelists & fiction gigachads** — write scenes, let the reader keep the books: open vs paid-off threads,
+  who drifted from who they were, what a character shouldn't know yet, the beat that hard-contradicts chapter two.
+- **🎬 Screenwriters** — [Fountain](https://fountain.io) is the *native unit*, not a cursed export. Works on a
+  feature or a full series bible without turning your machine into a space heater.
+- **🎥 AI-video & script creators** — a screenplay is basically already a video prompt (a shot, a line, an action,
+  a cut). Write in Fountain and it converts to a video-model prompt with almost no translation. Turn a raw
+  transcript into clean, structured scenes an agent can actually read. it's giving pipeline.
+
+---
+
+## the receipts
+
+> **every single image below is a live analysis of a real 302-scene _Genshin Impact_ project** (+ one from
+> _Romance of the Three Kingdoms_). these are NOT mockups. no Figma was harmed. the lore is DEEP.
 
 <table>
   <tr>
-    <td align="center"><b>Plot threads across the whole story</b><br/><sub>3 open · 59 resolved</sub></td>
-    <td align="center"><b>A real timeline of events</b></td>
+    <td align="center"><b>Every plot thread, whole story</b><br/><sub>3 open · 59 resolved · 0 forgotten</sub></td>
+    <td align="center"><b>An actual timeline of events</b></td>
   </tr>
   <tr>
     <td><img src="assets/genshin-threads.png" alt="plot-thread gantt across acts" /></td>
     <td><img src="assets/genshin-timeline.png" alt="story timeline" /></td>
   </tr>
   <tr>
-    <td align="center"><b>How two characters relate, scene by scene</b></td>
-    <td align="center"><b>Cast presence & who carries the story</b></td>
+    <td align="center"><b>How two characters relate, scene by scene</b><br/><sub>the ship graph, receipts included</sub></td>
+    <td align="center"><b>Who carries the story</b><br/><sub>main-character energy, quantified</sub></td>
   </tr>
   <tr>
     <td><img src="assets/genshin-relationships.png" alt="Paimon ↔ Traveler relationship spine" /></td>
     <td><img src="assets/genshin-cast.png" alt="cast presence over the story" /></td>
   </tr>
   <tr>
-    <td align="center"><b>A world bible that builds itself</b></td>
-    <td align="center"><b>Continuity — contradictions & drift</b></td>
+    <td align="center"><b>A world bible that writes itself</b></td>
+    <td align="center"><b>Continuity cop</b><br/><sub>contradictions & drift, found before reddit finds them</sub></td>
   </tr>
   <tr>
     <td><img src="assets/genshin-world.png" alt="world bible pages" /></td>
     <td><img src="assets/genshin-coherence.png" alt="coherence findings" /></td>
   </tr>
   <tr>
-    <td align="center"><b>Who knows the secret — and when they learned it</b></td>
-    <td align="center"><b>Light mode, too</b></td>
+    <td align="center"><b>Who's holding the MacGuffin, and since when</b><br/><sub>Red Hare: Dong Zhuo → Lü Bu → Cao Cao → Guan Yu</sub></td>
+    <td align="center"><b>light mode for the manuscript purists</b></td>
   </tr>
   <tr>
-    <td><img src="assets/genshin-custody.png" alt="dramatic-irony / secret custody" /></td>
+    <td><img src="assets/three-kingdoms-red-hare-custody.png" alt="Red Hare custody chart — who holds the horse, handoff by handoff" /></td>
     <td><img src="assets/genshin-threads-light.png" alt="threads in light mode" /></td>
   </tr>
 </table>
+
+That last one — **custody** — is the "who knows the secret / who's holding the thing" tracker. It's the One Ring
+except it's a horse, and NVS never loses track of who has it. Dramatic irony, but you can actually *see* it. 
+
+This is your skill in engineering mystery or suspense.  
+
+## what it does (the boring-but-important bullets)
+
+- **Write in Markdown.** Scenes are dialogue-led `.md` files; a world bible sits alongside. Files are the
+  product — open them in any editor, `git commit` them, they're yours forever. no lock-in, no rugpull.
+- **A reader keeps the books.** The in-process engine reads each scene and keeps ledgers: threads, cast presence,
+  coherence, reveals. Ask *what have I left hanging? who knew by now? did she drift?* and you get instant answers.
+- **Local-first & private, actually.** Everything runs on your machine. Analysis lives in a `.nvs/` folder next
+  to your story. When you turn on AI, your prose goes to the provider **you** pick (OpenAI / OpenRouter /
+  Anthropic / local Ollama) with **your** key — key lives in the OS keychain, never on disk, never through us.
+  we literally do not have a server to spy on you with. it's just you and Claude / GPT.
 
 ---
 
 ## Download
 
-**NVS is cross-platform** — Linux, Windows, and macOS installers are all built by the same release pipeline
-(one cloud runner per OS) and published right here. All builds are **unsigned beta**, so each OS shows a
-first-run warning you can click past (noted below).
+**NVS is cross-platform** — Linux, Windows, and macOS, all built by the same pipeline (one cloud runner per OS).
+All builds are **unsigned beta**, so each OS throws a scary-looking first-run warning you can click past (steps
+below). it's fine. we promise. (it's open source, read the code if you're paranoid.)
 
 ### 🐧 Linux
 
-**[⬇ Download the AppImage](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x86_64.AppImage)** (any distro, no install), then make it executable and run:
+**[⬇ Download the AppImage](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x86_64.AppImage)** (any distro, no install), then:
 
 ```bash
 chmod +x novel-visual-studio-x86_64.AppImage
@@ -136,52 +163,50 @@ curl -L -o nvs.deb \
 ### 🪟 Windows
 
 **[⬇ Download the installer (.exe)](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x64.exe)**
-— unsigned beta, so SmartScreen shows a warning on first launch: click **More info → Run anyway**.
+— SmartScreen will clutch its pearls on first launch: click **More info → Run anyway**.
 
 ### 🍎 macOS (Apple Silicon)
 
 **[⬇ Download the .dmg](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-arm64.dmg)**
-— unsigned beta, so Gatekeeper blocks the first open: **right-click the app → Open**, then confirm.
+— Gatekeeper blocks the first open: **right-click the app → Open**, then confirm. Apple just being Apple.
 
-### 📚 Start with a real project
+### 📚 don't have a project? borrow a classic
 
-The in-app **Store** connects to **[nvs-datasets](https://github.com/neldivad/nvs-datasets)** — a public library
-of classics already in NVS format. Download one and it opens with every panel live: no conversion, no waiting.
+Look, we already knew this is gonna happen. Writers block happens when you see a blank screen and you hate your life for not being able to write something. 
+
+The in-app **Store** pulls from **[nvs-datasets](https://github.com/neldivad/nvs-datasets)** — classical and popular stories you probably know, already in NVS format. Download one, it opens with every rail live, zero conversion. Poke at *Alice in
+Wonderland* or *Journey to the West* and see how the machine read a whole book and how it matched with your experience after finishing the book.
+
+Hopefully, this is enough to convince you the capabilities of NVS and save you from skill issue. 
 
 ---
 
-## First prompts to try
+## first prompts to paste into the AI
 
-NVS ships an AI assistant in the right rail (bring your own model). Open a project — or grab one from the Store —
-and paste any of these; wherever a prompt says `[…]`, drop in a name from your story:
+Bring your own model, open a project, and ask any of these into the right-rail chat (`[…]` = a name from your story):
 
 - *"What are the main plot threads, and which are still open?"*
 - *"Summarize everything that's happened up to chapter 5."*
 - *"Are there any continuity errors or plot holes in my draft?"*
 - *"Who knows about `[the secret]`, and when did each of them find out?"*
-- *"Trace `[character]`'s arc — how do they change across the story?"*
+- *"Trace `[character]`'s arc. how do they change across the story?"*
 - *"Based on my corkboard, what have I planned but haven't written yet?"*
-- *"Turn this text into NVS scenes and character pages."* — for pasting in a draft or transcript.
+- *"Turn this text into NVS scenes and character pages."* -- paste a raw draft or transcript
 
-Anything it proposes to change becomes a **Task** you review first — nothing is applied silently.
+Anything it wants to change becomes a **Task** you review first. nothing gets yeeted into your files without a yes.
 
 ---
 
-## Build from source
+## Build from source (for the tinkerers)
 
-It's an [Electron](https://www.electronjs.org/) app (Windows · macOS · Linux) with an in-process TypeScript
-narrative-analysis engine.
+It's an [Electron](https://www.electronjs.org/) app + an in-process TypeScript narrative engine.
 
 ```bash
 npm install        # postinstall rebuilds better-sqlite3 for Electron
-npm run dev        # launch the app with HMR
+npm run dev        # launch with HMR
 npm run build      # typecheck + bundle
-npm run dist       # build installers for the current OS (win/mac/linux)
+npm run dist       # build installers for your current OS
 ```
-
-Open a project from the welcome screen — point it at the bundled
-[`resources/sample-project/`](resources/sample-project/) or download one from
-[nvs-datasets](https://github.com/neldivad/nvs-datasets).
 
 ```
 src/main      Electron main (Node): windows, dialogs, safeStorage, file-watch, IPC
@@ -189,41 +214,123 @@ src/preload   contextBridge → window.nvs (the only UI→engine path)
 src/engine    the TS narrative engine + app-owned SQL schema
 src/shared    ipc.ts — the typed renderer↔main contract
 src/renderer  the React SPA (Tailwind v4 · shadcn/ui · Zustand)
-DESIGN.md     the visual system (source of truth; pins both light/dark modes)
-AGENTS.md     guide for agents building the app
 ```
 
-## Use NVS from Claude (MCP)
+**Drive it from Claude (MCP).** NVS is also a tool an agent can drive over [MCP](https://modelcontextprotocol.io):
+Claude can read your project, build the analysis, and screenshot your rails — all local. In-app: **Store → Use
+with Claude**. 
 
-NVS is also a tool an agent can drive over [MCP](https://modelcontextprotocol.io): Claude can **read** your
-project, **build** the analysis from Markdown, and — while the app is open — **see** your rails via a screenshot.
-It's local (your files never leave your machine). While NVS is open, use **Store → Use with Claude** to copy the
-exact `claude mcp add` command (it embeds a per-install token — copy it, don't share it), then in Claude Code:
-*"captureView and describe what you see."*
+**Companion repos:** 
 
-## Companion projects
-
-- **[nvs-parser](https://github.com/neldivad/nvs-parser)** — the converter (transcripts / novels → NVS projects),
-  its agentic conversion skills + quality oracle, and the on-disk convention.
-- **[nvs-datasets](https://github.com/neldivad/nvs-datasets)** — the public library of example works the in-app
-  Store downloads from.
+1. [nvs-parser](https://github.com/neldivad/nvs-parser) (converter + quality oracle). Use this if you have a big pdf or full storybook you are trying to turn into nvs.
+2. [nvs-datasets](https://github.com/neldivad/nvs-datasets) (the classics the Store pulls from).
 
 ---
 
-## How you can help
+## ok you scrolled this far. now WRITE something.
 
-NVS is early, and the single most useful thing you can do is **use it and tell us what breaks**:
+The app is free, the datasets are free, there's no paywall and no sponsor slop. the only thing
+we actually want is for you to **use it and share what you make.** that's the whole ask.
 
-- 🐛 **Report a bug** — [open an issue](https://github.com/neldivad/nvs-app/issues/new) with what you did and what happened. Even rough reports help.
-- 💡 **Suggest / discuss** — [start a discussion](https://github.com/neldivad/nvs-app/discussions) for ideas, questions, or feature requests.
-- 🎧 **Join the [Discord](https://discord.gg/QpggZnAHEY)** — ask questions, show your work, help shape the roadmap.
-- ⭐ **Star** this repo so other writers find it.
-- ✍️ **Just use it** — write something real and tell us how the panels held up. That feedback is worth more than anything.
+1. ⬇️ **grab it** (up there ☝️)
+2. 💬 **[join the Discord](https://discord.gg/QpggZnAHEY)** — say hi, ask dumb questions, lurk if you must, I will personally reply to you!
+3. ✍️ **write your first scene.** blank project, or paste a transcript, or crack open a classic from the Store and mess with it
+4. 📢 **post your first story in the Discord.** three scenes and a fever dream? we want to see it. no story too small, no writer too new. we're all NPCs until chapter one.
+
+that's it. no growth-hack funnel, no "book a demo." just writers and a developer having fun.
+
+**be the main character. ship a story. or transcribe a non-fiction into something you can easily share with your AI** 
+
+## other ways to help
+
+- 🐛 **[report a bug](https://github.com/neldivad/nvs-app/issues/new)** — even a rough "this broke fffffffuuuuu" helps a ton
+- 💡 **[start a discussion](https://github.com/neldivad/nvs-app/discussions)** — ideas, feature requests, hot takes
+- ⭐ **star the repo** so other writers stumble onto it
+
+## FAQ (the questions you're actually about to ask)
+
+> **"But I don't want AI. I just want to WRITE."**
+
+Good! NVS is a literally made for writers first. We first make a great plain-text writing app with all the features you normally already use. 
+
+We have the editor, the story tree, and half the features
+(cast presence, timeline, who's-in-which-scene) are **100% deterministic: zero AI, zero key, zero internet.** 
+
+AI is opt-in and **off by default.** Switch it on only if/when you want the fancy extraction. Or never. we don't care if you use AI or not. We just thought "wouldn't it be cool if I stopped forgetting what I write?" and "hey, maybe this AI thing solves this problem.".
+
+> **"Ok I still don't get it. How do I start in 5 minutes?"**
+
+1. Download from the link ☝️
+2. Accept the scary unsigned-app warning (More info → Run anyway / right-click → Open)
+3. Start writing. Alternatively, agree to all terms and conditions, then write.
+
+That's genuinely it. Still stuck? Paste this repo's link into ChatGPT/Claude and go *"yo how do I use this on my
+pc"* and it'll hand-hold you through it. living in the future is free.
+
+> **"Is my writing private?"**
+
+Yes. We have **no servers, no funding, and we don't charge you.** There's no backend to leak because there's no
+backend. Your prose is plain files on your disk. You get everything free, no catch. You even get the full source
+code, so you can literally ask an AI to build you the version *you* want. (turn on AI and your text goes to the
+provider **you** pick with **your** key. We don't intercept any data because there is no us to route through.)
+
+> **"WTF is Fountain format?"**
+
+The plain-text screenplay format you learn right before Hollywood employs you. Looks like this:
+
+```text
+INT. TAVERN — NIGHT
+
+The place reeks of ale and questionable life choices.
+
+GUAN YU
+(hand on his blade)
+Say that again. I dare you.
+
+CAO CAO
+You wound me. I merely offered you a horse.
+```
+
+You write like that because **your director wants you to write like that.** Plot twist: it's now basically the
+standard shape for **AI video prompts** too (shot, line, action, cut) — so we might as well ride the trend. one
+format, novel → screen → generated video.
+
+> **"Does this work for visual novels?"**
+
+Yes! Branching dialogue, a huge cast, routes, who-knows-what-when — literally NVS's home turf.
+
+> **"So what *can* I throw at it?"**
+
+Novels, screenplays, visual novels, podcasts, interviews, YouTube scripts, that 3-hour Discord VC you
+transcribed — anything **dialogue-shaped**. If it's people talking, NVS reads it.
+
+> **"Do I have to pay? what's the catch?"**
+
+$0. No pro tier, no "unlock threads for $9.99," no free trial that ambushes your credit card. It's open source.
+The catch is there is no catch. (using the *code* to build a commercial competitor is the one thing the license
+blocks -- for that, DM support@nelworks.com or my Twitter inbox. everyone else: just have fun bro.)
+
+> **"Your software is alpha, am I gonna lose my work if it gets taken down?"**
+
+Your writing is **plain markdown files on your own disk.** If NVS spontaneously combusted tomorrow, your story is
+still just files in a folder that open in any editor. The analysis DB is the disposable part, nuke it and it
+rebuilds. Your words are never held hostage.
+
+> **"Which AI models does it support?"**
+
+OpenAI, OpenRouter (hundreds of models), Anthropic, or local Ollama if you want it fully offline. Bring your own key (BYOK).
+
+> **"Windows/Mac says it's sketchy??"**
+
+Because it's unsigned beta, not because it's sketchy (it's open source -- read every line yourself or ask Claude to do it). Windows:
+**More info → Run anyway.** Mac: **right-click → Open.** 
+
+Code signing costs money we are currently not spending, on account of having none. soon™. This is what we can offer as a free software guy. 
 
 ## License
 
-**[AGPL-3.0](LICENSE)** — free to use, study, modify, and share; if you distribute a modified version or run it
-as a network service, you must release your source under the AGPL too. Novel Visual Studio is © 2026 neldivad.
-For commercial licensing without AGPL obligations, contact **support@nelworks.com**.
+**[AGPL-3.0](LICENSE)** — free to use, study, remix, and share; if you ship a modified version or run it as a
+network service, your source goes AGPL too (copyleft gang). © 2026 neldivad. Want it *without* the AGPL strings
+for a commercial thing? → **support@nelworks.com** or DM my Twitter.
 
-See the [privacy policy](https://www.getqed.app/legal/privacy) and [terms](https://www.getqed.app/legal/terms).
+[privacy](https://www.getqed.app/legal/privacy) · [terms](https://www.getqed.app/legal/terms)
