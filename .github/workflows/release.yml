@@ -53,14 +53,17 @@ jobs:
         with:
           name: installers-${{ matrix.os }}
           if-no-files-found: error
+          # `release/*/…` = the version dir ONLY. NOT `release/**/…` — that also sweeps in the intermediate
+          # win-unpacked/ · linux-unpacked/ · mac-*/ dirs (raw binaries, nested node_modules, a spaced
+          # "Novel Visual Studio.exe"), which are not release assets and break the file list downstream.
           path: |
-            release/**/*.AppImage
-            release/**/*.deb
-            release/**/*.exe
-            release/**/*.dmg
-            release/**/*.zip
-            release/**/*.blockmap
-            release/**/latest*.yml
+            release/*/*.AppImage
+            release/*/*.deb
+            release/*/*.exe
+            release/*/*.dmg
+            release/*/*.zip
+            release/*/*.blockmap
+            release/*/latest*.yml
 
   publish:
     needs: build
@@ -79,11 +82,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # automatic, repo-scoped — no PAT needed
         run: |
           TAG="${GITHUB_REF_NAME:-manual-$(date +%s)}"
-          FILES=$(find dist-artifacts -type f)
-          echo "Publishing $TAG with:"; echo "$FILES"
+          mapfile -t FILES < <(find dist-artifacts -type f)   # one array element per file — survives spaces
+          echo "Publishing $TAG with:"; printf '  %s\n' "${FILES[@]}"
           # create the release if it doesn't exist, else just add/overwrite the assets
           gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
             --title "Novel Visual Studio $TAG" \
             --notes "Automated build. Linux (AppImage/.deb), Windows (.exe), macOS (.dmg). Unsigned beta." \
-            $FILES \
-          || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber $FILES
+            "${FILES[@]}" \
+          || gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber "${FILES[@]}"
