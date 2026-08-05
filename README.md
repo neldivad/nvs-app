@@ -20,7 +20,7 @@ Write dialogue-driven scenes as Markdown; a tireless reader holds the whole stor
 
 </div>
 
-![Plot threads tracked across a whole novel](assets/threads.png)
+![Writing a 302-scene story in NVS — the story tree, dialogue blocks, and the AI working in the margin](assets/genshin-editor.png)
 
 > **Status: working alpha.** The editor, the analysis panels (threads · cast · coherence · relationships ·
 > timeline · custody), AI extraction, and the Claude MCP plugin are all built and usable. The
@@ -71,11 +71,41 @@ promised, who drifted — and check the machine's account of the story against y
   story. When AI extraction is enabled, your prose goes to the provider *you* choose (OpenAI / OpenRouter /
   Anthropic / local Ollama) with your own key — the key lives in the OS keychain, never on disk, never through us.
 
+> **Every image below is a live analysis of a real, 302-scene _Genshin Impact_ story project** — not mockups.
+
 <table>
-  <tr><td align="center"><b>Threads over time</b></td><td align="center"><b>Cast presence</b></td></tr>
-  <tr><td><img src="assets/threads.png" alt="threads" /></td><td><img src="assets/cast.png" alt="cast" /></td></tr>
-  <tr><td align="center"><b>Timeline</b></td><td align="center"><b>Continuity</b></td></tr>
-  <tr><td><img src="assets/timeline.png" alt="timeline" /></td><td><img src="assets/coherence.png" alt="coherence" /></td></tr>
+  <tr>
+    <td align="center"><b>Plot threads across the whole story</b><br/><sub>3 open · 59 resolved</sub></td>
+    <td align="center"><b>A real timeline of events</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/genshin-threads.png" alt="plot-thread gantt across acts" /></td>
+    <td><img src="assets/genshin-timeline.png" alt="story timeline" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>How two characters relate, scene by scene</b></td>
+    <td align="center"><b>Cast presence & who carries the story</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/genshin-relationships.png" alt="Paimon ↔ Traveler relationship spine" /></td>
+    <td><img src="assets/genshin-cast.png" alt="cast presence over the story" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>A world bible that builds itself</b></td>
+    <td align="center"><b>Continuity — contradictions & drift</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/genshin-world.png" alt="world bible pages" /></td>
+    <td><img src="assets/genshin-coherence.png" alt="coherence findings" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Who knows the secret — and when they learned it</b></td>
+    <td align="center"><b>Light mode, too</b></td>
+  </tr>
+  <tr>
+    <td><img src="assets/genshin-custody.png" alt="dramatic-irony / secret custody" /></td>
+    <td><img src="assets/genshin-threads-light.png" alt="threads in light mode" /></td>
+  </tr>
 </table>
 
 ---
