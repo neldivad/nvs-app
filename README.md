@@ -87,18 +87,18 @@ pipeline and publish right here.
 
 ### 🐧 Linux
 
-**[⬇ Download the AppImage](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x64.AppImage)** (any distro, no install), then make it executable and run:
+**[⬇ Download the AppImage](https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x86_64.AppImage)** (any distro, no install), then make it executable and run:
 
 ```bash
-chmod +x novel-visual-studio-x64.AppImage
-./novel-visual-studio-x64.AppImage
+chmod +x novel-visual-studio-x86_64.AppImage
+./novel-visual-studio-x86_64.AppImage
 ```
 
 **Debian / Ubuntu (`.deb`):**
 
 ```bash
 curl -L -o nvs.deb \
-  "https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-x64.deb" \
+  "https://github.com/neldivad/nvs-app/releases/latest/download/novel-visual-studio-amd64.deb" \
   && sudo dpkg -i nvs.deb
 ```
 

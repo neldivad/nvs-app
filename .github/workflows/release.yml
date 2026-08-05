@@ -43,7 +43,10 @@ jobs:
       # runner's own OS (AppImage+deb on Linux, nsis .exe on Windows, dmg+zip on macOS) and rebuilds the native
       # better-sqlite3 for the Electron ABI automatically.
       - name: Build installers
-        run: npm run dist
+        # Build ONLY — do not let electron-builder publish. On a tag it auto-detects a GitHub release and
+        # demands a Personal Access Token (the very thing we're avoiding); our separate `publish` job below
+        # uploads the artifacts with the automatic GITHUB_TOKEN. `--publish never` keeps it to packaging.
+        run: npm run mcp:build && npx electron-vite build && npx electron-builder --publish never
 
       - name: Collect installers + update feed
         uses: actions/upload-artifact@v4
