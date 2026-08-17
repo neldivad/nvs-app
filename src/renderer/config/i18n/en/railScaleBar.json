@@ -1,0 +1,12 @@
+{
+  "scene": "Scene",
+  "sceneReadout": "{{shown}} of {{full}}",
+  "autoSuffix": " · auto",
+  "backToDefault": "Back to the default window",
+  "reset": "reset",
+  "previousPage": "Previous page",
+  "pageReadout": "{{from}}–{{to}} of {{total}} {{noun}}",
+  "nextNoun": "Next {{noun}}",
+  "resetWindow": "Reset the window",
+  "all": "all"
+}

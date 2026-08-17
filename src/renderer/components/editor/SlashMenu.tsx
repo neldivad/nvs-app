@@ -17,6 +17,7 @@ import {
   type JSX,
 } from 'react';
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -45,6 +46,7 @@ export function SlashMenu({
   onSelect: (item: SlashItem) => void
   onClose: () => void
 }): JSX.Element | null {
+  const { t } = useTranslation('editor')
   const [idx, setIdx] = useState(0)
 
   const filtered = useMemo(() => {
@@ -132,7 +134,7 @@ export function SlashMenu({
             {it.description && <div className="truncate text-[11px] text-faint">{it.description}</div>}
           </div>
           {it.present ? (
-            <span className="ml-auto shrink-0 text-[10px] uppercase tracking-wide text-character/70">added</span>
+            <span className="ml-auto shrink-0 text-[10px] uppercase tracking-wide text-character/70">{t('slashMenu.added')}</span>
           ) : (
             <span className="ml-auto shrink-0 font-mono text-[10px] text-muted-foreground">{it.command}</span>
           )}

@@ -1,0 +1,30 @@
+{
+  "title": "世界观",
+  "searchPlaceholder": "搜索世界页面…",
+  "newCategory": "新建 {{name}}",
+  "custodyHint": "托管主题关联到现有实体 — 请从托管栏创建",
+  "custodyBadge": "通过 <key/>",
+  "createError": "无法创建“{{name}}”。如果问题持续，请完全退出并重新启动应用；该名称也可能已被占用。",
+  "emptyCategory": "暂无。",
+  "archived": "已归档",
+  "namePlaceholder": "输入名称，然后按 Enter",
+  "categoryPhase": "阶段 — 每个 {{name}} 页面",
+  "menu": {
+    "rename": "重命名",
+    "exportMd": "导出 .md…",
+    "delete": "删除"
+  },
+  "createMenu": {
+    "heading": "新建页面"
+  },
+  "row": {
+    "restore": "恢复",
+    "archive": "归档",
+    "delete": "删除"
+  },
+  "delete": {
+    "title": "删除页面？",
+    "confirm": "删除",
+    "message": "删除 <hl>{{name}}</hl>？这会从磁盘中移除该文件。若要暂时搁置，请在属性中将其阶段设置为 <hl>已归档</hl>。"
+  }
+}

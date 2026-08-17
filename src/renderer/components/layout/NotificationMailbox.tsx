@@ -8,6 +8,7 @@
  * busy author never silently drifts out of date and never gets a black box working unseen.
  */
 import { useEffect, useRef, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Bell, Check, CheckCircle2, Copy, Info, RefreshCw, X } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { freshnessCounts, needsAttention, outdatedCount } from '@shared/config/ingest'
@@ -16,6 +17,7 @@ import { useAiEnabled } from '@/config/aiFeatures'
 import { cn } from '@/lib/utils'
 
 export function NotificationMailbox(): JSX.Element | null {
+  const { t } = useTranslation('notifications')
   const project = useWorkspace((s) => s.project)
   const aiEnabled = useAiEnabled() // the freshness nudge is analysis-derived → drop it (only it) when AI is off
   const rows = useFreshness()
@@ -55,7 +57,7 @@ export function NotificationMailbox(): JSX.Element | null {
     <div ref={ref} className="relative flex items-center">
       <button
         onClick={toggle}
-        title="Notifications"
+        title={t('title')}
         className={cn('flex items-center gap-1 rounded px-1.5 transition-colors hover:bg-panel-soft', open && 'bg-panel-soft text-foreground')}
       >
         <Bell className="size-3" />
@@ -67,25 +69,25 @@ export function NotificationMailbox(): JSX.Element | null {
       {open && (
         <div className="absolute bottom-full right-0 z-50 mb-1.5 w-80 overflow-hidden rounded-lg border border-border bg-panel shadow-xl">
           <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-[11px]">
-            <span className="font-medium text-foreground/90">Notifications</span>
+            <span className="font-medium text-foreground/90">{t('title')}</span>
             <div className="ml-auto flex items-center gap-2">
               {items.length > 0 && (
-                <button onClick={clearAll} className="text-[10px] text-muted-foreground hover:text-flag">Clear all</button>
+                <button onClick={clearAll} className="text-[10px] text-muted-foreground hover:text-flag">{t('clearAll')}</button>
               )}
             </div>
           </div>
 
           <div className="max-h-72 overflow-auto">
             {empty ? (
-              <p className="p-4 text-center text-[11px] text-muted-foreground">You&apos;re all caught up.</p>
+              <p className="p-4 text-center text-[11px] text-muted-foreground">{t('empty')}</p>
             ) : (
               <ul className="divide-y divide-border/60">
                 {nudge && (
                   <Card
                     icon={<AlertTriangle className="size-3.5 text-warn" />}
-                    title={`${outdatedCount(counts)} scene${outdatedCount(counts) === 1 ? '' : 's'} outdated`}
-                    body="Some scenes changed since they were last read into the analysis."
-                    action={{ label: 'Open Analysis', onClick: () => { setOpen(false); openDockTab('ingest') } }}
+                    title={t('outdated', { count: outdatedCount(counts) })}
+                    body={t('outdatedBody')}
+                    action={{ label: t('openAnalysis'), onClick: () => { setOpen(false); openDockTab('ingest') } }}
                   />
                 )}
                 {items.map((n) => (
@@ -94,6 +96,7 @@ export function NotificationMailbox(): JSX.Element | null {
                     icon={n.kind === 'warning' ? <AlertTriangle className="size-3.5 text-flag" /> : n.kind === 'success' ? <CheckCircle2 className="size-3.5 text-ok" /> : <Info className="size-3.5 text-muted-foreground" />}
                     title={n.title}
                     body={n.body}
+                    action={n.href ? { label: n.actionLabel ?? t('open'), onClick: () => void window.nvs.openUrl?.(n.href!) } : undefined}
                     onDismiss={() => dismiss(n.id)}
                   />
                 ))}
@@ -113,8 +116,9 @@ function Card({ icon, title, body, action, onDismiss }: {
   action?: { label: string; onClick: () => void }
   onDismiss?: () => void
 }): JSX.Element {
+  const { t } = useTranslation('notifications')
   const [copied, setCopied] = useState(false)
-  useEffect(() => { if (!copied) return; const t = setTimeout(() => setCopied(false), 1200); return () => clearTimeout(t) }, [copied])
+  useEffect(() => { if (!copied) return; const timer = setTimeout(() => setCopied(false), 1200); return () => clearTimeout(timer) }, [copied])
   const copy = (): void => { void navigator.clipboard.writeText(body ? `${title}\n${body}` : title); setCopied(true) }
   return (
     <li className="group flex items-start gap-2 px-3 py-2">
@@ -130,11 +134,11 @@ function Card({ icon, title, body, action, onDismiss }: {
         )}
       </div>
       <div className="flex shrink-0 items-center gap-0.5">
-        <button onClick={copy} title={copied ? 'Copied' : 'Copy'} aria-label="Copy notification" className="rounded p-0.5 text-faint opacity-0 transition-opacity group-hover:opacity-100 hover:bg-panel-soft hover:text-foreground focus-visible:opacity-100">
+        <button onClick={copy} title={copied ? t('copied') : t('copy')} aria-label={t('copyAria')} className="rounded p-0.5 text-faint opacity-0 transition-opacity group-hover:opacity-100 hover:bg-panel-soft hover:text-foreground focus-visible:opacity-100">
           {copied ? <Check className="size-3 text-ok" /> : <Copy className="size-3" />}
         </button>
         {onDismiss && (
-          <button onClick={onDismiss} title="Dismiss" aria-label="Dismiss notification" className="rounded p-0.5 text-faint hover:bg-panel-soft hover:text-foreground"><X className="size-3" /></button>
+          <button onClick={onDismiss} title={t('dismiss')} aria-label={t('dismissAria')} className="rounded p-0.5 text-faint hover:bg-panel-soft hover:text-foreground"><X className="size-3" /></button>
         )}
       </div>
     </li>

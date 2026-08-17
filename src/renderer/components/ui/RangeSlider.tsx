@@ -5,6 +5,7 @@
  * shared windowing control for every scene-range surface (Cast · Relationships · spines).
  */
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 import type { JSX } from "react";
@@ -22,6 +23,7 @@ export function RangeSlider({
   onChange: (v: [number, number]) => void
   className?: string
 }): JSX.Element {
+  const { t } = useTranslation('rangeSlider')
   const [lo, hi] = value
   const span = Math.max(1, max - min)
   const pl = ((lo - min) / span) * 100
@@ -54,7 +56,7 @@ export function RangeSlider({
         <div
           className="absolute top-0 z-10 h-full cursor-grab touch-none active:cursor-grabbing"
           style={{ left: `calc(${pl}% + 10px)`, right: `calc(${100 - pr}% + 10px)` }}
-          title="Drag to slide the window · edges resize it"
+          title={t('drag')}
           onPointerDown={(e) => {
             drag.current = { startX: e.clientX, lo, hi }
             ;(e.target as HTMLElement).setPointerCapture(e.pointerId)

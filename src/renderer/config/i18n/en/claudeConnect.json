@@ -1,0 +1,57 @@
+{
+  "hero": {
+    "title": "Talk to Claude about your novel",
+    "intro": "Add NVS to Claude once, and you can ask Claude anything about your story — what threads are still open, where the plot holes are, what happens in a scene. It reads the same analysis you see in the rails."
+  },
+  "copyable": {
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "step": {
+    "getFile": {
+      "title": "Get the plugin file",
+      "body": "One file, made for this computer. Save it somewhere you can find it — your Desktop is fine.",
+      "download": "Download the plugin",
+      "saving": "Saving…",
+      "saved": "Saved — now do step 2.",
+      "restart": "Restart NVS to pick up this feature.",
+      "notBuilt": "Not ready in this dev build — run `npm run mcp:build` once. (Shipped copies include it.)"
+    },
+    "addToClaude": {
+      "title": "Add it to Claude",
+      "shotUpload": "Claude → Settings → Plugins → Add → Upload plugin",
+      "shotPickZip": "Pick the file you just saved, then Upload",
+      "body": "In **Claude Desktop**, open **Settings → Plugins**, click **Add → Upload plugin**, and choose the file. That's it — no accounts, no keys."
+    },
+    "ask": {
+      "title": "Type /nvs and ask",
+      "shotInstalled": "Installed — Claude now has an /nvs skill",
+      "intro": "In any Claude chat, start your message with `/nvs` and ask in plain words:",
+      "examples": [
+        "/nvs read scene 3 and tell me what it sets up",
+        "/nvs what plot holes did you find?",
+        "/nvs take a screenshot of my timeline — does it look tangled?"
+      ],
+      "liveNote": "**While NVS is open**, Claude follows whatever project you have on screen and can screenshot your rails. Close the app and it still answers — from the project you had open when you made the file.",
+      "privacy": "Claude works from the analysis in your project folder — your writing never leaves this computer."
+    }
+  },
+  "advanced": {
+    "summary": "Advanced — Claude Code, and letting Claude see your screen",
+    "connect": {
+      "title": "Connect Claude Code to the open app",
+      "body": "The plugin above already does this for you — it detects the running app and hands off to it. This is the direct connection for **Claude Code** users who'd rather not install the plugin:",
+      "tokenWarn": "Copy it — don't screenshot or share it. That token lets any local process drive your open project.",
+      "needProject": "Open a project first — then this command appears."
+    },
+    "headless": {
+      "title": "Claude Code, without the app running",
+      "body": "Same engine, no window — it can also build the analysis for a folder of markdown from scratch. The `--live` path is what lets it hand off to the app whenever that's running."
+    },
+    "byHand": {
+      "title": "Claude Desktop by hand",
+      "body": "The plugin above does this for you. If you'd rather edit config yourself: **Settings → Developer → Edit Config** (the **Developer** tab — not **Connectors**, which is for cloud servers and can't reach your machine)."
+    },
+    "toolsLine": "{{n}} engine tools · local connection, not a cloud service."
+  }
+}

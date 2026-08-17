@@ -1,0 +1,55 @@
+{
+  "title": "Inspector",
+  "toggle": {
+    "showAll": "Showing filled categories — click to show all",
+    "hideEmpty": "Showing all categories — click to hide empty"
+  },
+  "section": {
+    "premise": "Premise",
+    "summary": "Summary",
+    "conclusion": "Conclusion",
+    "purpose": "Purpose",
+    "cast": "Cast",
+    "threads": "Threads",
+    "arc": "Arc",
+    "entities": "Entities",
+    "lore": "Lore",
+    "flags": "Flags",
+    "secrets": "Secrets",
+    "custody": "Custody"
+  },
+  "ghost": {
+    "premise": "Why this scene opens appears here once it's read.",
+    "summary": "A one-line summary appears once this scene is read.",
+    "conclusion": "How this scene ends (its outcome or cliffhanger) appears here once it's read.",
+    "purpose": "The goals and conflicts driving this scene appear here once it's read.",
+    "cast": "Characters present in this scene are listed here.",
+    "threads": "Threads opened, advanced, or resolved in this scene appear here.",
+    "arc": "Character state changes (alignment, knowledge, power…) in this scene appear here once it's read.",
+    "entities": "Items, factions, and other tracked entities present in this scene appear here.",
+    "lore": "World-facts revealed in this scene appear here once it's read.",
+    "flags": "Coherence flags that cite this scene appear here.",
+    "secrets": "Secrets learned or exposed in this scene appear here.",
+    "custody": "Items changing hands in this scene appear here."
+  },
+  "grid": {
+    "who": "Who",
+    "wants": "Wants / Conflicts",
+    "outcome": "Outcome",
+    "vs": "vs"
+  },
+  "label": {
+    "pov": "POV · {{pov}}",
+    "secret": "secret",
+    "custody": "custody"
+  },
+  "cast": {
+    "speaking": "speaking",
+    "silent": "silently present"
+  },
+  "tooltip": {
+    "openArc": "Open {{name}}'s arc",
+    "openJourney": "Open {{name}}'s journey",
+    "openReveal": "Open “{{label}}” reveal timeline"
+  }
+}

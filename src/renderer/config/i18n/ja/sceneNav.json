@@ -1,0 +1,77 @@
+{
+  "title": "ストーリー",
+  "search": {
+    "placeholder": "シーンとフォルダーを検索…"
+  },
+  "action": {
+    "expandAll": "すべてのフォルダーを展開",
+    "collapseAll": "すべてのフォルダーを折りたたむ",
+    "new": "新規…"
+  },
+  "placeholder": {
+    "sceneTitle": "シーンタイトル…",
+    "folderName": "フォルダー名…"
+  },
+  "badge": {
+    "locked": "ロック中"
+  },
+  "tooltip": {
+    "archivedInside_one": "内部にアーカイブ済みシーンが{{count}}件あります（アーカイブ済みビンに表示）",
+    "archivedInside_other": "内部にアーカイブ済みシーンが{{count}}件あります（アーカイブ済みビンに表示）"
+  },
+  "empty": {
+    "relaunch": "ストーリーツリーを読み込むには、アプリを完全に終了して再起動してください — 新しいバックエンド機能です。シーンはディスク上に安全に保存されています。レンダラーの再読み込みだけでは反映されません。",
+    "hintPrefix": "空です。右クリックするか、",
+    "hintSuffix": "を使ってフォルダーまたはシーンを追加してください。"
+  },
+  "archived": {
+    "heading": "アーカイブ済み"
+  },
+  "folder": {
+    "root": "/（ルート）"
+  },
+  "kind": {
+    "folder": "フォルダー",
+    "scene": "シーン"
+  },
+  "error": {
+    "dupExists": "「{{name}}」という名前の{{kind}}は、ここにすでに存在します。",
+    "badName": "「{{name}}」は使用できる{{kind}}名ではありません — 別の文字を試してください。"
+  },
+  "row": {
+    "restore": "復元",
+    "archive": "アーカイブ",
+    "delete": "削除"
+  },
+  "menu": {
+    "newScene": "新規シーン",
+    "newFolder": "新規フォルダー",
+    "labelAs": "ラベルを付ける",
+    "clear": "クリア",
+    "exportMd": ".mdを書き出し…",
+    "rename": "名前を変更",
+    "delete": "削除",
+    "phaseEveryScene": "フェーズ — 内部のすべてのシーン",
+    "selectedCount": "{{count}}件を選択中",
+    "setPhase": "フェーズを設定",
+    "moveToFolder": "フォルダーに移動…",
+    "bulkDelete": "{{count}}件を削除…"
+  },
+  "confirm": {
+    "titleFolder": "フォルダーを削除しますか？",
+    "titleScene": "シーンを削除しますか？",
+    "delete": "削除",
+    "prefix": "削除",
+    "folderInside": "とその内部のすべて",
+    "suffix": "？ディスクから削除されます。",
+    "alsoArchived_one": "⚠ 内部に残っているアーカイブ済みシーン{{count}}件も削除されます（アーカイブ済みビンに表示）。",
+    "alsoArchived_other": "⚠ 内部に残っているアーカイブ済みシーン{{count}}件も削除されます（アーカイブ済みビンに表示）。"
+  },
+  "bulkConfirm": {
+    "title_one": "{{count}}件の項目を削除しますか？",
+    "title_other": "{{count}}件の項目を削除しますか？",
+    "prefix": "削除",
+    "suffix_one": "選択した項目（フォルダーを削除すると内部のすべても削除されます）？ディスクから削除されます。",
+    "suffix_other": "選択した項目（フォルダーを削除すると内部のすべても削除されます）？ディスクから削除されます。"
+  }
+}

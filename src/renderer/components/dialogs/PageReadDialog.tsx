@@ -6,6 +6,7 @@
  * needs reading in place.
  */
 import { useEffect, useState, type ReactNode, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { ExternalLink, X } from 'lucide-react'
 import { regionAttrs } from '@/config/regions'
 import { useWorkspace } from '@/stores/workspace'
@@ -37,6 +38,7 @@ export function PageReadDialog({
   footer?: ReactNode // extra footer action (e.g. the timeline's Remove)
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('pageRead')
   const openPage = useWorkspace((s) => s.openPage)
   const setWorkspace = useWorkspace((s) => s.setWorkspace)
   const [doc, setDoc] = useState<SceneDoc | null>(null)
@@ -80,15 +82,15 @@ export function PageReadDialog({
 
         <div className="min-h-0 flex-1 overflow-auto">
           {missing || !path ? (
-            <p className="p-6 text-sm text-flag">This page no longer exists.</p>
+            <p className="p-6 text-sm text-flag">{t('missing')}</p>
           ) : !doc ? (
-            <p className="p-6 text-sm text-muted-foreground">Loading…</p>
+            <p className="p-6 text-sm text-muted-foreground">{t('loading')}</p>
           ) : (
             <>
               {/* Scenes have no in-body gallery, so show a vignette cover banner here (click → full
                   view). World pages render their own gallery inside WikiPreview, so skip it. */}
               {kind === 'scene' && imgs.length > 0 && (
-                <button onClick={() => setZoom(true)} title="View full image" className="relative block h-56 w-full cursor-zoom-in bg-panel-soft">
+                <button onClick={() => setZoom(true)} title={t('viewImage')} className="relative block h-56 w-full cursor-zoom-in bg-panel-soft">
                   <img src={`nvs-asset://${imgs[0]}`} alt="" className="h-full w-full object-cover" draggable={false} />
                   <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/15" />
                 </button>
@@ -115,7 +117,7 @@ export function PageReadDialog({
               }}
             >
               <ExternalLink className="size-3" />
-              Open in editor
+              {t('openInEditor')}
             </Button>
           ) : (
             <span />

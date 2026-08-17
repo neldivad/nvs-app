@@ -1,0 +1,12 @@
+{
+  "library": {
+    "title": "库",
+    "openElsewhere": "在其他位置打开…",
+    "empty": "暂无作品。",
+    "workSub": "{{scenes}} 个场景 · {{world}} 个世界"
+  },
+  "timeline": {
+    "reload": "从磁盘重新加载",
+    "buildWithAi": "打开聊天并使用 AI 构建时间线"
+  }
+}

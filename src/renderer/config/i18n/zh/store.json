@@ -1,0 +1,55 @@
+{
+  "field": {
+    "kind": "类别",
+    "type": "类型",
+    "status": "状态",
+    "author": "作者",
+    "language": "语言",
+    "genre": "体裁",
+    "subject": "主题",
+    "themes": "主题",
+    "warnings": "警告",
+    "keywords": "关键词"
+  },
+  "relation": {
+    "series": "系列",
+    "basedOn": "改编自",
+    "forkedFrom": "分支自",
+    "coverOf": "翻唱自",
+    "prompt": "提示词"
+  },
+  "heading": {
+    "synopsis": "简介",
+    "credits": "创作人员",
+    "relations": "关系"
+  },
+  "button": {
+    "edit": "编辑",
+    "showLess": "收起",
+    "showAll": "显示全部 {{count}}"
+  },
+  "empty": {
+    "noSynopsis": "暂无简介。",
+    "contributor": "贡献者"
+  },
+  "nav": {
+    "back": "返回",
+    "projects": "项目",
+    "backToWork": "返回你的作品",
+    "backToProjects": "返回你的项目"
+  },
+  "shell": {
+    "heading": "商店"
+  },
+  "tab": {
+    "works": "作品",
+    "worksHint": "其他作者分享的故事",
+    "extensions": "扩展",
+    "extensionsHint": "在 NVS 中运行的工具",
+    "claudeHint": "从 Claude 使用你的小说"
+  },
+  "search": {
+    "works": "搜索作品…",
+    "extensions": "搜索扩展…"
+  }
+}

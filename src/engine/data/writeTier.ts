@@ -26,7 +26,7 @@ import { openDb, openReadonly } from '@engine/data/db'
 import { canonicalizeUnitRefs } from '@engine/content/unitRefs'
 import { readStructure } from '@engine/analysis/structure'
 import { allowedArcChanges } from '@shared/config/entityArc'
-import { analysisPromptVersion, COHERENCE_LOGIC_VERSION, FIDELITY_KINDS, CONTINUITY_KINDS } from '@shared/config/extraction'
+import { analysisPromptVersion, COHERENCE_LOGIC_VERSION, FIDELITY_KINDS, CONTINUITY_KINDS, CRITIQUE_KINDS } from '@shared/config/extraction'
 import { loadProjectInfo } from '@engine/content/projectInfo'
 import { entityNameVariants, normName as nameKey } from '@shared/entityNames'
 import { nameToId } from '@shared/entityId'
@@ -45,6 +45,8 @@ const FIDELITY_SET = new Set<string>(FIDELITY_KINDS)
 const CONTINUITY_SET = new Set<string>(CONTINUITY_KINDS)
 const FIDELITY_DELETE = FIDELITY_KINDS.map((k) => `'${k}'`).join(',') // the per-entity Fidelity replace
 const CONTINUITY_DELETE = CONTINUITY_KINDS.map((k) => `'${k}'`).join(',') // the whole-story Continuity replace
+const CRITIQUE_SET = new Set<string>(CRITIQUE_KINDS) // the fourth family (story-critique.md) — same strict partition
+const CRITIQUE_DELETE = CRITIQUE_KINDS.map((k) => `'${k}'`).join(',') // the whole-story Critique replace
 const SEVERITIES = new Set(['low', 'medium', 'high'])
 
 /** Read the target entity's category and check every arc-event change against that category's vocab (item/faction
@@ -247,7 +249,7 @@ function validate(p: TierWrite): string | null {
     }
   } else {
     if (!p.asOfUnitId) return `${p.kind} pass requires asOfUnitId (the checkpoint)`
-    const allowed = p.kind === 'continuity' ? CONTINUITY_SET : FIDELITY_SET
+    const allowed = p.kind === 'continuity' ? CONTINUITY_SET : p.kind === 'critique' ? CRITIQUE_SET : FIDELITY_SET
     for (const f of p.rows.findings) {
       if (!allowed.has(f.kind)) return `bad ${p.kind} kind "${f.kind}"`
       if (!SEVERITIES.has(f.severity)) return `bad severity "${f.severity}"`
@@ -512,6 +514,40 @@ export function writeTier(workRoot: string, workId: string, p: TierWrite): TierW
           const base = [`${eid}:${checkpoint}:${fi++}`, workId, eid, checkpoint, f.trait, f.declared, f.observed, f.kind, f.severity, f.suggestion, J(canon(f.evidence)), p.inputHash, p.model, now]
           if (hasWhy) base.push(f.why ?? null)
           if (hasSecret) base.push(f.secret ?? null)
+          ins.run(...base)
+        }
+        written.coherence_findings = p.rows.findings.length
+      } else if (p.kind === 'critique') {
+        // CRITIQUE ("Tough questions") — WHOLE-STORY replace, the fourth family (internal/story-critique.md).
+        // Same partition discipline as Continuity: replace only CRITIQUE_KINDS, never the linter families.
+        // Evidence is thread-centric, so refs are canonicalized against BOTH units and narrative_threads, and a
+        // cited thread also contributes its FIRST beat's scene (so the finding places on the chapter map).
+        const checkpoint = asOf!
+        db.prepare(`DELETE FROM coherence_findings WHERE work_id = ? AND kind IN (${CRITIQUE_DELETE})`).run(workId)
+        const hasWhy = (db.prepare("SELECT COUNT(*) c FROM pragma_table_info('coherence_findings') WHERE name='why'").get() as { c: number }).c > 0
+        const hasSecret = (db.prepare("SELECT COUNT(*) c FROM pragma_table_info('coherence_findings') WHERE name='secret_id'").get() as { c: number }).c > 0
+        const cols = `finding_id, work_id, entity_id, as_of_unit_id, trait, declared, observed, kind, severity, suggestion, evidence_json, input_hash, model, created_at${hasWhy ? ', why' : ''}${hasSecret ? ', secret_id' : ''}`
+        const ph = `?,?,?,?,?,?,?,?,?,?,?,?,?,?${hasWhy ? ',?' : ''}${hasSecret ? ',?' : ''}`
+        const ins = db.prepare(`INSERT INTO coherence_findings (${cols}) VALUES (${ph})`)
+        const canon = canonicalizeRefs(db)
+        const threadIds = new Set((db.prepare('SELECT thread_id AS id FROM narrative_threads').all() as { id: string }[]).map((r) => r.id))
+        const firstScene = db.prepare(`SELECT te.scene_id AS s FROM thread_events te JOIN unit_order o ON o.unit_id = te.scene_id WHERE te.thread_id = ? ORDER BY o.linear_pos LIMIT 1`)
+        let fi = 0
+        for (const f of p.rows.findings) {
+          const refs: string[] = []
+          for (const r of f.evidence ?? []) {
+            if (threadIds.has(r)) {
+              refs.push(r)
+              const sc = (firstScene.get(r) as { s?: string } | undefined)?.s
+              if (sc && !refs.includes(sc)) refs.push(sc) // the placeable anchor
+            } else {
+              for (const c of canon([r])) if (!refs.includes(c)) refs.push(c)
+            }
+          }
+          const fid = `critique:${f.kind}:${fi++}`
+          const base = [fid, workId, f.entityId ?? null, checkpoint, f.trait, f.declared, f.observed, f.kind, f.severity, f.suggestion, J(refs), p.inputHash, p.model, now]
+          if (hasWhy) base.push(null)
+          if (hasSecret) base.push(null)
           ins.run(...base)
         }
         written.coherence_findings = p.rows.findings.length

@@ -1,0 +1,40 @@
+{
+  "placeholder": {
+    "speech": "Dialogue…",
+    "thinking": "Inner thought…",
+    "narration": "Narration…",
+    "action": "Stage direction…",
+    "transition": "Cut…"
+  },
+  "agent": {
+    "label": "Ask AI to write",
+    "description": "Queue a background edit for this scene (review & apply from Tasks)."
+  },
+  "speaker": {
+    "openPageBefore": "Open",
+    "openPageAfter": "page",
+    "placeholder": "Character name…",
+    "add": "Add “{{name}}”",
+    "invalidBefore": "Can’t use “{{name}}” — a cue is letters/digits/spaces and",
+    "invalidOnly": "only (or",
+    "invalidAfter": ")",
+    "noSpeaker": "no speaker"
+  },
+  "mood": {
+    "placeholder": "Emotion, e.g. angry…",
+    "neutral": "Neutral (no direction)",
+    "title": "Delivery / mood — the (parenthetical) after the speaker",
+    "add": "+ mood"
+  },
+  "timing": {
+    "title": "Timing — the beat's start → end timecodes",
+    "label": "Timing",
+    "start": "Start",
+    "end": "End",
+    "clear": "Clear",
+    "set": "Set",
+    "add": "+ time"
+  },
+  "blockType": "Change block type",
+  "find": "Find in scene"
+}

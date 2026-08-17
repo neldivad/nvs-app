@@ -11,6 +11,7 @@
  */
 import { useEffect, useRef, useState, type JSX } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { Printer, Sun, Moon } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog } from '@/components/ui/dialog'
@@ -35,6 +36,7 @@ const PRINT_CSS = `
 `
 
 export function PrintPreviewDialog({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element | null {
+  const { t } = useTranslation('editor')
   const page = useWorkspace((s) => s.activePage)
   const frontmatter = useWorkspace((s) => s.frontmatter)
   const body = useWorkspace((s) => s.body)
@@ -71,12 +73,12 @@ export function PrintPreviewDialog({ open, onClose }: { open: boolean; onClose: 
       region="printPreviewDialog"
       open={open}
       onClose={onClose}
-      title={`Print — ${page.title}`}
+      title={t('print.titleWith', { title: page.title })}
       size="workspace"
       bodyClassName="flex flex-col p-0"
     >
       <div className="flex shrink-0 items-center gap-2 border-b border-border px-3 py-1.5">
-        <span className="text-[11px] text-muted-foreground">Preview — scroll to review; the PDF matches this theme</span>
+        <span className="text-[11px] text-muted-foreground">{t('print.previewHint')}</span>
         {/* Paper theme toggle — Light (paper) / Dark (app). WYSIWYG: the PDF prints whichever is shown. */}
         <div className="ml-auto flex overflow-hidden rounded-md border border-border text-[11px]">
           {([['light', Sun, !dark], ['dark', Moon, dark]] as const).map(([label, Icon, on]) => (
@@ -85,7 +87,7 @@ export function PrintPreviewDialog({ open, onClose }: { open: boolean; onClose: 
               onClick={() => setDark(label === 'dark')}
               className={cn('flex items-center gap-1 px-2 py-1 capitalize transition-colors', on ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}
             >
-              <Icon className="size-3" /> {label}
+              <Icon className="size-3" /> {t(`print.${label}`)}
             </button>
           ))}
         </div>
@@ -93,7 +95,7 @@ export function PrintPreviewDialog({ open, onClose }: { open: boolean; onClose: 
           onClick={() => iframeRef.current?.contentWindow?.print()}
           className="flex items-center gap-1.5 rounded-md bg-thread px-2.5 py-1 text-[12px] text-thread-foreground transition-opacity hover:opacity-90"
         >
-          <Printer className="size-3.5" /> Print / Save as PDF
+          <Printer className="size-3.5" /> {t('print.save')}
         </button>
       </div>
       {/* srcDoc gives a clean, same-origin document whose onLoad fires reliably. */}
@@ -101,7 +103,7 @@ export function PrintPreviewDialog({ open, onClose }: { open: boolean; onClose: 
         ref={iframeRef}
         onLoad={onLoad}
         srcDoc="<!doctype html><html><head></head><body></body></html>"
-        title="Print preview"
+        title={t('print.iframeTitle')}
         className="min-h-0 w-full flex-1 bg-white"
       />
       {mount &&

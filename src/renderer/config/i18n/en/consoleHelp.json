@@ -1,0 +1,33 @@
+{
+  "title": "Console & AI",
+  "tabs": {
+    "title": "Console tabs",
+    "rows": [
+      { "k": "Ingest", "v": "Tracks which canon scenes are fresh / stale / pending and runs analysis bundles — the inferred layer (threads, arcs, coherence) the rails read." },
+      { "k": "Database", "v": "Inspect the co-located nvs.db behind the panels. (Planned.)" },
+      { "k": "Agent", "v": "Mount an AI to produce that analysis for you — pick a source below." }
+    ]
+  },
+  "canon": {
+    "title": "Canon — the analysis gate",
+    "rows": [
+      { "k": "What it is", "v": "A scene is read by analysis (threads, arcs, coherence) only once you mark it canon — so drafts you’re still wrestling with don’t skew the ledgers." },
+      { "k": "How to set it", "v": "Open the scene → Properties → set its phase to “canon” (it’s frontmatter — you can also write phase: canon in Source view)." },
+      { "k": "Who decides", "v": "You. Canon is your call about what counts as “real” in the story — the AI can create pages, but it never marks them canon for you." },
+      { "k": "World pages", "v": "No canon gate — characters / locations / items / lore are always-live reference once they exist." }
+    ]
+  },
+  "sources": {
+    "title": "AI sources — bring your key, or connect your plan",
+    "rows": [
+      { "k": "Off", "v": "No AI — pure manual authoring." },
+      { "k": "Key", "v": "Paste an Anthropic API key (console.anthropic.com → API Keys, stored encrypted on this machine). NVS runs the agent itself in a chat — pay-per-token. Not keyless: NVS holds your key." },
+      { "k": "Plan", "v": "Use your Claude Pro/Max via Claude Code — run the connect command from the Agent tab. Keyless: the model runs in your agent, not NVS." }
+    ]
+  },
+  "engineNote": "Either way the AI calls the *same* engine tools the UI uses (read scenes, write analysis) — it can't corrupt your files; every write is validated and stamped with its producer.",
+  "links": {
+    "getKey": "Get an API key",
+    "claudeCodeDocs": "Claude Code docs"
+  }
+}

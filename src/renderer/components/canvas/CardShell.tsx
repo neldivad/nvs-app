@@ -8,6 +8,7 @@
  * (which persist) — one affordance, correct on both.
  */
 import { JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Handle, Position, NodeResizer, useReactFlow } from '@xyflow/react'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -33,6 +34,7 @@ export interface CardShellProps {
 const HANDLE = 'size-3.5! z-20! rounded-full! border-2! border-canvas! bg-faint! transition-colors hover:bg-thread!'
 
 export function CardShell({ id, selected, resizable, minWidth = 160, minHeight = 112, header, headerTint, footer, children, className, onDelete }: CardShellProps): JSX.Element {
+  const { t } = useTranslation('cardShell')
   const { deleteElements } = useReactFlow()
   const del = onDelete ?? ((): void => void deleteElements({ nodes: [{ id }] }))
   return (
@@ -45,7 +47,7 @@ export function CardShell({ id, selected, resizable, minWidth = 160, minHeight =
       {/* quick-delete — hover-reveal X (nodrag so the click doesn't start a drag) */}
       <button
         onClick={del}
-        title="Delete"
+        title={t('delete')}
         className="nodrag absolute -right-1.5 -top-1.5 z-30 flex size-4 items-center justify-center rounded-full border border-border bg-panel text-faint opacity-0 shadow-sm transition-opacity hover:text-flag group-hover:opacity-100"
       >
         <X className="size-2.5" />

@@ -1,0 +1,12 @@
+{
+  "library": {
+    "title": "Library",
+    "openElsewhere": "Open elsewhere…",
+    "empty": "No works yet.",
+    "workSub": "{{scenes}} scenes · {{world}} world"
+  },
+  "timeline": {
+    "reload": "Reload from disk",
+    "buildWithAi": "Opens chat and build timeline with AI"
+  }
+}

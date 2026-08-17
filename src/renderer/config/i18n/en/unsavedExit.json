@@ -1,0 +1,26 @@
+{
+  "title": {
+    "dirty": "Unsaved changes",
+    "clean": "Leave this project?"
+  },
+  "verb": {
+    "library": "return to the Library",
+    "tab": "close this tab",
+    "app": "quit",
+    "nav": "leave this page",
+    "default": "leave"
+  },
+  "button": {
+    "cancel": "Cancel",
+    "dontSave": "Don't Save",
+    "save": "Save",
+    "quit": "Quit",
+    "closeTab": "Close tab",
+    "returnToLibrary": "Return to Library"
+  },
+  "thisPage": "this page",
+  "thisProject": "this project",
+  "dirty": "You have unsaved edits in <hl>{{name}}</hl>. Save them before you {{verb}}?",
+  "clean": "Everything's saved. Ready to {{verb}}?",
+  "job": "Analysis is running on <hl>{{name}}</hl> ({{done}}/{{total}}). Leaving <em>pauses</em> it — it resumes right where it left off next time you open it."
+}

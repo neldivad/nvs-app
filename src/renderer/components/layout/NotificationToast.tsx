@@ -6,6 +6,7 @@
  * Replaces the two ad-hoc toasts that used to live inside ConsoleDock + TimelinePanel.
  */
 import { useEffect, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Copy, Check, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useWorkspace } from '@/stores/workspace'
@@ -17,6 +18,7 @@ const DUR = 4500
 const ANCHOR_POS = 'bottom-9 right-4 justify-end'
 
 export function NotificationToast(): JSX.Element | null {
+  const { t } = useTranslation('notifications')
   const notifications = useWorkspace((s) => s.notifications)
   const notice = useWorkspace((s) => s.notice)
   const setNotice = useWorkspace((s) => s.setNotice)
@@ -78,10 +80,10 @@ export function NotificationToast(): JSX.Element | null {
           {flash.body && <div className="mt-0.5 cursor-text select-text text-[11px] leading-snug text-muted-foreground">{flash.body}</div>}
           {/* copy + dismiss — appear on hover (the toast is small); copy flips to a check for feedback */}
           <div className="absolute top-1 right-1 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-            <button onClick={copy} title={copied ? 'Copied' : 'Copy'} aria-label="Copy notification" className="rounded p-1 text-muted-foreground hover:bg-panel-soft hover:text-foreground">
+            <button onClick={copy} title={copied ? t('copied') : t('copy')} aria-label={t('copyAria')} className="rounded p-1 text-muted-foreground hover:bg-panel-soft hover:text-foreground">
               {copied ? <Check className="size-3.5 text-ok" /> : <Copy className="size-3.5" />}
             </button>
-            <button onClick={dismiss} title="Dismiss" aria-label="Dismiss notification" className="rounded p-1 text-muted-foreground hover:bg-panel-soft hover:text-foreground">
+            <button onClick={dismiss} title={t('dismiss')} aria-label={t('dismissAria')} className="rounded p-1 text-muted-foreground hover:bg-panel-soft hover:text-foreground">
               <X className="size-3.5" />
             </button>
           </div>

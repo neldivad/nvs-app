@@ -4,14 +4,16 @@
  * beside the write/preview content; the parent owns the jump + which pane it scrolls.
  */
 import { type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { EditorAside } from './EditorAside'
 import type { Heading } from '@/lib/analysis/outline'
 
 export function Outline({ headings, active, onJump }: { headings: Heading[]; active: number; onJump: (i: number) => void }): JSX.Element {
+  const { t } = useTranslation('editor')
   const minLevel = headings.length ? Math.min(...headings.map((h) => h.level)) : 1
   return (
-    <EditorAside title="Outline" widthKey="nvs.outlineW" defaultWidth={224}>
+    <EditorAside title={t('outline.title')} widthKey="nvs.outlineW" defaultWidth={224}>
       <nav className="pb-3">
         {headings.map((h, i) => (
           <button

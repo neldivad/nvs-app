@@ -1,0 +1,87 @@
+{
+  "fab": {
+    "export": "Export this scene",
+    "help": "Page help",
+    "backToTop": "Back to top"
+  },
+  "export": {
+    "title": "Export this scene",
+    "lead": "One scene, in the same shape as a full project export — small enough for another app to actually consume.",
+    "bestFor": "Best for:",
+    "best": {
+      "json": "another app · re-import",
+      "csv": "spreadsheets",
+      "md": "the raw scene file",
+      "srt": "subtitles · captions"
+    }
+  },
+  "help": {
+    "sceneTitle": "Scene help",
+    "worldTitle": "World page help",
+    "scene": {
+      "write": {
+        "title": "Write — the Fountain dialect",
+        "rows": {
+          "plain line": "Narration",
+          "ALL CAPS line": "Speaker cue — following line(s) are their dialogue",
+          "(THINKING) after a cue": "Inner monologue instead of spoken",
+          "> line": "Action beat (stage direction)",
+          "= line": "Transition (e.g. \"Two weeks earlier\")",
+          "**bold**  *italic*": "Inline emphasis, any block"
+        }
+      },
+      "slash": {
+        "title": "Slash palette — type / in a block",
+        "rows": {
+          "/sp": "Speech",
+          "/th": "Thinking",
+          "/na": "Narration",
+          "/ac": "Action",
+          "/tr": "Transition",
+          "@name": "Convert to speech and set the speaker"
+        }
+      },
+      "properties": {
+        "title": "Properties & the timeline",
+        "items": [
+          "Open **Properties** for the beat (goal · conflict · outcome), cast, and content-phase.",
+          "The first **Media** image becomes the scene's cover on the timeline.",
+          "The scene's **phase** tints its timeline card; connections there write `leads_to`."
+        ]
+      },
+      "views": {
+        "title": "Views & shortcuts",
+        "rows": {
+          "Write / Preview / Source": "Compose · rendered · raw Fountain",
+          "Cmd / Ctrl + S": "Save the open scene",
+          "↑ / ↓": "Move between blocks",
+          "Enter": "New narration block below"
+        }
+      }
+    },
+    "world": {
+      "writing": {
+        "title": "{{kind}} page — writing",
+        "items": [
+          "Start a section with `##` (or type `/` for the section palette).",
+          "Write in Markdown; Preview renders the wiki panel; Source is the raw file an agent reads."
+        ]
+      },
+      "properties": {
+        "title": "Properties",
+        "items": [
+          "**Properties** edits the page's fields, media gallery, and phase.",
+          "**Phase** is editorial maturity (draft → developing → canon → archived); **status** is in-world state (active, deceased…).",
+          "The first Media image is the page's avatar used across lists."
+        ]
+      },
+      "shortcuts": {
+        "title": "Shortcuts",
+        "rows": {
+          "Write / Preview / Source": "Compose · wiki panel · raw Markdown",
+          "Cmd / Ctrl + S": "Save the open page"
+        }
+      }
+    }
+  }
+}

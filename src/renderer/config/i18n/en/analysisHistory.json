@@ -1,0 +1,32 @@
+{
+  "title": "Analysis history",
+  "empty": "No past runs yet — run one from the dock’s Update.",
+  "option_one": "{{when}} · {{count}} target · {{dur}}",
+  "option_other": "{{when}} · {{count}} targets · {{dur}}",
+  "tab": {
+    "graph": "Analyzed graph",
+    "stats": "Coverage & stats"
+  },
+  "graphEmpty": "This run touched no scenes.",
+  "noCoverage": "This run recorded no coverage.",
+  "kind": {
+    "scene": "Scenes",
+    "window": "Arcs",
+    "profile": "Profiles",
+    "digest": "Digests",
+    "coherence": "Coherence"
+  },
+  "stat": {
+    "targets": "Targets",
+    "rowsWritten": "Rows written",
+    "done": "Done",
+    "failedSkipped": "Failed / skipped",
+    "duration": "Duration",
+    "finished": "Finished"
+  },
+  "liveOnlyNote": "A run keeps what it covered, not its step-by-step log (that stream is live-only).",
+  "restore": "Restore this version",
+  "restoreTitle": "Roll the analysis DB back to this version’s snapshot",
+  "snapshotPruned": "snapshot pruned — can’t restore",
+  "close": "Close"
+}

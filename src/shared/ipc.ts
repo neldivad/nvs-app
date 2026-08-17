@@ -200,6 +200,18 @@ export type HandshakeResult =
   | { ok: true; granted: string[]; degraded: string[] }
   | { ok: false; reasons: string[] }
 
+/** Result of the on-launch (and manual) "is there a newer NVS?" check. We do NOT auto-update — this only
+ *  compares the installed version against the latest PUBLIC GitHub release and hands the renderer enough to
+ *  show a dismissible "update available" nudge that links out to the download page. `latest` is null when the
+ *  check couldn't complete (offline, rate-limited, no release yet) — `error` carries the reason; never throws. */
+export interface UpdateCheck {
+  current: string // the installed version (app.getVersion())
+  latest: string | null // newest published release tag, `v` stripped; null on any failure
+  isNewer: boolean // latest is a strictly higher semver than current
+  url: string // where to send the user to download (the /download page, not a raw asset)
+  error?: string // set when latest is null — offline / HTTP status / parse failure
+}
+
 /** What an AMBIENT (declarative) extension contributes to the app while installed + enabled — applied by the
  *  renderer, no subprocess. v1: the manuscript font. `kind: 'ui'` extensions carry this; active ones don't. */
 export interface ExtensionContributions {
@@ -622,6 +634,7 @@ export interface UiState {
  */
 export interface NvsApi {
   ping(): Promise<{ ok: true; version: string }> // liveness (P0 smoke)
+  checkForUpdate(): Promise<UpdateCheck> // compare installed version vs latest public release (no auto-update; nudge only)
 
   // Custom title-bar window controls (frameless on win/linux).
   minimizeWindow(): Promise<void>
@@ -768,6 +781,13 @@ export interface NvsApi {
    */
   importImagePaths(pageId: string, kind: string, paths: string[]): Promise<string[]>
   /**
+   * Import GENERATED image bytes (a DialogZoomCrop result) into the same
+   * content/assets/{pageId}/ pipeline as importImagePaths, returning the rel
+   * path or null. PNG is written as-is (crops are small and may carry alpha);
+   * no source file exists, hence bytes rather than a path.
+   */
+  importImageBytes(pageId: string, kind: string, baseName: string, bytes: ArrayBuffer): Promise<string | null>
+  /**
    * Resolve a dropped File (from a renderer drag-and-drop event) to its real filesystem
    * path. Synchronous and preload-only (Electron's webUtils) — the one NvsApi method that
    * doesn't round-trip through ipcMain, since webUtils only works outside the sandboxed
@@ -877,7 +897,7 @@ export interface NvsApi {
   planIngestPreview(depth?: AnalysisDepth): Promise<IngestPreview>
   /** Start the coherence check — its own trigger (one AI call diffing every character's page vs their arc).
    *  Shares the runner's progress stream + version history with the analysis update. No-op if a run is live. */
-  startCoherenceRun(): Promise<void>
+  startCoherenceRun(opts?: { critique?: boolean }): Promise<void>
   /** Stop the current run after the in-flight step (aborts the live AI call). */
   cancelIngestRun(): Promise<void>
   /** Subscribe to the live run's progress (pushed on every step change). Returns an unsubscribe. */
@@ -1331,6 +1351,23 @@ export interface ContinuityRows {
   findings: ContinuityFindingRow[]
 }
 
+/** One CRITIQUE ("Tough questions") finding — dramaturgical construction, not consistency
+ *  (internal/story-critique.md). Slice 1 kind: `inert` (a beat nothing downstream depends on). Work-level:
+ *  entityId stays null; the trait is the specific QUESTION the author must be able to answer. */
+export interface CritiqueFindingRow {
+  entityId: string | null // null — critique findings are work-level
+  trait: string // the specific question ("What does the Left Ci episode buy the story?")
+  declared: string // what the beat sets up (weak-close: the thread's close gate)
+  observed: string // what the story does with it (often: nothing; weak-close: what the close actually records)
+  kind: 'inert' | 'weak-close'
+  severity: 'low' | 'medium' | 'high'
+  suggestion: string // the honest menu: cut · fold · plant the payoff
+  evidence: string[] // thread_ids / scene_ids
+}
+export interface CritiqueRows {
+  findings: CritiqueFindingRow[]
+}
+
 /**
  * A producer's write of one inferred-tier target. `run_id` is derived; never sent.
  * Kinds mirror the live inference_runs vocabulary: scene · window · coherence.
@@ -1344,6 +1381,7 @@ export type TierWrite =
   | { tier: 't2'; kind: 'window'; targetId: string; asOfUnitId: string; model: string; inputHash: string; rows: WindowRows }
   | { tier: 't3'; kind: 'coherence'; targetId: string; asOfUnitId: string; model: string; inputHash: string; rows: CoherenceRows }
   | { tier: 't3'; kind: 'continuity'; targetId: 'story'; asOfUnitId: string; model: string; inputHash: string; rows: ContinuityRows }
+  | { tier: 't3'; kind: 'critique'; targetId: 'story'; asOfUnitId: string; model: string; inputHash: string; rows: CritiqueRows }
 
 export interface TierWriteResult {
   ok: boolean
@@ -1456,7 +1494,7 @@ export interface DeclaredSecretInfo {
 }
 
 /** The three producer passes, matching the live inference_runs vocabulary. */
-export type TierKind = 'scene' | 'window' | 'coherence' | 'continuity' | 'digest' | 'profile' // digest/profile = working-set reductions (M2/M3); continuity = plot-holes (story vs itself)
+export type TierKind = 'scene' | 'window' | 'coherence' | 'continuity' | 'critique' | 'digest' | 'profile' // digest/profile = working-set reductions (M2/M3); continuity = plot-holes; critique = tough questions (story-critique.md)
 
 /** A tier target's freshness vs the staleness ledger (the Ingest dock tab reads these). */
 export type TierStatus = 'fresh' | 'stale' | 'pending'
@@ -1621,6 +1659,7 @@ export interface IngestSession {
  */
 export const CHANNELS = {
   ping: 'app:ping',
+  checkForUpdate: 'app:check-for-update',
   minimizeWindow: 'window:minimize',
   toggleMaximizeWindow: 'window:toggle-maximize',
   closeWindow: 'window:close',
@@ -1700,6 +1739,7 @@ export const CHANNELS = {
   deletePage: 'pages:delete',
   importImages: 'asset:import-images',
   importImagePaths: 'asset:import-image-paths',
+  importImageBytes: 'asset:import-image-bytes',
   // getPathForFile never goes through ipcMain (preload-only webUtils call) but CHANNELS is typed
   // Record<keyof NvsApi, string>, so every NvsApi member needs an entry here — unused by design.
   getPathForFile: 'asset:get-path-for-file',

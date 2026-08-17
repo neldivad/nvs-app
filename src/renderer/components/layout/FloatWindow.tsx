@@ -7,6 +7,7 @@
  * (chat brings its own header; threads doesn't) — then the drag grip becomes a titled bar with a close.
  */
 import { useEffect, useRef, useState, type ReactNode, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { GripHorizontal, X } from 'lucide-react'
 import { useFloat, useFrontFloat, bringFloatToFront } from '@/lib/editor/escapeStack'
 import { regionAttrs, type RegionId } from '@/config/regions'
@@ -48,6 +49,7 @@ export function FloatWindow({
   maxHeight?: number // cap the resize height (px); default = viewport-bounded only
   children: ReactNode
 }): JSX.Element {
+  const { t } = useTranslation('floatWindow')
   const [box, setBox] = useState<Box>(() => (persistKey ? boxCache.get(persistKey) : undefined) ?? initial())
   useEffect(() => {
     if (persistKey) boxCache.set(persistKey, box)
@@ -131,7 +133,7 @@ export function FloatWindow({
         onPointerDown={startDrag}
         className="flex h-5 shrink-0 cursor-grab items-center gap-1 border-b border-border bg-panel px-1.5 active:cursor-grabbing"
         style={accent ? { background: `color-mix(in oklab, ${accent} 14%, var(--panel))`, borderBottomColor: `color-mix(in oklab, ${accent} 45%, var(--border))` } : undefined}
-        title="Drag to move"
+        title={t('dragToMove')}
       >
         {title ? (
           <>
@@ -141,7 +143,7 @@ export function FloatWindow({
               <button
                 onClick={onClose}
                 onPointerDown={(e) => e.stopPropagation()}
-                title="Close"
+                title={t('close')}
                 className="ml-auto rounded p-0.5 text-muted-foreground hover:bg-panel-soft"
               >
                 <X className="size-3" />
@@ -157,14 +159,14 @@ export function FloatWindow({
       <div className="flex min-h-0 flex-1 select-text flex-col">{children}</div>
       {/* Resize handles — left / right / bottom edges + the two bottom corners (top is the drag bar). The edge
           strips are thin invisible hit-targets; the bottom-right keeps the visible corner grip. */}
-      <div onPointerDown={(e) => startResize(e, 'e')} className="absolute right-0 top-5 bottom-2 z-10 w-1.5 cursor-ew-resize" title="Drag to resize" />
-      <div onPointerDown={(e) => startResize(e, 'w')} className="absolute left-0 top-5 bottom-2 z-10 w-1.5 cursor-ew-resize" title="Drag to resize" />
-      <div onPointerDown={(e) => startResize(e, 's')} className="absolute bottom-0 left-2 right-2 z-10 h-1.5 cursor-ns-resize" title="Drag to resize" />
-      <div onPointerDown={(e) => startResize(e, 'sw')} className="absolute bottom-0 left-0 z-10 size-3 cursor-nesw-resize" title="Drag to resize" />
+      <div onPointerDown={(e) => startResize(e, 'e')} className="absolute right-0 top-5 bottom-2 z-10 w-1.5 cursor-ew-resize" title={t('dragToResize')} />
+      <div onPointerDown={(e) => startResize(e, 'w')} className="absolute left-0 top-5 bottom-2 z-10 w-1.5 cursor-ew-resize" title={t('dragToResize')} />
+      <div onPointerDown={(e) => startResize(e, 's')} className="absolute bottom-0 left-2 right-2 z-10 h-1.5 cursor-ns-resize" title={t('dragToResize')} />
+      <div onPointerDown={(e) => startResize(e, 'sw')} className="absolute bottom-0 left-0 z-10 size-3 cursor-nesw-resize" title={t('dragToResize')} />
       <div
         onPointerDown={(e) => startResize(e, 'se')}
         className="absolute bottom-0 right-0 z-10 size-3.5 cursor-nwse-resize"
-        title="Drag to resize"
+        title={t('dragToResize')}
         style={{ background: 'linear-gradient(135deg, transparent 50%, var(--faint) 50%)' }}
       />
     </div>

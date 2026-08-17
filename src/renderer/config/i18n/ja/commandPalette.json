@@ -1,0 +1,29 @@
+{
+  "placeholder": "タイトルを検索 — または本文内で見つけたいフレーズ…",
+  "empty": {
+    "noContent": "まだコンテンツがありません — 分析を実行するか、シーンを追加してください。",
+    "noMatches": "一致する項目はありません。"
+  },
+  "group": {
+    "scenes": "シーン",
+    "world": "世界",
+    "custody": "保管",
+    "threads": "スレッド",
+    "entities": "エンティティ",
+    "lore": "設定",
+    "coherence": "整合性",
+    "sequences": "シーケンス",
+    "content": "コンテンツ"
+  },
+  "checkpoints_one": "{{count}}件のチェックポイント",
+  "checkpoints_other": "{{count}}件のチェックポイント",
+  "disclosures_one": "{{count}}件の開示項目",
+  "disclosures_other": "{{count}}件の開示項目",
+  "paradox": "パラドックス",
+  "chartAxis": "グラフの軸",
+  "sceneCount_one": "{{count}}シーン",
+  "sceneCount_other": "{{count}} シーン",
+  "matches_one": "{{count}}件の一致",
+  "matches_other": "{{count}}件の一致",
+  "lineNo": "{{line}}行目"
+}

@@ -4,6 +4,7 @@
  * drift that motivated the BasePage plan). Mount it keyed by page path; `text` seeds the document.
  */
 import { useEffect, useRef, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { EditorState } from '@codemirror/state'
 import { EditorView, keymap, lineNumbers } from '@codemirror/view'
 import { markdown } from '@codemirror/lang-markdown'
@@ -39,6 +40,7 @@ export function SourceTab({
   chromeless?: boolean // hide the built-in bottom Save bar — the host puts Save in its own header (custody Write)
   gutter?: boolean // show a line-number gutter (so linter "Line N" references are locatable — scene source)
 }): JSX.Element {
+  const { t } = useTranslation('sourceTab')
   const hostRef = useRef<HTMLDivElement>(null)
   const viewRef = useRef<EditorView | null>(null)
   const find = useCmFind(() => viewRef.current)
@@ -87,7 +89,7 @@ export function SourceTab({
     <div className="relative flex min-h-0 flex-1 flex-col" onKeyDown={find.onKeyDown}>
       {find.open && (
         <>
-          <FindBar ref={find.inputRef} query={find.query} count={find.count} active={find.active} onQueryChange={find.onQueryChange} onNext={() => find.step(1)} onPrev={() => find.step(-1)} onClose={find.close} placeholder="Find in source" />
+          <FindBar ref={find.inputRef} query={find.query} count={find.count} active={find.active} onQueryChange={find.onQueryChange} onNext={() => find.step(1)} onPrev={() => find.step(-1)} onClose={find.close} placeholder={t('findPlaceholder')} />
           <SearchMinimap markers={find.markers} onJump={find.goto} />
         </>
       )}
@@ -105,9 +107,9 @@ export function SourceTab({
       {!readOnly && !chromeless && (
         <div className="flex shrink-0 items-center gap-2 border-t border-border px-3 py-1.5">
           <Button size="sm" variant="outline" disabled={!dirty || saving} onClick={() => onSaveRef.current?.()}>
-            {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />} Save
+            {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />} {t('save')}
           </Button>
-          {error ? <span className="text-[10px] text-flag">{error}</span> : dirty && <span className="text-[10px] text-faint">unsaved changes</span>}
+          {error ? <span className="text-[10px] text-flag">{error}</span> : dirty && <span className="text-[10px] text-faint">{t('unsaved')}</span>}
         </div>
       )}
     </div>

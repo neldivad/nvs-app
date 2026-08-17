@@ -1,0 +1,38 @@
+{
+  "header": {
+    "caption": "バックグラウンド編集 — 適用すると1回の取り消し操作になります",
+    "clearDone": "完了をクリア",
+    "clearAll": "すべてクリア"
+  },
+  "empty": {
+    "noProject": "バックグラウンド編集を実行するには、作業を開いてください。",
+    "noTasks": "タスクはまだありません。ページで<1>/ag</1>と入力するか、チャットにページをまたいだ編集を依頼してください。"
+  },
+  "group": {
+    "edits_one": "{{count}}件の編集",
+    "edits_other": "{{count}}件の編集",
+    "applyAll": "すべて適用",
+    "applyAllTitle": "完了した編集をすべて適用",
+    "dismissAllTitle": "すべて破棄"
+  },
+  "confirm": {
+    "title_one": "{{count}}件の編集を適用しますか？",
+    "title_other": "{{count}}件の編集を適用しますか？",
+    "message_one": "完了した編集を{{count}}ページに適用します。各ページが置き換えられ、ページごとにCtrl/Cmd+Zを1回押すと元に戻せます。エディターが順に適用します。",
+    "message_other": "完了した編集を{{count}}ページに適用します。各ページが置き換えられ、ページごとにCtrl/Cmd+Zを1回押すと元に戻せます。エディターが順に適用します。",
+    "label": "{{count}}件を適用"
+  },
+  "status": {
+    "running": "実行中",
+    "queued": "待機中"
+  },
+  "card": {
+    "cancel": "キャンセル",
+    "dismiss": "破棄",
+    "took": "所要時間 {{time}}",
+    "undo": "元に戻す",
+    "redo": "やり直す",
+    "reviewApply": "確認して適用",
+    "applied": "適用済み ✓"
+  }
+}

@@ -6,6 +6,7 @@
  * a swatch menu that paints the whole route through it (stored per-scene on the variant, so it persists).
  */
 import { useCallback, useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HelpCircle } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { activeVariant, activeSequencePath } from '@/lib/timeline/treeVariant'
@@ -28,6 +29,7 @@ const DEFAULT_ROUTE_COLOR = 'var(--speaker-6)' // indigo (== --thread) — the m
 type Menu = { x: number; y: number; route: string[] }
 
 export function CellView(): JSX.Element {
+  const { t } = useTranslation('timeline')
   const trees = useWorkspace((s) => s.trees)
   const storyTree = useWorkspace((s) => s.storyTree)
   const setRouteColor = useWorkspace((s) => s.setRouteColor)
@@ -112,8 +114,10 @@ export function CellView(): JSX.Element {
   const onCardContext = useCallback((id: string, e: React.MouseEvent): void => onContext(e, id), [onContext])
   const cardTitle = useCallback(
     (id: string): string =>
-      isFolderCell(id) ? `${graph.meta.get(id)?.title} — ${graph.meta.get(id)?.count} scenes (expand on the Canvas tab to see them)` : 'Click to read · right-click to color this route',
-    [graph]
+      isFolderCell(id)
+        ? t('cell.folderCardTitle', { title: graph.meta.get(id)?.title, count: graph.meta.get(id)?.count ?? 0 })
+        : t('cell.sceneCardTitle'),
+    [graph, t]
   )
 
   return (
@@ -121,8 +125,8 @@ export function CellView(): JSX.Element {
       {subsetIds.length === 0 ? (
         <div className="flex min-h-0 flex-1 items-center justify-center">
           <div className="max-w-sm rounded-lg border border-dashed border-border bg-panel/60 px-6 py-5 text-center text-[13px] text-muted-foreground">
-            <p>The Cell view draws your wired scenes as a visual-novel flowchart — main route centered, branches flanking, merges colored.</p>
-            <p className="mt-2 text-[11px] text-faint">Add and connect scenes on the Canvas tab to see the flow here.</p>
+            <p>{t('cell.emptyTitle')}</p>
+            <p className="mt-2 text-[11px] text-faint">{t('cell.emptyHint')}</p>
           </div>
         </div>
       ) : (
@@ -145,11 +149,11 @@ export function CellView(): JSX.Element {
       {subsetIds.length > 0 && (
         <RailChrome
           region="cellView"
-          name="Cell flow"
+          name={t('cell.flowName')}
           fabClassName="top-4 left-4"
           fabDirection="down"
-          export={{ file: 'cell-flow', caption: () => `Cell flow — ${variant?.name ?? 'timeline'}` }}
-          actions={[{ icon: <HelpCircle className="size-4" />, title: 'Cell flow help', onClick: () => setPaneHelpOpen(true) }]}
+          export={{ file: 'cell-flow', caption: () => t('cell.exportCaption', { name: variant?.name ?? t('cell.timelineFallback') }) }}
+          actions={[{ icon: <HelpCircle className="size-4" />, title: t('cell.help'), onClick: () => setPaneHelpOpen(true) }]}
         />
       )}
 
@@ -174,17 +178,17 @@ export function CellView(): JSX.Element {
             <button
               key={col}
               onClick={() => { void setRouteColor(menu.route, col); setMenu(null) }}
-              title="Color this route"
+              title={t('cell.colorRoute')}
               className="size-5 rounded-full border border-black/20 transition-transform hover:scale-110"
               style={{ background: col }}
             />
           ))}
           <button
             onClick={() => { void setRouteColor(menu.route, null); setMenu(null) }}
-            title="Clear this route's color"
+            title={t('cell.clearRouteColor')}
             className="ml-0.5 rounded px-1.5 py-0.5 text-[11px] text-muted-foreground hover:bg-panel-soft"
           >
-            Clear
+            {t('cell.clear')}
           </button>
         </div>
       )}

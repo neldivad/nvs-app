@@ -24,6 +24,7 @@ import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
 import { RailHeader, RailTabs } from '@/components/ui/RailHeader'
 import { Annotated, type NameRef } from '@/components/ui/Annotated'
 import { DetailSplitView, type FeedEvent, type FeedChapter, type FeedTone, type DetailEndpoint } from '@/components/layout/DetailSplitView'
+import { DetailLabel, DETAIL_PROSE } from '@/components/ui/detail'
 import { AppearanceHeatStrip, type HeatCell } from '@/components/layout/AppearanceHeatStrip'
 import { CharacterArcPanel } from '@/components/features/arc/CharacterArcPanel'
 import { EntityPanel } from '@/components/features/entity/EntityPanel'
@@ -35,6 +36,7 @@ import { RailScaleBar } from '@/components/layout/RailScaleBar'
 import { RailChrome } from '@/components/layout/RailChrome'
 import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
 import type { Thread, ThreadBeat, ThreadDetail } from '@shared/ipc'
 
 type ScenePreview = { path: string; title: string }
@@ -43,9 +45,6 @@ type ScenePreview = { path: string; title: string }
 const humanizeSlug = (s: string): string => s.replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 /** Drop a leading honorific so a beat's cast name ("Mr See Yi Oh") can match a world page ("See Yi Oh"). */
 const normalizeName = (s: string): string => normName(s.replace(/^(mr|mrs|ms|dr|sir|lord|lady)\.?\s+/i, ''))
-
-/** Threads are opened and (defeasibly) resolved — a reopen can overturn a resolve. "closed" → "resolved". */
-const statusLabel = (status: string): string => (status === 'open' ? 'open' : status === 'closed' ? 'resolved' : status)
 
 export function ThreadsPanel(): JSX.Element {
   const threads = useWorkspace((s) => s.threads)
@@ -130,6 +129,7 @@ function ThreadMap({
   const [typeFilter, setTypeFilter] = useState<string | null>(null) // filter the rail by thread_type (mystery · promise · …)
   const [evWin, setEvWin] = useState<[number, number] | null>(null) // trim rows by beat count (hide loose/short threads)
   const [page, setPage] = useState(0) // paginated vertical axis — one page of rows in the DOM at a time
+  const { t } = useTranslation('threads')
 
   // Gantt scale (internal/gantt-scale.md): a long axis windows to the first GANTT_WINDOW scenes (slider scrubs the
   // span); events + rows derive from win.colOf, so off-window beats and their now-empty rows drop reactively.
@@ -163,16 +163,16 @@ function ThreadMap({
   const rows = useMemo(
     () =>
       [...threads]
-        .map((t) => ({ t, evs: events.get(t.id) ?? [], v: threadVisual(t.type) }))
+        .map((th) => ({ th, evs: events.get(th.id) ?? [], v: threadVisual(th.type) }))
         .filter((r) => r.evs.length > 0)
         // Rows in reading order — EARLIEST first (each thread by its first beat's column); open-before-closed
         // is only the tiebreak for threads that open on the same scene.
-        .sort((a, b) => a.evs[0].col - b.evs[0].col || Number(a.t.status !== 'open') - Number(b.t.status !== 'open')),
+        .sort((a, b) => a.evs[0].col - b.evs[0].col || Number(a.th.status !== 'open') - Number(b.th.status !== 'open')),
     [threads, events]
   )
   // Off-route threads (a branch not on this view) are surfaced in the ThreadSidebar's "Other branches" section,
   // not here — the gantt only charts threads whose beats land on the active axis.
-  const types = useMemo(() => [...new Set(rows.map((r) => r.t.type))].sort(), [rows]) // the thread_types actually present
+  const types = useMemo(() => [...new Set(rows.map((r) => r.th.type))].sort(), [rows]) // the thread_types actually present
   // Beat-count window — trim rows by how many events a thread has (drag the low thumb up to hide loose/short
   // threads; the same windowed RangeSlider the Cast rail uses for lines). Small integer range → linear, not laddered.
   const maxEv = useMemo(() => Math.max(1, ...rows.map((r) => r.evs.length)), [rows])
@@ -180,7 +180,7 @@ function ThreadMap({
   const hiEv = evWin ? Math.min(Math.max(loEv, evWin[1]), maxEv) : maxEv
   const evAll = loEv === 1 && hiEv === maxEv
   const visibleRows = useMemo(
-    () => rows.filter((r) => (!typeFilter || r.t.type === typeFilter) && r.evs.length >= loEv && r.evs.length <= hiEv),
+    () => rows.filter((r) => (!typeFilter || r.th.type === typeFilter) && r.evs.length >= loEv && r.evs.length <= hiEv),
     [rows, typeFilter, loEv, hiEv]
   )
   // Paginate the vertical axis: `rows` are already window-relevant (their beats were built from win.colOf);
@@ -190,20 +190,20 @@ function ThreadMap({
   const sceneById = useMemo(() => new Map(cols.map((s) => [s.sceneId, s])), [cols])
   const ganttRows = useMemo<GanttRow[]>(
     () =>
-      scoped.shown.map(({ t, evs, v }) => {
-        const on = selectedId === t.id
-        const closed = t.status !== 'open'
+      scoped.shown.map(({ th, evs, v }) => {
+        const on = selectedId === th.id
+        const closed = th.status !== 'open'
         // "Loose": opened but never advanced OR closed — a thread that only ever fired `open`. Often extraction
         // noise (a one-off event mis-framed as a thread, or a payoff the reader never got connected to it).
         const loose = !closed && evs.length <= 1
         return {
-          key: t.id,
+          key: th.id,
           highlighted: on,
           gutter: (
-            <button onClick={() => select(on ? null : t.id)} className={cn('flex h-full w-full items-center gap-2 border-l-2 pr-2 pl-1.5 text-left', on ? 'border-thread' : 'border-transparent')}>
+            <button onClick={() => select(on ? null : th.id)} className={cn('flex h-full w-full items-center gap-2 border-l-2 pr-2 pl-1.5 text-left', on ? 'border-thread' : 'border-transparent')}>
               <span className={cn('size-2 shrink-0 rounded-full', v.bg)} title={v.label} />
-              <span className={cn(GANTT_ROW_TITLE, !t.title && 'font-mono', on && 'text-foreground')} title={t.slug}>{t.title || t.slug}</span>
-              {loose && <span className="ml-auto size-1.5 shrink-0 rounded-full bg-warn/70" title="Loose thread — opened but never developed or resolved. Often noise (a one-off event, or an unconnected payoff). Review or prune." />}
+              <span className={cn(GANTT_ROW_TITLE, !th.title && 'font-mono', on && 'text-foreground')} title={th.slug}>{th.title || th.slug}</span>
+              {loose && <span className="ml-auto size-1.5 shrink-0 rounded-full bg-warn/70" title={t('map.looseThread')} />}
             </button>
           ),
           renderLane: ({ colW }) => {
@@ -220,8 +220,8 @@ function ThreadMap({
                     key={k}
                     className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
                     style={{ left: e.col * colW + colW / 2 }}
-                    title={`${t.slug} · ${e.scene.title} — ${e.action}`}
-                    onClick={() => select(t.id)}
+                    title={`${th.slug} · ${e.scene.title} — ${e.action}`}
+                    onClick={() => select(th.id)}
                   >
                     <Marker action={e.action} v={v} />
                   </button>
@@ -240,7 +240,7 @@ function ThreadMap({
           shared bottom RailScaleBar now. Uses RailHeader so it matches the Coherence rail's header exactly. */}
       {types.length > 1 && (
         <RailHeader data-export-hide="1" className="overflow-x-auto">
-          <span className="shrink-0 text-faint">Type</span>
+          <span className="shrink-0 text-faint">{t('map.type')}</span>
           {types.map((ty) => {
             const v = threadVisual(ty)
             const on = typeFilter === ty
@@ -254,7 +254,7 @@ function ThreadMap({
               </button>
             )
           })}
-          {typeFilter && <button onClick={() => setTypeFilter(null)} className="shrink-0 text-faint hover:text-foreground">clear</button>}
+          {typeFilter && <button onClick={() => setTypeFilter(null)} className="shrink-0 text-faint hover:text-foreground">{t('map.clear')}</button>}
         </RailHeader>
       )}
       <LifecycleGantt
@@ -301,6 +301,7 @@ export function ThreadDetail({ thread, onScene, onClose, focus }: { thread: Thre
   const characters = useWorkspace((s) => s.characters)
   const [detail, setDetail] = useState<ThreadDetail | null>(null)
   const [namePreview, setNamePreview] = useState<{ path: string; title: string; kind: 'character' } | null>(null)
+  const { t } = useTranslation('threads')
   const sceneById = useMemo(() => new Map(scenes.map((s) => [s.sceneId, s])), [scenes])
   const storyTree = useWorkspace((s) => s.storyTree)
   const chapterIndex = useMemo(() => buildChapterIndex(storyTree), [storyTree])
@@ -346,24 +347,24 @@ export function ThreadDetail({ thread, onScene, onClose, focus }: { thread: Thre
     const lead = b.description || b.sceneSummary || ''
     return (
       <div className="space-y-3.5">
-        <p className="text-[12px] leading-relaxed text-foreground/85"><Annotated text={lead} names={names} onName={onName} /></p>
-        {b.evidence && <p className="border-l-2 border-border/60 pl-3 text-[11.5px] italic leading-relaxed text-muted-foreground">“{b.evidence}”</p>}
+        <p className={DETAIL_PROSE}><Annotated text={lead} names={names} onName={onName} /></p>
+        {b.evidence && <p className="border-l-2 border-border/60 pl-3 text-[13px] italic leading-relaxed text-muted-foreground">“{b.evidence}”</p>}
         {/* No scene-title repeat — the pane title above is the linked scene. Keep only the scene-wide summary. */}
         {b.description && b.sceneSummary && (
           <div>
-            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Scene summary</div>
-            <p className="text-[11.5px] leading-relaxed text-faint"><Annotated text={b.sceneSummary} names={names} onName={onName} /></p>
+            <DetailLabel>{t('detail.sceneSummary')}</DetailLabel>
+            <p className="text-[13px] leading-relaxed text-faint"><Annotated text={b.sceneSummary} names={names} onName={onName} /></p>
           </div>
         )}
         {(b.cast.length > 0 || b.location) && (
           <div>
-            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Cast &amp; place</div>
+            <DetailLabel>{t('detail.castAndPlace')}</DetailLabel>
             <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
               {b.location && <span className="flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-muted-foreground"><MapPin className="size-2.5" /> {b.location}</span>}
               {b.cast.slice(0, CAST_CAP).map((nm, j) => {
                 const c = charByNorm.get(normalizeName(nm))
                 return c ? (
-                  <button key={j} onClick={() => openCast(nm)} title={`${nm} — open page`} className="flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-character hover:bg-panel-soft"><Users className="size-2.5" /> {nm}</button>
+                  <button key={j} onClick={() => openCast(nm)} title={t('detail.openPage', { name: nm })} className="flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-character hover:bg-panel-soft"><Users className="size-2.5" /> {nm}</button>
                 ) : (
                   <span key={j} className="flex items-center gap-1 rounded-full border border-border/60 px-2 py-0.5 text-faint"><Users className="size-2.5" /> {nm}</span>
                 )
@@ -409,13 +410,13 @@ export function ThreadDetail({ thread, onScene, onClose, focus }: { thread: Thre
         const chKey = chapterIndex.sceneChapter.get(s.sceneId)
         return {
           key: s.sceneId,
-          label: n ? `${s.title} — ${n} event${n === 1 ? '' : 's'}` : s.title,
+          label: n ? t('detail.heatCell', { title: s.title, count: n }) : s.title,
           weight: n,
           onClick: n ? () => onScene({ path: s.path, title: s.title }) : undefined,
           group: chKey ? { key: chKey, title: chapterIndex.chapters.get(chKey)?.title ?? chKey } : undefined
         }
       })
-  }, [detail, scenes, graph, chapterIndex, onScene])
+  }, [detail, scenes, graph, chapterIndex, onScene, t])
 
   const sceneRef = (b: ThreadBeat | null, fallback: string | null): ReactNode =>
     b ? (
@@ -424,40 +425,40 @@ export function ThreadDetail({ thread, onScene, onClose, focus }: { thread: Thre
       <span className="text-faint">{fallback ?? '—'}</span>
     )
   const endpoints: DetailEndpoint[] = [
-    { k: 'Opened by', v: sceneRef(openBeat, thread.openedAt) },
-    { k: 'Resolves when', v: thread.resolutionCondition ?? '— no close-condition', open: !thread.resolutionCondition },
-    isResolved ? { k: 'Resolved by', v: sceneRef(resolveBeat, thread.closedAt) } : { k: 'Resolves by', v: 'still open — not yet resolved', open: true }
+    { k: t('detail.openedBy'), v: sceneRef(openBeat, thread.openedAt) },
+    { k: t('detail.resolvesWhen'), v: thread.resolutionCondition ?? t('detail.noCloseCondition'), open: !thread.resolutionCondition },
+    isResolved ? { k: t('detail.resolvedBy'), v: sceneRef(resolveBeat, thread.closedAt) } : { k: t('detail.resolvesBy'), v: t('detail.stillOpen'), open: true }
   ]
 
   return (
     <>
       <DetailSplitView
         onClose={onClose}
-        icon={<span className={cn('size-2.5 shrink-0 rounded-full', v.bg)} />}
+        icon={<span className={cn('size-2 shrink-0 rounded-full', v.bg)} />}
         title={thread.title || humanizeSlug(thread.slug)}
         subtitle={thread.description ? <Annotated text={thread.description} names={names} onName={onName} /> : undefined}
         chips={
           <>
             <span className={cn('shrink-0 rounded-full border border-border/60 px-1.5 text-[10px]', v.text)}>{v.label}</span>
-            <span className={cn('shrink-0 text-[11px]', thread.status === 'open' ? 'text-ok' : 'text-faint')}>{statusLabel(thread.status)}</span>
+            <span className={cn('shrink-0 text-[11px]', thread.status === 'open' ? 'text-ok' : 'text-faint')}>{thread.status === 'open' ? t('detail.status.open') : thread.status === 'closed' ? t('detail.status.resolved') : thread.status}</span>
             {thread.builtBy === 'inferred' && (
-              <span className="flex shrink-0 items-center gap-1 text-[10px] text-faint" title="The analysis agent's reading of your dialogue.">
-                <Info className="size-3" /> inferred
+              <span className="flex shrink-0 items-center gap-1 text-[10px] text-faint" title={t('detail.inferredTitle')}>
+                <Info className="size-3" /> {t('detail.inferred')}
               </span>
             )}
           </>
         }
-        meta={detail ? `${detail.beats.length} event${detail.beats.length === 1 ? '' : 's'}` : ''}
+        meta={detail ? t('detail.events', { count: detail.beats.length }) : ''}
         endpoints={endpoints}
         heatmap={<AppearanceHeatStrip cells={heatCells} accentClass="text-thread" />}
-        tabs={[{ id: 'feed', label: 'Feed', icon: <Rows3 className="size-3.5" />, count: detail?.beats.length }]}
+        tabs={[{ id: 'feed', label: t('detail.feed'), icon: <Rows3 className="size-3.5" />, count: detail?.beats.length }]}
         tab="feed"
         onTab={() => {}}
         chapters={chapters}
         events={events}
         isFeed={detail != null}
         focusId={focusId}
-        tabBody={detail == null ? <div className="flex items-center gap-2 px-6 py-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> <span className="text-sm">Loading…</span></div> : undefined}
+        tabBody={detail == null ? <div className="flex items-center gap-2 px-6 py-6 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> <span className="text-sm">{t('detail.loading')}</span></div> : undefined}
       />
       {namePreview && <PageReadDialog path={namePreview.path} kind={namePreview.kind} title={namePreview.title} onClose={() => setNamePreview(null)} />}
     </>
@@ -492,49 +493,21 @@ function Marker({ action, v }: { action: string; v: { bg: string; border: string
 
 // ── Help ────────────────────────────────────────────────────────────────────────
 function ThreadHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('threads')
   return (
-    <Dialog open={open} onClose={onClose} title="Threads — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="What a thread is">
-          <HelpList
-            items={[
-              <>A <b className="text-foreground/80">thread</b> is a promise or question the story opens and (maybe) pays off — a mystery, a goal, a conflict.</>,
-              <>Its status is a <b className="text-foreground/80">fold over its events</b>: a <i>resolve</i> closes it, a later <i>reopen</i> re-opens it. The close-gate is what would pay it off.</>,
-              <>A thread can fork into <b className="text-foreground/80">strands</b> (per subject) — e.g. one layoff thread, one strand per person.</>
-            ]}
-          />
+        <HelpSection title={t('help.whatIsAThread.title')}>
+          <HelpList items={t('help.whatIsAThread.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Reading the Map">
-          <HelpTable
-            rows={[
-              ['lane color', 'the archetype (mystery · promise · conflict · task · foreshadowing)'],
-              ['lane opacity', 'solid = open · faded = resolved'],
-              ['● open', 'the event that opened the thread'],
-              ['• advance', 'an event that develops it'],
-              ['◆ resolve', 'an event that closes it (the gate is met)'],
-              ['◌ reopen', 'a later event that re-opens a closed thread'],
-              ['columns', 'scenes in reading order — click one to read it'],
-              ['chapter bands', 'the wrap-layer groups scenes by folder; toggle with the layers button']
-            ]}
-          />
+        <HelpSection title={t('help.readingMap.title')}>
+          <HelpTable rows={Object.entries(t('help.readingMap.rows', { returnObjects: true }) as Record<string, string>)} />
         </HelpSection>
-        <HelpSection title="The Sheet (click a thread)">
-          <HelpList
-            items={[
-              <>The sheet is a <b className="text-foreground/80">chapter railway</b>: each chapter is a <b className="text-foreground/80">station</b> — a filled stop (●) where the thread has events, a hollow stop (○ ··) for a chapter it stays <b className="text-foreground/80">quiet</b>, a <b className="text-foreground/80">◆ terminus</b> where it resolves.</>,
-              <>Events are <b className="text-foreground/80">cards</b> under their station (so each names just its scene). Click one to expand its full moment, the <b className="text-foreground/80">“evidence”</b> dialogue it was drawn from, the surrounding <b className="text-foreground/80">scene context</b>, and its cast.</>,
-              <>The hollow stops between stations show how long a thread goes <b className="text-foreground/80">silent</b> — a slow burn, or a thread left hanging.</>
-            ]}
-          />
+        <HelpSection title={t('help.sheet.title')}>
+          <HelpList items={t('help.sheet.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Provenance — this is the agent's reading">
-          <HelpList
-            items={[
-              <>Threads are <b className="text-foreground/80">inferred</b> by the analysis agent from your dialogue — they are its understanding, not authored truth.</>,
-              <>Each event carries a <b className="text-flag">confidence</b>; low values (highlighted) are worth a second look before you trust a close.</>,
-              <>Re-running analysis after you edit a scene refreshes the threads it touched.</>
-            ]}
-          />
+        <HelpSection title={t('help.provenance.title')}>
+          <HelpList items={t('help.provenance.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>

@@ -8,7 +8,7 @@
  * Group ops (Connect-all-to / Set-group-color / Delete) live in a top-right float when ≥2 cards are selected —
  * corkboard connections are many-to-one, not a reading-order sequence like the timeline's.
  */
-import { JSX, memo, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { JSX, memo, useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react'
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -40,6 +40,7 @@ import { Fab } from '@/components/ui/Fab'
 import { Dialog } from '@/components/ui/dialog'
 import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
 import { HelpSection, HelpTable } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
 import { MAX_CORKBOARD_CARDS, MAX_CORK_CARD_REFS, MAX_CORK_TITLE, type CorkBoard, type CorkCard, type CorkNote, type CorkRef } from '@shared/ipc'
 
 // Card color = a facet-palette CSS var (the same palette + swatch style as the Cast label / ColorTagMenu),
@@ -49,18 +50,18 @@ const swatch = (v: string): string => `var(${v})`
 const headerTintOf = (v: string | undefined): string | undefined => (v ? `color-mix(in oklab, var(${v}) 16%, var(--panel))` : undefined)
 
 /** Relative timestamp for a note ("just now" / "5 min ago" …) — adapted from the comments-component reference. */
-function timeAgo(ts?: number): string {
+function timeAgo(t: (key: string, opts?: Record<string, unknown>) => string, ts?: number): string {
   if (!ts) return ''
   const s = Math.floor((Date.now() - ts) / 1000)
-  if (s < 60) return 'just now'
+  if (s < 60) return t('time.justNow')
   const m = Math.floor(s / 60)
-  if (m < 60) return `${m} min ago`
+  if (m < 60) return t('time.min', { n: m })
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h} hr ago`
+  if (h < 24) return t('time.hr', { n: h })
   const d = Math.floor(h / 24)
-  if (d < 30) return `${d} day${d === 1 ? '' : 's'} ago`
+  if (d < 30) return t('time.day', { count: d })
   const mo = Math.floor(d / 30)
-  return mo < 12 ? `${mo} mo ago` : `${Math.floor(mo / 12)} yr ago`
+  return mo < 12 ? t('time.mo', { n: mo }) : t('time.yr', { n: Math.floor(mo / 12) })
 }
 
 interface CardData extends Record<string, unknown> {
@@ -83,6 +84,7 @@ const chipColorVar = (r: CorkRef): string => {
 
 /** One attached-link chip, tinted by page type. Read-only on the card; the post passes onOpen/onRemove/onPromote. */
 function RefChip({ r, onOpen, onRemove, onPromote, priority }: { r: CorkRef; onOpen?: () => void; onRemove?: () => void; onPromote?: () => void; priority?: boolean }): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const v = chipColorVar(r)
   return (
     <span
@@ -93,18 +95,18 @@ function RefChip({ r, onOpen, onRemove, onPromote, priority }: { r: CorkRef; onO
       {priority ? <Star className="size-2.5 shrink-0 fill-thread text-thread" /> : <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: `var(${v})` }} />}
       {onOpen ? (
         <button onClick={onOpen} className="max-w-32 truncate text-foreground hover:text-thread">
-          {r.label ?? 'page'}
+          {r.label ?? t('refChip.pageFallback')}
         </button>
       ) : (
-        <span className="max-w-28 truncate text-muted-foreground">{r.label ?? 'page'}</span>
+        <span className="max-w-28 truncate text-muted-foreground">{r.label ?? t('refChip.pageFallback')}</span>
       )}
       {onPromote && !priority && (
-        <button onClick={onPromote} title="Make priority (show first)" className="text-faint hover:text-thread">
+        <button onClick={onPromote} title={t('refChip.makePriority')} className="text-faint hover:text-thread">
           <Star className="size-2.5" />
         </button>
       )}
       {onRemove && (
-        <button onClick={onRemove} title="Remove" className="text-faint hover:text-flag">
+        <button onClick={onRemove} title={t('refChip.remove')} className="text-faint hover:text-flag">
           <X className="size-2.5" />
         </button>
       )}
@@ -114,6 +116,7 @@ function RefChip({ r, onOpen, onRemove, onPromote, priority }: { r: CorkRef; onO
 
 // ── the card CONTENT (CardShell provides the shared chrome: handles/drag-handle/resize/quick-delete) ────────────
 const CorkCardNode = memo(function CorkCardNode({ id, data, selected }: NodeProps): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const d = data as CardData
   const { updateNodeData } = useReactFlow()
   const notes = d.notes ?? []
@@ -130,7 +133,7 @@ const CorkCardNode = memo(function CorkCardNode({ id, data, selected }: NodeProp
         <>
           <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: d.color ? swatch(d.color) : 'var(--border)' }} />
           {/* the card's headline — READ-ONLY here (rename in the feed post; the header stays a clean drag surface) */}
-          <span className={cn('min-w-0 flex-1 truncate text-[11px] font-medium', d.title ? 'text-foreground' : 'text-faint')}>{d.title || 'Untitled card'}</span>
+          <span className={cn('min-w-0 flex-1 truncate text-[11px] font-medium', d.title ? 'text-foreground' : 'text-faint')}>{d.title || t('card.untitled')}</span>
           <GripVertical className="size-3 shrink-0 text-faint" />
         </>
       }
@@ -161,7 +164,7 @@ const CorkCardNode = memo(function CorkCardNode({ id, data, selected }: NodeProp
           </div>
         )}
         <div className="min-h-0 flex-1 text-[12.5px] leading-snug text-foreground">
-          {latest ? <span className="line-clamp-3 whitespace-pre-wrap wrap-break-word">{latest}</span> : <span className="text-faint">Double-click to open…</span>}
+          {latest ? <span className="line-clamp-3 whitespace-pre-wrap wrap-break-word">{latest}</span> : <span className="text-faint">{t('card.doubleClickToOpen')}</span>}
         </div>
         {/* count badges — timeline presence-badge style (icon + count), so notes/links read without opening the card */}
         {(notes.length > 0 || refs.length > 0) && (
@@ -224,6 +227,7 @@ const MAX_OPEN_FEEDS = 20 // posts open in the feed at once — newest wins, the
 
 // ── the canvas (remounted per board via key, so no stale state) ────────────────────
 function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; onChange: (b: CorkBoard) => void }): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const seed = useMemo(() => boardToFlow(board), [board])
   const [nodes, setNodes, onNodesChange] = useNodesState(seed.nodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(seed.edges)
@@ -274,7 +278,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
   const addCard = useCallback(
     (clientX: number, clientY: number) => {
       if (nodes.length >= MAX_CORKBOARD_CARDS) {
-        setNotice(`This board is full — ${MAX_CORKBOARD_CARDS} cards. Open another board.`)
+        setNotice(t('board.fullNotice', { max: MAX_CORKBOARD_CARDS }))
         return
       }
       const nid = crypto.randomUUID()
@@ -290,7 +294,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
       setOpenIds((ids) => [nid, ...ids].slice(0, MAX_OPEN_FEEDS))
       setDockCollapsed(true)
     },
-    [nodes, screenToFlowPosition, setNodes, setNotice]
+    [nodes, screenToFlowPosition, setNodes, setNotice, t]
   )
 
   // group ops (the top-right float, when ≥2 cards selected)
@@ -382,7 +386,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
         <CanvasMiniMap nodeColor={(n) => { const c = (n.data as CardData)?.color; return c ? swatch(c) : 'var(--faint)' }} />
         {/* top-left Fab — HELP (cards are added by right-click; the empty cue teaches it) */}
         <Panel position="top-left">
-          <Fab direction="down" actions={[{ icon: <HelpCircle className="size-4" />, title: 'How the corkboard works', onClick: () => setHelp(true) }]} />
+          <Fab direction="down" actions={[{ icon: <HelpCircle className="size-4" />, title: t('fab.help'), onClick: () => setHelp(true) }]} />
         </Panel>
         {/* top-right controls — the collapsed-feed toggle (symmetric to the top-left Fab) + the group-ops float */}
         {((openIds.length > 0 && dockCollapsed) || selectedIds.length >= 2) && (
@@ -391,7 +395,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
               {openIds.length > 0 && dockCollapsed && (
                 <button
                   onClick={() => setDockCollapsed(false)}
-                  title={`Show feed (${openIds.length})`}
+                  title={t('feed.show', { n: openIds.length })}
                   className="relative flex size-8 items-center justify-center rounded-full border border-border bg-panel/95 text-muted-foreground shadow-md transition-colors hover:bg-panel-soft hover:text-foreground"
                 >
                   <PanelRight className="size-4" />
@@ -400,26 +404,26 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
               )}
               {selectedIds.length >= 2 && (
                 <div className="flex w-48 flex-col gap-0.5 rounded-lg border border-border bg-panel/95 p-1.5 text-[11px] shadow-xl">
-                  <div className="px-1.5 py-0.5 text-faint">{selectedIds.length} selected</div>
+                  <div className="px-1.5 py-0.5 text-faint">{t('group.selected', { n: selectedIds.length })}</div>
                   <button onClick={() => setConnectPick(true)} className="flex items-center gap-1.5 rounded px-1.5 py-1 text-left text-foreground transition-colors hover:bg-panel-soft">
-                    <Link2 className="size-3.5 text-faint" /> Connect all to… <span className="ml-auto text-faint">C</span>
+                    <Link2 className="size-3.5 text-faint" /> {t('group.connectAll')} <span className="ml-auto text-faint">C</span>
                   </button>
                   <button onClick={disconnectGroup} className="flex items-center gap-1.5 rounded px-1.5 py-1 text-left text-foreground transition-colors hover:bg-panel-soft">
-                    <Unlink className="size-3.5 text-faint" /> Disconnect all <span className="ml-auto text-faint">X</span>
+                    <Unlink className="size-3.5 text-faint" /> {t('group.disconnectAll')} <span className="ml-auto text-faint">X</span>
                   </button>
                   {/* Set group — the sidebar's "Label as" palette treatment, distinct from the action rows above */}
                   <div className="mt-0.5 border-t border-border/60 pt-1">
-                    <div className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">Set group</div>
+                    <div className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('group.setGroup')}</div>
                     <div className="flex flex-wrap items-center gap-1.5 px-1.5 py-1">
                       {PALETTE.map((v) => (
                         <button key={v} onClick={() => setGroupColor(v)} className="size-4 rounded-full border-2 border-transparent transition-colors hover:border-border" style={{ backgroundColor: swatch(v) }} />
                       ))}
-                      <button onClick={() => setGroupColor(undefined)} className="ml-0.5 text-[10px] text-faint hover:text-foreground">clear</button>
+                      <button onClick={() => setGroupColor(undefined)} className="ml-0.5 text-[10px] text-faint hover:text-foreground">{t('common.clear')}</button>
                     </div>
                   </div>
                   <div className="mt-0.5 border-t border-border/60 pt-1">
                     <button onClick={deleteGroup} className="flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-left text-muted-foreground transition-colors hover:bg-flag/10 hover:text-flag">
-                      <Trash2 className="size-3.5" /> Delete <span className="ml-auto text-faint">⌫</span>
+                      <Trash2 className="size-3.5" /> {t('group.delete')} <span className="ml-auto text-faint">⌫</span>
                     </button>
                   </div>
                 </div>
@@ -431,8 +435,8 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
         {connectPick && (
           <Panel position="top-center">
             <CanvasWarning
-              message={`Click a card to connect all ${selectedIds.length} selected to it`}
-              actions={[{ label: 'Cancel', onClick: () => setConnectPick(false) }]}
+              message={t('group.connectHint', { n: selectedIds.length })}
+              actions={[{ label: t('common.cancel'), onClick: () => setConnectPick(false) }]}
             />
           </Panel>
         )}
@@ -440,8 +444,8 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
         {full && !connectPick && (
           <Panel position="top-center">
             <CanvasWarning
-              message={`This board is full — ${MAX_CORKBOARD_CARDS} cards`}
-              actions={[{ label: 'New board', primary: true, onClick: () => addBoard(), title: 'Move your next notes to a fresh board' }]}
+              message={t('board.full', { max: MAX_CORKBOARD_CARDS })}
+              actions={[{ label: t('board.newBoard'), primary: true, onClick: () => addBoard(), title: t('board.newBoardTitle') }]}
             />
           </Panel>
         )}
@@ -449,7 +453,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
       {/* empty-board cue (pointer-events-none so right-click still reaches the pane) */}
       {nodes.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="rounded-lg border border-dashed border-border bg-panel/70 px-4 py-2 text-sm text-faint">Right-click the board to add your first note</span>
+          <span className="rounded-lg border border-dashed border-border bg-panel/70 px-4 py-2 text-sm text-faint">{t('board.emptyCue')}</span>
         </div>
       )}
       </div>
@@ -471,6 +475,7 @@ function Canvas({ board, epoch, onChange }: { board: CorkBoard; epoch: number; o
 
 // ── panel: the active board's canvas (state lives in the isolated corkboard store) ──
 export function CorkboardPanel(): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const file = useCorkboard((s) => s.file)
   const load = useCorkboard((s) => s.load)
   const updateActiveBoard = useCorkboard((s) => s.updateActiveBoard)
@@ -485,7 +490,7 @@ export function CorkboardPanel(): JSX.Element {
   useUndoTarget(true, { undo, redo })
 
   const active = file ? file.boards.find((b) => b.id === file.activeId) ?? file.boards[0] : undefined
-  if (!active) return <div className="flex h-full items-center justify-center text-sm text-faint">Loading corkboard…</div>
+  if (!active) return <div className="flex h-full items-center justify-center text-sm text-faint">{t('loading')}</div>
 
   return (
     <div {...regionAttrs('corkboardPanel')} className="relative h-full w-full">
@@ -516,6 +521,7 @@ function CorkboardFeed({
   onCloseAll: () => void
   onCollapse: () => void
 }): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const startResize = (e: ReactMouseEvent): void => {
     e.preventDefault()
     const startX = e.clientX
@@ -531,15 +537,15 @@ function CorkboardFeed({
   return (
     <div className="relative flex h-full shrink-0 flex-col border-l border-border bg-panel" style={{ width }}>
       {/* left-edge resize handle */}
-      <div onMouseDown={startResize} title="Drag to resize" className="absolute -left-1 top-0 z-10 h-full w-2 cursor-col-resize" />
+      <div onMouseDown={startResize} title={t('feed.dragResize')} className="absolute -left-1 top-0 z-10 h-full w-2 cursor-col-resize" />
       <div className="flex h-9 shrink-0 items-center gap-2 border-b border-border px-3">
-        <span className="type-label min-w-0 flex-1 truncate text-muted-foreground">Feed · {cardIds.length}</span>
+        <span className="type-label min-w-0 flex-1 truncate text-muted-foreground">{t('feed.title', { n: cardIds.length })}</span>
         {cardIds.length > 1 && (
-          <button onClick={onCloseAll} title="Close all posts" className="shrink-0 text-[11px] text-faint transition-colors hover:text-foreground">
-            Close all
+          <button onClick={onCloseAll} title={t('feed.closeAllTitle')} className="shrink-0 text-[11px] text-faint transition-colors hover:text-foreground">
+            {t('feed.closeAll')}
           </button>
         )}
-        <button onClick={onCollapse} title="Collapse" className="shrink-0 text-faint transition-colors hover:text-foreground">
+        <button onClick={onCollapse} title={t('feed.collapse')} className="shrink-0 text-faint transition-colors hover:text-foreground">
           <PanelRightClose className="size-4" />
         </button>
       </div>
@@ -554,6 +560,7 @@ function CorkboardFeed({
 
 // one "post" in the feed — a card's header + its note thread (comments) + reply box.
 function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const { updateNodeData } = useReactFlow()
   const node = useNodesData(cardId)
   const d = (node?.data ?? {}) as CardData
@@ -607,15 +614,15 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
         if (scene) return { path: scene.path, kind: 'scene', title: scene.title, missing: false }
         const page = worldPages.find((p) => p.path === reading.id)
         if (page) return { path: page.path, kind: page.kind, title: page.name, missing: false }
-        return { path: reading.id, kind: 'scene', title: reading.label ?? 'Page', missing: true }
+        return { path: reading.id, kind: 'scene', title: reading.label ?? t('post.pageFallback'), missing: true }
       })()
     : null
 
   if (!node)
     return (
       <div className="flex items-center gap-2 rounded-lg border border-dashed border-border px-3 py-2 text-xs text-faint">
-        <span className="flex-1">Card removed.</span>
-        <button onClick={onClose} title="Remove from feed" className="hover:text-foreground">
+        <span className="flex-1">{t('post.cardRemoved')}</span>
+        <button onClick={onClose} title={t('post.removeFromFeed')} className="hover:text-foreground">
           <X className="size-3.5" />
         </button>
       </div>
@@ -630,10 +637,10 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
           value={d.title ?? ''}
           onChange={(e) => updateNodeData(cardId, { title: e.target.value.slice(0, MAX_CORK_TITLE) })}
           maxLength={MAX_CORK_TITLE}
-          placeholder="Untitled card"
+          placeholder={t('card.untitled')}
           className="min-w-0 flex-1 truncate bg-transparent text-[13px] font-medium text-foreground outline-none placeholder:font-normal placeholder:text-faint"
         />
-        <button onClick={onClose} title="Remove from feed" className="shrink-0 text-faint transition-colors hover:text-foreground">
+        <button onClick={onClose} title={t('post.removeFromFeed')} className="shrink-0 text-faint transition-colors hover:text-foreground">
           <X className="size-3.5" />
         </button>
       </div>
@@ -643,12 +650,12 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
           <RefChip key={r.id} r={r} priority={i === 0 && refs.length > 1} onOpen={() => setReading(r)} onRemove={() => removeRef(r.id)} onPromote={() => promoteRef(r.id)} />
         ))}
         {refs.length > 1 && (
-          <button onClick={clearRefs} title="Remove all links" className="text-[10px] text-faint transition-colors hover:text-flag">
-            Clear
+          <button onClick={clearRefs} title={t('post.removeAllLinks')} className="text-[10px] text-faint transition-colors hover:text-flag">
+            {t('post.clear')}
           </button>
         )}
         {refsFull ? (
-          <span className="text-[10px] text-faint">{MAX_CORK_CARD_REFS} links max</span>
+          <span className="text-[10px] text-faint">{t('post.linksMax', { max: MAX_CORK_CARD_REFS })}</span>
         ) : attaching ? (
           <div className="relative">
             <input
@@ -656,7 +663,7 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onBlur={() => window.setTimeout(() => setAttaching(false), 150)}
-              placeholder="Search pages…"
+              placeholder={t('post.searchPages')}
               className="w-40 rounded border border-border bg-canvas px-1.5 py-0.5 text-[11px] outline-none"
             />
             {candidates.length > 0 && (
@@ -679,27 +686,27 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
             )}
           </div>
         ) : (
-          <button onClick={() => setAttaching(true)} title="Attach a page" className="flex items-center gap-1 rounded-full border border-dashed border-border px-2 py-0.5 text-[10px] text-faint transition-colors hover:text-foreground">
-            <Paperclip className="size-2.5" /> Attach
+          <button onClick={() => setAttaching(true)} title={t('post.attachTitle')} className="flex items-center gap-1 rounded-full border border-dashed border-border px-2 py-0.5 text-[10px] text-faint transition-colors hover:text-foreground">
+            <Paperclip className="size-2.5" /> {t('post.attach')}
           </button>
         )}
       </div>
       <div className="space-y-2 p-2.5">
         {notes.length > 1 && (
           <div className="flex items-center justify-end">
-            <button onClick={clearNotes} title="Delete all notes" className="text-[10px] text-faint transition-colors hover:text-flag">
-              Clear all
+            <button onClick={clearNotes} title={t('post.deleteAllNotes')} className="text-[10px] text-faint transition-colors hover:text-flag">
+              {t('post.clearAll')}
             </button>
           </div>
         )}
         {notes.length === 0 ? (
-          <div className="text-xs text-faint">No notes yet — add one below.</div>
+          <div className="text-xs text-faint">{t('post.noNotes')}</div>
         ) : (
           notes.map((n) => (
             <div key={n.id} className="group rounded-md border border-border bg-canvas/40 px-3 py-2">
               <div className="flex items-center gap-1.5 text-[10px] text-faint">
-                <span>{timeAgo(n.createdAt) || 'note'}</span>
-                <button onClick={() => deleteNote(n.id)} title="Delete note" className="ml-auto opacity-0 transition-opacity hover:text-flag group-hover:opacity-100">
+                <span>{timeAgo(t, n.createdAt) || t('post.noteFallback')}</span>
+                <button onClick={() => deleteNote(n.id)} title={t('post.deleteNote')} className="ml-auto opacity-0 transition-opacity hover:text-flag group-hover:opacity-100">
                   <Trash2 className="size-3" />
                 </button>
               </div>
@@ -717,7 +724,7 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
                 addNote()
               }
             }}
-            placeholder={full ? 'Note limit reached (50)' : 'Add a note… (⌘↵)'}
+            placeholder={full ? t('post.noteLimit', { max: 50 }) : t('post.addNotePlaceholder')}
             disabled={full}
             maxLength={280}
             rows={2}
@@ -725,8 +732,8 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
           />
           <div className="flex items-center justify-between border-t border-border/60 px-2 py-1">
             <span className="text-[10px] tabular-nums text-faint">{reply.length}/280</span>
-            <button onClick={addNote} disabled={!reply.trim() || full} title="Add note (⌘↵)" className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-thread transition-colors hover:bg-thread/10 disabled:opacity-40">
-              <Send className="size-3.5" /> Add
+            <button onClick={addNote} disabled={!reply.trim() || full} title={t('post.addNoteTitle')} className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px] text-thread transition-colors hover:bg-thread/10 disabled:opacity-40">
+              <Send className="size-3.5" /> {t('post.add')}
             </button>
           </div>
         </div>
@@ -739,54 +746,26 @@ function CorkboardPost({ cardId, selected, onClose }: { cardId: string; selected
 }
 
 function CorkboardHelpDialog({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('corkboard')
+  const rowsOf = (key: string): [string, ReactNode][] =>
+    (t(key, { returnObjects: true }) as { k: string; v: string }[]).map((r) => [r.k, r.v] as [string, ReactNode])
   return (
-    <Dialog open={open} onClose={onClose} title="Corkboard — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="Add & edit">
-          <HelpTable
-            rows={[
-              ['Right-click the board', 'Add a card where you click'],
-              ['Type in the card header', 'Name it — a headline like “Childe is a secret Fatui”'],
-              ['Double-click a card', 'Open it as a post in the feed — add notes, attach pages'],
-              ['Drag the header grip', 'Move a card'],
-              ['Drag a corner', 'Resize a card'],
-              ['Hover → ×', 'Delete a card']
-            ]}
-          />
+        <HelpSection title={t('help.addEdit.title')}>
+          <HelpTable rows={rowsOf('help.addEdit.rows')} />
         </HelpSection>
-        <HelpSection title="Link pages">
-          <HelpTable
-            rows={[
-              ['Attach (in a post)', 'Search scenes & world pages — chips are colored by type'],
-              ['⭐ on a chip', 'Make it the priority link (leads the row)'],
-              ['Click a chip', 'Open that scene/page']
-            ]}
-          />
+        <HelpSection title={t('help.linkPages.title')}>
+          <HelpTable rows={rowsOf('help.linkPages.rows')} />
         </HelpSection>
-        <HelpSection title="Connect">
-          <HelpTable
-            rows={[
-              ['Right dot → a card', 'Draw a connection — release anywhere on the target card'],
-              ['Select a group → Connect all to', 'Link every selected card to one target (many-to-one)']
-            ]}
-          />
+        <HelpSection title={t('help.connect.title')}>
+          <HelpTable rows={rowsOf('help.connect.rows')} />
         </HelpSection>
-        <HelpSection title="Select a group">
-          <HelpTable
-            rows={[
-              ['⇧ drag', 'Draw a selection box — any card the box touches is picked up'],
-              ['Group float (top-right)', 'Connect all to · Set group color · Delete'],
-              ['Backspace / Delete', 'Remove the selection']
-            ]}
-          />
+        <HelpSection title={t('help.selectGroup.title')}>
+          <HelpTable rows={rowsOf('help.selectGroup.rows')} />
         </HelpSection>
-        <HelpSection title="Boards">
-          <HelpTable
-            rows={[
-              ['Left sidebar', 'Switch, rename, or delete boards'],
-              ['100 cards · 100 boards', 'Open another board when one fills up']
-            ]}
-          />
+        <HelpSection title={t('help.boards.title')}>
+          <HelpTable rows={rowsOf('help.boards.rows')} />
         </HelpSection>
       </div>
     </Dialog>

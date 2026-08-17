@@ -15,7 +15,8 @@
  */
 
 import { JSX, useEffect, useMemo, useState } from 'react'
-import { ArrowUpRight, Check, Circle, ImagePlus, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { ArrowUpRight, Check, Circle, X } from 'lucide-react'
 import { dominantSpeaker } from '@/lib/analysis/pov'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -25,6 +26,7 @@ import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/button'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
+import { MediaGallery } from '@/components/editor/MediaGallery'
 import { bodyHeadings } from '@/lib/fountain/wikiSerializer'
 import type { WorldPage } from '@shared/ipc'
 import { entityVisual } from '@/config/entityVisual'
@@ -94,6 +96,7 @@ export function PropertyDialog({
   open: boolean
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const activePage = useWorkspace((s) => s.activePage)
   const frontmatter = useWorkspace((s) => s.frontmatter)
   const setFrontmatter = useWorkspace((s) => s.setFrontmatter)
@@ -110,7 +113,7 @@ export function PropertyDialog({
     return id ? worldPages.find((p) => p.id === id)?.name : undefined
   }, [kind, frontmatter.scene_id, timelineGraph, worldPages])
   const groups = useMemo(() => groupFields(schema.fields), [schema])
-  const title = kind === 'scene' ? 'Scene properties' : `${cap(kind)} properties`
+  const title = kind === 'scene' ? t('property.titleScene') : t('property.titleOther', { kind: cap(kind) })
 
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [phase, setPhase] = useState<string>('draft')
@@ -157,15 +160,15 @@ export function PropertyDialog({
       title={title}
       footer={
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-          <Button size="sm" onClick={() => void apply()}>Apply</Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>{t('action.cancel')}</Button>
+          <Button size="sm" onClick={() => void apply()}>{t('action.apply')}</Button>
         </DialogFooter>
       }
     >
       <div className="space-y-3">
           {/* Phase pill */}
           <div>
-            <Label>Phase</Label>
+            <Label>{t('property.phase')}</Label>
             <div className="mt-1 flex gap-0.5 rounded-md border border-border p-0.5">
               {CONTENT_PHASES.map((p) => (
                 <button
@@ -199,7 +202,7 @@ export function PropertyDialog({
                   <EntityPicker
                     key={f.key}
                     label={f.label}
-                    emptyHint={`No ${ref.kind} pages in world/${ref.kind}s yet.`}
+                    emptyHint={t('property.noPages', { kind: ref.kind })}
                     kind={ref.kind}
                     single={ref.single}
                     defaultHint={f.key === 'pov' ? povDefaultName : undefined}
@@ -230,14 +233,15 @@ export function PropertyDialog({
  * schema detector so the author sees coverage at a glance.
  */
 function SectionStatus({ sections }: { sections: SectionSpec[] }): JSX.Element {
+  const { t } = useTranslation('editor')
   const body = useWorkspace((s) => s.body)
   const present = useMemo(() => new Set(bodyHeadings(body).map((h) => h.toLowerCase())), [body])
 
   return (
     <div className="pt-1">
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-faint">Sections</div>
+      <div className="text-[11px] font-semibold uppercase tracking-wide text-faint">{t('property.sections')}</div>
       <p className="mb-1.5 mt-0.5 text-[10px] text-faint">
-        On the page below. Add one by typing <span className="font-mono">/</span> in the Write tab.
+        {t('property.sectionsHintPre')} <span className="font-mono">/</span> {t('property.sectionsHintPost')}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {sections.map((s) => {
@@ -275,15 +279,13 @@ function readImages(fm: Record<string, unknown>): string[] {
  * the multi-select picker; remove per image; the first is badged.
  */
 function MediaRow(): JSX.Element {
+  const { t } = useTranslation('editor')
   const frontmatter = useWorkspace((s) => s.frontmatter)
   const setFrontmatter = useWorkspace((s) => s.setFrontmatter)
   const saveScene = useWorkspace((s) => s.saveScene)
   const refreshWorldPages = useWorkspace((s) => s.refreshWorldPages)
   const refreshStoryTree = useWorkspace((s) => s.refreshStoryTree)
   const kind = useWorkspace((s) => s.activePage?.kind ?? 'character')
-  const [busy, setBusy] = useState(false)
-  const [dragOver, setDragOver] = useState(false)
-
   const isScene = kind === 'scene'
   // Scenes are keyed by scene_id; world pages by id. Assets land in content/assets/{pageId}/.
   const pageId = String(frontmatter.scene_id ?? frontmatter.id ?? '')
@@ -305,86 +307,22 @@ function MediaRow(): JSX.Element {
     else await refreshWorldPages()
   }
 
-  async function add(): Promise<void> {
-    setBusy(true)
-    try {
-      const added = await window.nvs.importImages(pageId, kind)
-      if (added.length) await commit([...images, ...added])
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const IMAGE_EXT = /\.(jpe?g|png|gif|webp)$/i
-
-  async function addFromDrop(files: FileList): Promise<void> {
-    const paths = Array.from(files)
-      .filter((f) => IMAGE_EXT.test(f.name))
-      .map((f) => window.nvs.getPathForFile(f))
-    if (!paths.length) return
-    setBusy(true)
-    try {
-      const added = await window.nvs.importImagePaths(pageId, kind, paths)
-      if (added.length) await commit([...images, ...added])
-    } finally {
-      setBusy(false)
-    }
-  }
-
   return (
     <div>
-      <Label>Media</Label>
-      <div
-        onDragOver={(e) => {
-          e.preventDefault()
-          e.dataTransfer.dropEffect = 'copy'
-          setDragOver(true)
-        }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragOver(false)
-          void addFromDrop(e.dataTransfer.files)
-        }}
-        className={cn(
-          'mt-1 flex flex-wrap items-center gap-2 rounded-md',
-          dragOver && 'outline-2 outline-offset-2 outline-primary'
-        )}
-      >
-        {images.map((rel, i) => (
-          <span
-            key={rel}
-            className="group relative size-14 overflow-hidden rounded-md border border-border bg-panel-soft"
-          >
-            <img src={`nvs-asset://${rel}`} alt="" className="h-full w-full object-cover" />
-            {i === 0 && (
-              <span className="absolute inset-x-0 bottom-0 bg-black/55 text-center text-[8px] font-medium uppercase tracking-wide text-white">
-                {isScene ? 'cover' : 'avatar'}
-              </span>
-            )}
-            <button
-              title="Remove"
-              onClick={() => void commit(images.filter((x) => x !== rel))}
-              className="absolute right-0.5 top-0.5 rounded bg-black/55 p-0.5 text-white opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <X className="size-3" />
-            </button>
-          </span>
-        ))}
-        <button
-          disabled={busy}
-          onClick={() => void add()}
-          className={cn(
-            'flex size-14 shrink-0 items-center justify-center rounded-md border border-dashed border-border text-faint transition-colors hover:bg-panel-soft hover:text-foreground',
-            busy && 'opacity-50'
-          )}
-          title="Add images"
-        >
-          <ImagePlus className="size-5" />
-        </button>
+      <Label>{t('property.media')}</Label>
+      <div className="mt-1">
+        <MediaGallery
+          images={images}
+          pageId={pageId}
+          kind={kind}
+          firstBadge={isScene ? t('property.cover') : t('property.avatar')}
+          cropTitle={isScene ? t('property.cropCover') : t('property.cropAvatar')}
+          cropAspect={isScene ? 16 / 9 : 1}
+          onCommit={commit}
+        />
       </div>
       <p className="mt-1 text-[10px] text-faint">
-        First image is the {isScene ? 'cover shown on the timeline' : 'avatar used in lists'}.
+        {isScene ? t('property.firstImageScene') : t('property.firstImageWorld')}
       </p>
     </div>
   )
@@ -417,6 +355,7 @@ function EntityPicker({
   onChange: (v: string) => void
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const openPage = useWorkspace((s) => s.openPage)
   const [q, setQ] = useState('')
   const [focused, setFocused] = useState(false)
@@ -446,7 +385,7 @@ function EntityPicker({
       <Label>{single ? label : `${label} · ${selected.length}`}</Label>
 
       {single && selected.length === 0 && defaultHint && (
-        <p className="mb-1 text-[11px] text-faint">Defaults to <span className="text-muted-foreground">{defaultHint}</span> (the scene’s main speaker) — pick to override.</p>
+        <p className="mb-1 text-[11px] text-faint">{t('property.defaultsToPre')} <span className="text-muted-foreground">{defaultHint}</span> {t('property.defaultsToPost')}</p>
       )}
 
       {selected.length > 0 && (
@@ -465,7 +404,7 @@ function EntityPicker({
                 <span className={cn('py-1 pl-1', p ? 'pr-1' : 'pr-1 font-mono')}>{p?.name ?? id}</span>
                 {p && (
                   <button
-                    title="Open page"
+                    title={t('property.openPage')}
                     onClick={() => {
                       void openPage({ path: p.path, title: p.name, kind: p.kind })
                       onClose()
@@ -475,7 +414,7 @@ function EntityPicker({
                     <ArrowUpRight className="size-3" />
                   </button>
                 )}
-                <button title="Remove" onClick={() => remove(id)} className="pr-1.5 pl-0.5 opacity-70 hover:opacity-100">
+                <button title={t('property.remove')} onClick={() => remove(id)} className="pr-1.5 pl-0.5 opacity-70 hover:opacity-100">
                   <X className="size-3" />
                 </button>
               </span>
@@ -486,7 +425,7 @@ function EntityPicker({
 
       <div className="relative">
         <Input
-          placeholder={pages.length === 0 ? emptyHint : `@ search ${label.toLowerCase()}…`}
+          placeholder={pages.length === 0 ? emptyHint : t('property.searchPlaceholder', { label: label.toLowerCase() })}
           disabled={pages.length === 0}
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -532,6 +471,7 @@ function FieldRow({
   value: string
   onChange: (v: string) => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   if (field.readOnly) {
     return (
       <div>
@@ -540,7 +480,7 @@ function FieldRow({
       </div>
     )
   }
-  const label = isList(field) ? `${field.label} · comma-separated` : field.label
+  const label = isList(field) ? `${field.label} · ${t('property.commaSeparated')}` : field.label
   return (
     <div>
       <Label>{label}</Label>
@@ -550,9 +490,9 @@ function FieldRow({
         <Select
           value={value}
           onChange={onChange}
-          placeholder={field.placeholder ?? 'Select…'}
+          placeholder={field.placeholder ?? t('property.select')}
           options={[
-            { value: '', label: field.placeholder ?? 'None' },
+            { value: '', label: field.placeholder ?? t('property.none') },
             ...field.options.map((o) => ({ value: o, label: o.charAt(0).toUpperCase() + o.slice(1) })),
             ...(value && !field.options.includes(value) ? [{ value, label: value }] : [])
           ]}

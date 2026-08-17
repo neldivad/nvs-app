@@ -9,6 +9,7 @@
  * and click handlers. Pure/presentational: no store reads.
  */
 import { memo, useMemo, useRef, type JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   ReactFlow,
   Background,
@@ -84,6 +85,7 @@ interface CellNodeData extends Record<string, unknown> {
 /** One cell rendered as an xyflow node. Hidden top/bottom handles anchor the edges (bottom-center → top-center),
  *  so the connectors read straight down the spine exactly like the old SVG board. */
 const CellCardNode = memo(function CellCardNode({ data }: NodeProps): JSX.Element {
+  const { t } = useTranslation('timeline')
   const d = data as CellNodeData
   const { card, state: st, isFork, isMerge } = d
   const folder = card.kind === 'folder'
@@ -103,8 +105,8 @@ const CellCardNode = memo(function CellCardNode({ data }: NodeProps): JSX.Elemen
       <Handle type="source" position={Position.Bottom} isConnectable={false} style={{ opacity: 0, pointerEvents: 'none' }} />
       {(isFork || isMerge) && (
         <div className="absolute -top-1.5 right-1.5 flex gap-0.5">
-          {isMerge && <span title="Merge point — routes converge here" className="rounded-full bg-panel p-0.5 text-faint shadow-sm"><GitMerge className="size-3" /></span>}
-          {isFork && <span title="Branch point — the route splits here" className="rounded-full bg-panel p-0.5 text-faint shadow-sm"><GitBranch className="size-3" /></span>}
+          {isMerge && <span title={t('cell.mergePoint')} className="rounded-full bg-panel p-0.5 text-faint shadow-sm"><GitMerge className="size-3" /></span>}
+          {isFork && <span title={t('cell.branchPoint')} className="rounded-full bg-panel p-0.5 text-faint shadow-sm"><GitBranch className="size-3" /></span>}
         </div>
       )}
       {folder ? (

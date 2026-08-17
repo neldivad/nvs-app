@@ -26,6 +26,7 @@ import {
   type ReactElement,
   type ReactNode
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 const DOCK_HEIGHT = 96
@@ -64,6 +65,7 @@ export function Dock({
   distance = DEFAULT_DISTANCE,
   panelHeight = DEFAULT_PANEL_HEIGHT
 }: DockProps): JSX.Element {
+  const { t } = useTranslation('dock')
   const mouseX = useMotionValue(Infinity)
   const isHovered = useMotionValue(0)
 
@@ -96,7 +98,7 @@ export function Dock({
         )}
         style={{ height: panelHeight }}
         role="toolbar"
-        aria-label="Application dock"
+        aria-label={t('label')}
       >
         <DockContext.Provider value={{ mouseX, spring, distance, magnification }}>{children}</DockContext.Provider>
       </motion.div>

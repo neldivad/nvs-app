@@ -1,0 +1,72 @@
+{
+  "title": "Prompts",
+  "search": "Search prompts…",
+  "filter": {
+    "all": "all",
+    "maintenance": "maintenance",
+    "generation": "generation",
+    "analysis": "analysis"
+  },
+  "new": "New",
+  "newTooltip": "New prompt",
+  "untitled": "Untitled",
+  "builtIn": "Built-in",
+  "copySuffix": "copy",
+  "empty": {
+    "noneYet": "No prompts yet — add one with New.",
+    "noMatch": "No prompts match.",
+    "selectBefore": "Select a prompt to inspect what the AI is told — or make your own with ",
+    "selectNew": "New",
+    "selectAfter": "."
+  },
+  "category": {
+    "maintenance": "Maintenance",
+    "generation": "Generation",
+    "analysis": "Analysis"
+  },
+  "categoryHint": {
+    "maintenance": "fix / clean the page",
+    "generation": "create new content",
+    "analysis": "ask the work — runs in chat"
+  },
+  "kind": {
+    "analysis": "Analysis — answers in chat",
+    "replace": "Replace — rewrites the whole page",
+    "append": "Append — adds to the end of the page"
+  },
+  "detail": {
+    "replaces": "Replaces the page",
+    "appends": "Appends to the page",
+    "answersInChat": "Answers in chat",
+    "whatToldLabel": "What the AI is told",
+    "builtInNote": "Built-in — read-only. Duplicate to make it yours.",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "edit": "Edit"
+  },
+  "editor": {
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Tighten dialogue",
+    "promptLabel": "Prompt — what the AI is told",
+    "promptPlaceholder": "e.g. Rewrite this scene's dialogue to be terser — cut filler, keep each line in the speaker's voice. Don't change the plot.",
+    "promptHelp": "Write it like you're telling the AI what to do. The page's text and live canon are added automatically when it runs.",
+    "runs": "Runs",
+    "output": "Output",
+    "replacePage": "Replace page",
+    "append": "Append",
+    "replaceTooltip": "Rewrites the whole page",
+    "appendTooltip": "Adds to the end of the page",
+    "answersInChat": "Answers in chat.",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "preview": {
+    "toggle": "Full run-time template",
+    "formatFor": "format for:",
+    "scene": "scene",
+    "world": "world",
+    "filledPerRun": "= filled per run",
+    "system": "System",
+    "user": "User"
+  }
+}

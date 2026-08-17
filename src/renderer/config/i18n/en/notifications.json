@@ -1,0 +1,20 @@
+{
+  "title": "Notifications",
+  "clearAll": "Clear all",
+  "empty": "You're all caught up.",
+  "outdated_one": "{{count}} scene outdated",
+  "outdated_other": "{{count}} scenes outdated",
+  "outdatedBody": "Some scenes changed since they were last read into the analysis.",
+  "openAnalysis": "Open Analysis",
+  "copy": "Copy",
+  "copied": "Copied",
+  "copyAria": "Copy notification",
+  "dismiss": "Dismiss",
+  "dismissAria": "Dismiss notification",
+  "open": "Open",
+  "update": {
+    "title": "Update available — {{version}}",
+    "body": "You're on {{current}}. Download the new version to update.",
+    "action": "Download"
+  }
+}

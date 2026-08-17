@@ -1,0 +1,15 @@
+{
+  "composition": {
+    "title": "Composition mode",
+    "label": "Composition"
+  },
+  "settings": {
+    "title": "Settings",
+    "label": "Settings"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light theme",
+    "dark": "Dark theme"
+  }
+}

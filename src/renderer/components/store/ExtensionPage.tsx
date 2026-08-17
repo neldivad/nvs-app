@@ -5,6 +5,7 @@
  * and only get the capabilities their manifest declares.
  */
 import { useEffect, useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Bot, Check, Download, Power, Puzzle, ShieldCheck, TimerReset, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -16,6 +17,7 @@ import type { ExtensionInfo } from '@shared/ipc'
 type SubTab = 'browse' | 'installed' | 'updates'
 
 export function ExtensionPage({ search }: { search: string }): JSX.Element {
+  const { t } = useTranslation('extensions')
   const [sub, setSub] = useState<SubTab>('browse')
   const [exts, setExts] = useState<ExtensionInfo[]>([])
   const [extErr, setExtErr] = useState<Record<string, string>>({})
@@ -43,13 +45,13 @@ export function ExtensionPage({ search }: { search: string }): JSX.Element {
 
   const detailActions = (x: ExtensionInfo): JSX.Element =>
     !x.installed ? (
-      <Button size="sm" disabled={!x.check.ok} title={x.check.ok ? 'Grant the listed capabilities and install' : x.check.reasons.join(' · ')} onClick={() => install(x.id)}>
-        <Download className="size-3.5" /> Install
+      <Button size="sm" disabled={!x.check.ok} title={x.check.ok ? t('installReady') : x.check.reasons.join(' · ')} onClick={() => install(x.id)}>
+        <Download className="size-3.5" /> {t('install')}
       </Button>
     ) : (
       <>
         <EnabledToggle enabled={x.enabled !== false} onChange={(v) => setEnabled(x.id, v)} />
-        <Button size="sm" variant="outline" onClick={() => uninstall(x.id)} title="Remove this extension"><Trash2 className="size-3.5" /> Uninstall</Button>
+        <Button size="sm" variant="outline" onClick={() => uninstall(x.id)} title={t('uninstallTitle')}><Trash2 className="size-3.5" /> {t('uninstall')}</Button>
       </>
     )
 
@@ -64,14 +66,14 @@ export function ExtensionPage({ search }: { search: string }): JSX.Element {
         title={selected.name}
         subtitle={`v${selected.version} · ${selected.kind}`}
         meta={<>
-          {selected.check.ok ? <span className="flex items-center gap-0.5 text-ok"><ShieldCheck className="size-3" /> compatible</span> : <span className="text-flag" title={selected.check.reasons.join(' · ')}>incompatible</span>}
-          {selected.installed && (disabled ? <span className="flex items-center gap-0.5 text-faint">disabled</span> : <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> installed</span>)}
+          {selected.check.ok ? <span className="flex items-center gap-0.5 text-ok"><ShieldCheck className="size-3" /> {t('status.compatible')}</span> : <span className="text-flag" title={selected.check.reasons.join(' · ')}>{t('status.incompatible')}</span>}
+          {selected.installed && (disabled ? <span className="flex items-center gap-0.5 text-faint">{t('status.disabled')}</span> : <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> {t('status.installed')}</span>)}
         </>}
         actions={detailActions(selected)}
       >
         {selected.description && <p className="type-body-sm text-muted-foreground">{selected.description}</p>}
         <PermissionList required={selected.capabilities.required} optional={selected.capabilities.optional} />
-        {!selected.check.ok && <p className="mt-3 type-caption text-flag">Incompatible: {selected.check.reasons.join(' · ')}</p>}
+        {!selected.check.ok && <p className="mt-3 type-caption text-flag">{t('incompatibleReasons', { reasons: selected.check.reasons.join(' · ') })}</p>}
         {extErr[selected.id] && <p className="mt-2 type-caption text-flag">{extErr[selected.id]}</p>}
       </StoreDetail>
     )
@@ -83,9 +85,9 @@ export function ExtensionPage({ search }: { search: string }): JSX.Element {
       <SubTabs sub={sub} setSub={setSub} installedCount={installed.length} />
       {sub !== 'updates' && (!q || 'claude desktop plugin'.includes(q)) && <ClaudePluginCard />}
       {sub === 'updates' ? (
-        <Empty text="No updates available. (Update detection needs the registry-vs-installed version check — coming with the extension registry.)" />
+        <Empty text={t('empty.updates')} />
       ) : list.length === 0 ? (
-        <Empty text={q ? 'No extensions match your search.' : sub === 'installed' ? 'No extensions installed yet.' : 'No extensions found (bundled sample missing?).'} />
+        <Empty text={q ? t('empty.search') : sub === 'installed' ? t('empty.installed') : t('empty.browse')} />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {list.map((x) => (
@@ -96,8 +98,8 @@ export function ExtensionPage({ search }: { search: string }): JSX.Element {
               icon={TimerReset}
               title={x.name}
               subtitle={`v${x.version} · ${x.kind}`}
-              badge={x.installed ? <span className="flex items-center gap-0.5 text-[10px] text-ok" title="Installed"><Check className="size-3.5 shrink-0" /></span> : x.check.ok ? <span title="Compatible"><ShieldCheck className="size-3.5 shrink-0 text-ok" /></span> : <span className="text-[9px] text-flag" title={x.check.reasons.join(' · ')}>incompatible</span>}
-              meta={<><PermissionSummary required={x.capabilities.required} optional={x.capabilities.optional} />{x.installed && (x.enabled === false ? <span className="text-faint">disabled</span> : <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> installed</span>)}</>}
+              badge={x.installed ? <span className="flex items-center gap-0.5 text-[10px] text-ok" title={t('status.installedTitle')}><Check className="size-3.5 shrink-0" /></span> : x.check.ok ? <span title={t('status.compatibleTitle')}><ShieldCheck className="size-3.5 shrink-0 text-ok" /></span> : <span className="text-[9px] text-flag" title={x.check.reasons.join(' · ')}>{t('status.incompatible')}</span>}
+              meta={<><PermissionSummary required={x.capabilities.required} optional={x.capabilities.optional} />{x.installed && (x.enabled === false ? <span className="text-faint">{t('status.disabled')}</span> : <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> {t('status.installed')}</span>)}</>}
               onOpen={() => setSelectedId(x.id)}
             />
           ))}
@@ -113,16 +115,17 @@ export function ExtensionPage({ search }: { search: string }): JSX.Element {
  * capabilities — it teaches Claude to drive NVS. Its action is Download, not Install; Claude installs it.
  */
 function ClaudePluginCard(): JSX.Element {
+  const { t } = useTranslation('extensions')
   const [state, setState] = useState<'idle' | 'busy' | 'done' | 'error'>('idle')
   const [err, setErr] = useState('')
   const get = async (): Promise<void> => {
     setState('busy')
     try {
-      if (!window.nvs.generateClaudePlugin) throw new Error('Restart NVS to pick up this feature.')
+      if (!window.nvs.generateClaudePlugin) throw new Error(t('claudePlugin.restart'))
       const r = await window.nvs.generateClaudePlugin()
       if (r.ok) setState('done')
       else if (r.error === 'cancelled') setState('idle')
-      else { setErr(r.error ?? 'could not build the plugin'); setState('error') }
+      else { setErr(r.error ?? t('claudePlugin.buildError')); setState('error') }
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e)); setState('error')
     }
@@ -132,18 +135,18 @@ function ClaudePluginCard(): JSX.Element {
       <Bot className="size-5 shrink-0 text-lore" />
       <div className="min-w-0 flex-1">
         <div className="type-card-title flex flex-wrap items-center gap-2">
-          Claude Desktop plugin
-          <span className="rounded-full bg-lore/15 px-1.5 py-0.5 text-[10px] font-medium text-lore">built in</span>
+          {t('claudePlugin.title')}
+          <span className="rounded-full bg-lore/15 px-1.5 py-0.5 text-[10px] font-medium text-lore">{t('claudePlugin.builtIn')}</span>
         </div>
         <p className="type-caption mt-0.5 text-muted-foreground">
-          Ask Claude about your novel — threads, plot holes, any scene. Download it, add it to Claude, type <code>/nvs</code>.
+          {t('claudePlugin.desc')} <code>/nvs</code>.
         </p>
         {state === 'error' && <p className="type-caption mt-1 text-flag">{err}</p>}
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        {state === 'done' && <span className="type-caption flex items-center gap-1 text-ok"><Check className="size-3.5" /> Saved</span>}
+        {state === 'done' && <span className="type-caption flex items-center gap-1 text-ok"><Check className="size-3.5" /> {t('claudePlugin.saved')}</span>}
         <Button size="sm" disabled={state === 'busy'} onClick={() => void get()}>
-          <Download className="size-3.5" /> {state === 'busy' ? 'Saving…' : 'Download'}
+          <Download className="size-3.5" /> {state === 'busy' ? t('claudePlugin.saving') : t('claudePlugin.download')}
         </Button>
       </div>
     </div>
@@ -153,26 +156,28 @@ function ClaudePluginCard(): JSX.Element {
 /** Enable/disable pill — the ambient (ui) extension's on/off; also gates an active one's availability. Toggling
  *  persists via setExtensionEnabled; no uninstall, no run. */
 function EnabledToggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }): JSX.Element {
+  const { t } = useTranslation('extensions')
   return (
     <button
       onClick={() => onChange(!enabled)}
-      title={enabled ? 'Enabled — click to disable' : 'Disabled — click to enable'}
+      title={enabled ? t('toggle.enabledTitle') : t('toggle.disabledTitle')}
       className={cn('flex items-center gap-1.5 rounded-md type-caption border px-2 py-1 transition-colors', enabled ? 'border-ok/40 text-ok hover:bg-ok/10' : 'border-border text-muted-foreground hover:text-foreground')}
     >
-      <Power className="size-3.5" /> {enabled ? 'Enabled' : 'Disabled'}
+      <Power className="size-3.5" /> {enabled ? t('toggle.enabled') : t('toggle.disabled')}
     </button>
   )
 }
 
 function SubTabs({ sub, setSub, installedCount }: { sub: SubTab; setSub: (t: SubTab) => void; installedCount: number }): JSX.Element {
-  const btn = (t: SubTab, label: string): JSX.Element => (
-    <button onClick={() => setSub(t)} className={cn('type-caption rounded-md px-2.5 py-1 transition-colors', sub === t ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}>{label}</button>
+  const { t } = useTranslation('extensions')
+  const btn = (tab: SubTab, label: string): JSX.Element => (
+    <button onClick={() => setSub(tab)} className={cn('type-caption rounded-md px-2.5 py-1 transition-colors', sub === tab ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}>{label}</button>
   )
   return (
     <div className="mb-4 flex items-center gap-1">
-      {btn('browse', 'Browse')}
-      {btn('installed', `Installed${installedCount ? ` · ${installedCount}` : ''}`)}
-      {btn('updates', 'Updates')}
+      {btn('browse', t('subtabs.browse'))}
+      {btn('installed', installedCount ? t('subtabs.installedCount', { n: installedCount }) : t('subtabs.installed'))}
+      {btn('updates', t('subtabs.updates'))}
     </div>
   )
 }

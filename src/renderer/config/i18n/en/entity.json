@@ -1,0 +1,63 @@
+{
+  "changes_one": "{{count}} change",
+  "changes_other": "{{count}} changes",
+  "sceneCount_one": "{{count}} scene",
+  "sceneCount_other": "{{count}} scenes",
+  "panel": {
+    "category": "Category",
+    "highlight": "Highlight",
+    "noJourneys": "— no journeys recorded yet",
+    "clear": "clear",
+    "rowNoFacet": "{{name}} — no {{facet}}",
+    "rowOpen": "{{name}} — open journey",
+    "bandTitle": "{{name}} · {{title}}: {{changes}}",
+    "entitiesNoun": "entities",
+    "range": "Range",
+    "all": "all",
+    "trimTip": "Trim entities by change count — drag the low thumb up to hide barely-tracked items and focus the busiest journeys.",
+    "railName": "Entity journey"
+  },
+  "detail": {
+    "openPage": "Open {{type}} page",
+    "changesHeading": "Changes",
+    "firstAppears": "First appears",
+    "lastAppears": "Last appears",
+    "appearsIn": "Appears in",
+    "journey": "Journey",
+    "changesThisChapter_one": "{{count}} change this chapter",
+    "changesThisChapter_other": "{{count}} changes this chapter"
+  },
+  "help": {
+    "title": "Entity journeys — how to read them",
+    "grid": {
+      "title": "The grid",
+      "items": [
+        "Each **row** is a tracked thing (item · faction · …); **columns** are scenes in reading order.",
+        "The **bands** group scenes into chapters — a thing's changes are accumulated per chapter, like a character's.",
+        "A band's **dots** are the changes in that chapter, colored by direction; click a row to read the journey."
+      ]
+    },
+    "moved": {
+      "title": "How it moved (every change is one of four)",
+      "rows": {
+        "● gain": "it strengthens / is acquired / rises",
+        "● loss": "it weakens / is destroyed / falls",
+        "● shift": "a lateral move — changes hands, is altered, realigns",
+        "● reveal": "it becomes known — exposed or discovered"
+      }
+    },
+    "facet": {
+      "title": "What changed (the facet)",
+      "items": [
+        "Facets are **per category**: an item moves along custody · state · location · function; a faction along power · standing · allegiance · territory.",
+        "Only **arc-worthy** things get journeys: it has a world page, recurs across scenes, or the analysis flagged it major."
+      ]
+    },
+    "provenance": {
+      "title": "Provenance",
+      "items": [
+        "The journey is the analysis agent's reading of the scenes — its understanding, not authored truth. Re-running analysis refreshes it."
+      ]
+    }
+  }
+}

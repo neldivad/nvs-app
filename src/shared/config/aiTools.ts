@@ -103,6 +103,8 @@ export const TOOL_CATALOG: ToolDef[] = [
   { name: 'listCharacterArcs', description: "Every character's windowed arc (T2 windows + events).", input: empty },
   { name: 'listCast', description: 'The cast by occurrence (T1): every character + scene counts (speaking + silently present), most-present first.', input: empty },
   { name: 'listStructuralIssues', description: 'The deterministic structural oracle: duplicate scene_ids, dangling/self leads_to, missing ids, orphan scenes/pages — each with severity + path.', input: empty },
+  { name: 'listChapterLedgers', description: 'The folded story hierarchy (fractal consolidation) — every chapter/act/book node as { chapterId, title, depth, status }; depth 0 = the top (whole-book) node. Read a node with readChapterLedger for the plot compressed to a page.', input: empty },
+  { name: 'readChapterLedger', description: "One folded unit's Ledger: { premise, conclusion, entries[{net(opened|advanced|resolved|opened-and-resolved|reopened), threadId, description}], openAtEnd[], flags[] } — the reconciled thread movements for that chapter/act/book, with long arcs closed at the level they resolve and openAtEnd = its still-dangling promises. Pass a unitId from listChapterLedgers (depth 0 = the whole book).", input: { unitId: z.string() } },
   {
     name: 'queryDb',
     description:
@@ -368,6 +370,8 @@ export const TOOL_CAPS: Readonly<Record<string, ToolCapability>> = {
   listCharacterArcs: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'read', profiles: BOTH },
   listCast: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'read', profiles: BOTH },
   listStructuralIssues: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'verify', profiles: BOTH },
+  listChapterLedgers: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'discover', profiles: BOTH },
+  readChapterLedger: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'read', profiles: BOTH },
   queryDb: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'read', profiles: SKILL }, // the escape hatch (tool-surface.md): semantic lists + search cover chat questions
   listLoreView: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'read', profiles: BOTH },
   listTierStatus: { cap: 'read:tiers/1', tier: 'read', stability: 'stable', kind: 'discover', profiles: SKILL },

@@ -1,0 +1,33 @@
+{
+  "title": "NVS Pro",
+  "shareText": "使用 Novel Visual Studio 写作。这是一款面向对话驱动小说的写作 IDE，并提供可选的 AI 阅读功能。",
+  "active": {
+    "heading": "Pro 已启用",
+    "tiedTo": "关联至 <email>{{email}}</email>",
+    "body": "感谢您支持 NVS。今天即可解锁更美观的图表导出主题；未来还会推出更多 Pro 小福利。您的写作内容和文件始终免费且保存在本地。"
+  },
+  "comingSoon": {
+    "heading": "Pro 功能即将推出",
+    "body": "写作、分析和您的文件永久免费。Pro 未来将陆续增加一些可选的小福利（也许会有更美观的导出效果）。"
+  },
+  "share": {
+    "prompt": "与此同时，欢迎通过分享来支持我们",
+    "shareX": "分享到 X",
+    "copyLink": "复制链接",
+    "copied": "已复制！",
+    "starGithub": "在 GitHub 上点 Star",
+    "joinDiscord": "加入 Discord"
+  },
+  "activate": {
+    "prompt": "已经有许可证？请输入购买时使用的邮箱：",
+    "emailPlaceholder": "you@email.com",
+    "button": "激活",
+    "haveLicense": "已经有许可证？"
+  },
+  "msg": {
+    "activated": "Pro 已激活 ✓",
+    "noPurchase": "未找到该邮箱对应的 Pro 购买记录。",
+    "verifyError": "暂时无法验证 — 请重试。"
+  },
+  "devToggle": "开发者：切换 Pro"
+}

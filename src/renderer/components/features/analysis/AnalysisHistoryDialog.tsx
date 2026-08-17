@@ -11,6 +11,7 @@
  * snapshot revert. Reuse over rebuild: the tree render + roll-up are the SAME code the pre-run preview uses.
  */
 import { useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { History, RotateCcw } from 'lucide-react'
 import type { IngestSession } from '@shared/ipc'
 import { Dialog } from '@/components/ui/dialog'
@@ -21,7 +22,6 @@ import { cn } from '@/lib/utils'
 
 // The run's phases, in execution order — same vocabulary as the live tracker (window = arcs).
 const KIND_ORDER = ['scene', 'window', 'profile', 'digest', 'coherence'] as const
-const KIND_LABEL: Record<string, string> = { scene: 'Scenes', window: 'Arcs', profile: 'Profiles', digest: 'Digests', coherence: 'Coherence' }
 
 function fmtWhen(iso: string): string {
   const d = new Date(iso)
@@ -33,6 +33,7 @@ function fmtDur(a: string, b: string): string {
 }
 
 export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: boolean; onClose: () => void; sessionId?: string | null }): JSX.Element | null {
+  const { t } = useTranslation('analysisHistory')
   const storyTree = useWorkspace((s) => s.storyTree)
   const revertIngestSession = useWorkspace((s) => s.revertIngestSession)
   const sessions = useWorkspace((s) => s.ingestSessions).filter((s) => (s.kind ?? 'analysis') === 'analysis')
@@ -57,10 +58,10 @@ export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: bool
   if (!open) return null
 
   return (
-    <Dialog open={open} onClose={onClose} title="Analysis history" size="panel">
+    <Dialog open={open} onClose={onClose} title={t('title')} size="panel">
       <div className="flex flex-col gap-3 p-4 text-[12px]">
         {sessions.length === 0 || !session ? (
-          <p className="py-6 text-center text-muted-foreground">No past runs yet — run one from the dock’s Update.</p>
+          <p className="py-6 text-center text-muted-foreground">{t('empty')}</p>
         ) : (
           <>
             {/* Run picker */}
@@ -73,7 +74,7 @@ export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: bool
               >
                 {sessions.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {fmtWhen(s.finishedAt)} · {s.total} targets · {fmtDur(s.startedAt, s.finishedAt)}
+                    {t('option', { when: fmtWhen(s.finishedAt), count: s.total, dur: fmtDur(s.startedAt, s.finishedAt) })}
                   </option>
                 ))}
               </select>
@@ -81,33 +82,33 @@ export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: bool
 
             {/* Tabs */}
             <div className="flex overflow-hidden rounded border border-border">
-              {(['graph', 'stats'] as const).map((t) => (
+              {(['graph', 'stats'] as const).map((tabId) => (
                 <button
-                  key={t}
-                  onClick={() => setTab(t)}
-                  className={cn('flex-1 px-3 py-1', tab === t ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}
+                  key={tabId}
+                  onClick={() => setTab(tabId)}
+                  className={cn('flex-1 px-3 py-1', tab === tabId ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}
                 >
-                  {t === 'graph' ? 'Analyzed graph' : 'Coverage & stats'}
+                  {tabId === 'graph' ? t('tab.graph') : t('tab.stats')}
                 </button>
               ))}
             </div>
 
             {tab === 'graph' ? (
               <div className="rounded border border-border bg-panel-soft/30 p-2">
-                <OutlineTree root={root} order={HISTORY_ORDER} empty="This run touched no scenes." />
+                <OutlineTree root={root} order={HISTORY_ORDER} empty={t('graphEmpty')} />
               </div>
             ) : (
               <div className="flex flex-col gap-3">
                 {/* Phases by kind — all done (this is a frozen record) */}
                 <div className="flex flex-wrap items-center gap-x-1 gap-y-1">
                   {byKind.length === 0 ? (
-                    <span className="text-muted-foreground">This run recorded no coverage.</span>
+                    <span className="text-muted-foreground">{t('noCoverage')}</span>
                   ) : (
                     byKind.map(({ kind, n }, i) => (
                       <span key={kind} className="flex items-center gap-1">
                         {i > 0 && <span className="text-faint/40">›</span>}
                         <span className="flex items-center gap-1 rounded bg-ok/10 px-1.5 py-px text-[11px] text-ok">
-                          {KIND_LABEL[kind] ?? kind}
+                          {t(`kind.${kind}`, { defaultValue: kind })}
                           <span className="tabular-nums opacity-80">{n}</span>
                         </span>
                       </span>
@@ -116,14 +117,14 @@ export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: bool
                 </div>
                 {/* Numbers */}
                 <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[11px] text-muted-foreground">
-                  <Stat label="Targets" value={`${session.total}`} />
-                  <Stat label="Rows written" value={`${session.rowsWritten}`} />
-                  <Stat label="Done" value={`${session.ok}`} />
-                  <Stat label="Failed / skipped" value={`${session.failed} / ${session.skipped}`} tone={session.failed ? 'flag' : undefined} />
-                  <Stat label="Duration" value={fmtDur(session.startedAt, session.finishedAt)} />
-                  <Stat label="Finished" value={fmtWhen(session.finishedAt)} />
+                  <Stat label={t('stat.targets')} value={`${session.total}`} />
+                  <Stat label={t('stat.rowsWritten')} value={`${session.rowsWritten}`} />
+                  <Stat label={t('stat.done')} value={`${session.ok}`} />
+                  <Stat label={t('stat.failedSkipped')} value={`${session.failed} / ${session.skipped}`} tone={session.failed ? 'flag' : undefined} />
+                  <Stat label={t('stat.duration')} value={fmtDur(session.startedAt, session.finishedAt)} />
+                  <Stat label={t('stat.finished')} value={fmtWhen(session.finishedAt)} />
                 </div>
-                <p className="text-[10px] text-faint">A run keeps what it covered, not its step-by-step log (that stream is live-only).</p>
+                <p className="text-[10px] text-faint">{t('liveOnlyNote')}</p>
               </div>
             )}
 
@@ -133,14 +134,14 @@ export function AnalysisHistoryDialog({ open, onClose, sessionId }: { open: bool
                 <button
                   onClick={() => { void revertIngestSession(session.id); onClose() }}
                   className="flex items-center gap-1.5 text-[11px] text-faint hover:text-foreground"
-                  title="Roll the analysis DB back to this version’s snapshot"
+                  title={t('restoreTitle')}
                 >
-                  <RotateCcw className="size-3" /> Restore this version
+                  <RotateCcw className="size-3" /> {t('restore')}
                 </button>
               ) : (
-                <span className="text-[10px] text-faint">{session.snapshotId ? 'snapshot pruned — can’t restore' : ''}</span>
+                <span className="text-[10px] text-faint">{session.snapshotId ? t('snapshotPruned') : ''}</span>
               )}
-              <button onClick={onClose} className="rounded border border-border px-3 py-1 text-muted-foreground hover:bg-panel-soft">Close</button>
+              <button onClick={onClose} className="rounded border border-border px-3 py-1 text-muted-foreground hover:bg-panel-soft">{t('close')}</button>
             </div>
           </>
         )}

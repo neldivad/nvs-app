@@ -1,0 +1,59 @@
+{
+  "title": "Settings",
+  "section": {
+    "language": "Language",
+    "editor": "Editor",
+    "ai": "AI",
+    "advanced": "Advanced",
+    "storage": "Storage",
+    "updates": "Updates"
+  },
+  "language": {
+    "label": "Interface language",
+    "hint": "The language of NVS's own menus and labels. It doesn't change your writing or the AI's output — those follow your project's language and what you ask for.",
+    "system": "System default"
+  },
+  "editor": {
+    "showMood": {
+      "label": "Show mood tags",
+      "hint": "Delivery cues — the (parenthetical) after a speaker, for visual-novel-style writing. Off hides them in the Write view; your prose keeps them and the Source view still shows them."
+    },
+    "showTiming": {
+      "label": "Show timing tags",
+      "hint": "Start → end timecodes on a beat ([00:01:23 → 00:01:27]), for subtitle / transcript work. Off hides the chip in the Write view; your prose keeps the timecodes and the Source view still shows them."
+    }
+  },
+  "ai": {
+    "features": {
+      "label": "AI features",
+      "hint": "The generative-AI layer: the assistant (chat + background Tasks), the prompt library, /agent and AI-write while editing, custody AI-suggest, and running analysis (Update / Jobs). Off hides all of it for a deterministic, AI-free workspace — your writing and already-computed result panels (cast, threads, coherence) stay. Turn back on any time; nothing is deleted."
+    }
+  },
+  "advanced": {
+    "editSource": {
+      "label": "Edit source directly",
+      "hint": "Makes the Source view editable — you type raw Markdown and it's saved to the file verbatim, including the frontmatter (so you can change fields the form locks, like a page's id). Only turn this on if you know the format: a broken frontmatter or malformed beat is written as-is and can break analysis. The Write/Preview views stay the safe way to edit."
+    }
+  },
+  "storage": {
+    "onDisk": "This project on disk",
+    "openToManage": "Open a project to manage its storage.",
+    "canClean": "About {{bytes}} of reset backups and logs can be cleared, and version history compressed — with nothing you’d miss. Your writing, chat, and current analysis are untouched.",
+    "tidy": "Nothing to clean up — this project is already tidy. Your writing and analysis aren’t counted here.",
+    "freed": "Freed {{bytes}}.",
+    "alreadyClean": "Already clean.",
+    "moreOptions": "More options in Jobs → Storage",
+    "clean": "Clean up",
+    "cleaning": "Cleaning…"
+  },
+  "updates": {
+    "current": "Installed version",
+    "hint": "NVS doesn’t update itself. Check here, and download the new version if one’s available.",
+    "check": "Check for updates",
+    "checking": "Checking…",
+    "upToDate": "You’re on the latest version.",
+    "available": "Update available — {{version}}",
+    "failed": "Couldn’t check right now — try again later.",
+    "download": "Download"
+  }
+}

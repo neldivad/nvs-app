@@ -10,6 +10,8 @@
  * never travel with a shared nvsproj.
  */
 import { type JSX, type ReactNode, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -28,24 +30,19 @@ function fmtBytes(n: number): string {
   if (n < 1073741824) return `${(n / 1048576).toFixed(1)} MB`
   return `${(n / 1073741824).toFixed(1)} GB`
 }
-const CLEAR_COPY: Record<StorageKind, { title: string; message: string }> = {
-  logs: { title: 'Clear analysis logs?', message: 'Deletes this project’s telemetry logs.\n\nDiagnostics only — regenerated on the next run. Nothing else is affected.' },
-  history: { title: 'Clear run history?', message: 'Removes past-run records and their revert snapshots.\n\nYour current analysis stays intact — you just lose the ability to revert to earlier versions.' },
-  chat: { title: 'Delete chat sessions?', message: 'Deletes this project’s chat history from your machine.\n\nThis can’t be undone.' },
-  tasks: { title: 'Clear the task inbox?', message: 'Deletes this project’s background-task inbox — including any completed edits you haven’t applied yet.\n\nThis can’t be undone.' },
-  backups: { title: 'Delete reset backups?', message: 'Removes the full “.nvs.bak-…” copies saved before each Reset analysis.\n\nSafe — they’re only recovery snapshots; your current project and analysis are untouched. This can’t be undone.' }
-}
+// Clear-confirm copy (title/message per storage kind) lives in the i18n catalog under `clear.<kind>.*`.
 
 // Storage composition — a FIXED categorical order (dataviz rule: stable hue order, never cycled). `db` is the
 // non-clearable analysis (the neutral bulk you keep); the rest are reclaimable buckets. Palette = app design
 // tokens, so the bar reads in the same visual language as the rest of the app.
+// Category display labels come from the i18n catalog (`cat.<key>`) at render time.
 const STORAGE_CATS = [
-  { key: 'db', label: 'Database', bar: 'bg-muted-foreground', kind: null as StorageKind | null },
-  { key: 'history', label: 'History', bar: 'bg-thread', kind: 'history' as StorageKind | null },
-  { key: 'backups', label: 'Backups', bar: 'bg-flag', kind: 'backups' as StorageKind | null },
-  { key: 'chat', label: 'Chat', bar: 'bg-character', kind: 'chat' as StorageKind | null },
-  { key: 'tasks', label: 'Tasks', bar: 'bg-lore', kind: 'tasks' as StorageKind | null },
-  { key: 'logs', label: 'Logs', bar: 'bg-ok', kind: 'logs' as StorageKind | null }
+  { key: 'db', bar: 'bg-muted-foreground', kind: null as StorageKind | null },
+  { key: 'history', bar: 'bg-thread', kind: 'history' as StorageKind | null },
+  { key: 'backups', bar: 'bg-flag', kind: 'backups' as StorageKind | null },
+  { key: 'chat', bar: 'bg-character', kind: 'chat' as StorageKind | null },
+  { key: 'tasks', bar: 'bg-lore', kind: 'tasks' as StorageKind | null },
+  { key: 'logs', bar: 'bg-ok', kind: 'logs' as StorageKind | null }
 ] as const
 
 /** Bytes for a composition category; NaN/undefined (a field a stale main omits) folds to 0. */
@@ -64,6 +61,7 @@ function storageTotal(s: StorageRow): number {
  *  `mode`: 'relative' fills 100% (composition only); 'absolute' scales the bar to `scaleMax` (the largest
  *  project) so bar LENGTH is the actual footprint — projects become comparable at a glance. */
 function StorageBar({ s, mode, scaleMax }: { s: StorageRow; mode: 'relative' | 'absolute'; scaleMax: number }): JSX.Element {
+  const { t } = useTranslation('jobs')
   const total = storageTotal(s)
   const fill = mode === 'absolute' && scaleMax > 0 ? (total / scaleMax) * 100 : 100
   return (
@@ -73,7 +71,7 @@ function StorageBar({ s, mode, scaleMax }: { s: StorageRow; mode: 'relative' | '
           {STORAGE_CATS.map((c) => {
             const b = catBytes(s, c.key)
             return b <= 0 ? null : (
-              <div key={c.key} title={`${c.label} — ${fmtBytes(b)}`} className={cn('h-full min-w-0.5', c.bar)} style={{ width: `${(b / total) * 100}%` }} />
+              <div key={c.key} title={`${t(`cat.${c.key}`)} — ${fmtBytes(b)}`} className={cn('h-full min-w-0.5', c.bar)} style={{ width: `${(b / total) * 100}%` }} />
             )
           })}
         </div>
@@ -124,7 +122,7 @@ function StatusPill({ status }: { status: JobRow['status'] }): JSX.Element {
   )
 }
 
-function cellContent(col: JobColumn, row: JobRow): ReactNode {
+function cellContent(col: JobColumn, row: JobRow, t: TFunction): ReactNode {
   switch (col.id) {
     case 'projectName':
       return <span className="truncate text-foreground">{row.projectName || '—'}</span>
@@ -149,7 +147,7 @@ function cellContent(col: JobColumn, row: JobRow): ReactNode {
           </span>
         )
       }
-      return <span className="tabular-nums text-faint">{row.result ? `${row.result.ok} ok${row.result.failed ? ` · ${row.result.failed} failed` : ''}${row.result.skipped ? ` · ${row.result.skipped} skipped` : ''}` : `${row.done}/${row.total}`}</span>
+      return <span className="tabular-nums text-faint">{row.result ? [t('result.ok', { n: row.result.ok }), row.result.failed ? t('result.failed', { n: row.result.failed }) : null, row.result.skipped ? t('result.skipped', { n: row.result.skipped }) : null].filter(Boolean).join(' · ') : `${row.done}/${row.total}`}</span>
     }
     case 'etaMs':
       return <span className="tabular-nums text-faint">{row.etaMs != null ? fmtDur(row.etaMs) : row.elapsedMs != null && row.status !== 'running' ? fmtDur(row.elapsedMs) : '—'}</span>
@@ -176,18 +174,21 @@ function fmtWhen(iso?: string | null): string {
 }
 
 // The queue columns as DataTable columns — the JOB_COLUMNS config (config/jobs.ts) mapped through the shared
-// cell renderer. Left UNSORTED on purpose: the row order is meaningful (active run pinned first, then history
-// by recency), so sorting is reserved for the Storage table where size/name ordering is what you want.
-const QUEUE_COLUMNS: Column<JobRow>[] = JOB_COLUMNS.map((c) => ({
-  id: c.id,
-  header: c.label,
-  cell: (row) => cellContent(c, row),
-  align: c.align,
-  grow: c.grow,
-  truncate: c.grow, // the one growing column is the project name — clip it, don't wrap
-  headerTag: c.private ? 'local' : undefined,
-  headerHint: c.private ? 'Machine-local — never exported' : undefined
-}))
+// cell renderer. Built inside the component (needs `t`). Left UNSORTED on purpose: the row order is meaningful
+// (active run pinned first, then history by recency), so sorting is reserved for the Storage table where
+// size/name ordering is what you want.
+function buildQueueColumns(t: TFunction): Column<JobRow>[] {
+  return JOB_COLUMNS.map((c) => ({
+    id: c.id,
+    header: c.label,
+    cell: (row) => cellContent(c, row, t),
+    align: c.align,
+    grow: c.grow,
+    truncate: c.grow, // the one growing column is the project name — clip it, don't wrap
+    headerTag: c.private ? t('tag.local') : undefined,
+    headerHint: c.private ? t('tooltip.machineLocal') : undefined
+  }))
+}
 
 /** One row of the Storage kebab. `onMouseDown` (not click) so it fires before the shell's click-away dismiss. */
 function StorageMenuItem({
@@ -234,6 +235,7 @@ function StorageMenu({
   onCompact: (root: string) => void
   onClear: (row: StorageRow, kind: StorageKind) => void
 }): JSX.Element {
+  const { t } = useTranslation('jobs')
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null)
   const hasHistory = catBytes(s, 'history') > 0
   const isCompacting = compacting === s.root
@@ -244,7 +246,7 @@ function StorageMenu({
           const r = e.currentTarget.getBoundingClientRect()
           setAnchor({ x: r.right, y: r.bottom + 2 })
         }}
-        title="Storage actions"
+        title={t('tooltip.storageActions')}
         className="inline-flex size-6 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
       >
         <MoreHorizontal className="size-3.5" />
@@ -252,8 +254,8 @@ function StorageMenu({
       {anchor && (
         <ContextMenuShell x={anchor.x} y={anchor.y} onClose={() => setAnchor(null)}>
           <StorageMenuItem
-            label={isCompacting ? 'Compacting…' : 'Compact snapshots'}
-            hint={hasHistory ? undefined : 'none'}
+            label={isCompacting ? t('menu.compacting') : t('menu.compact')}
+            hint={hasHistory ? undefined : t('menu.none')}
             disabled={!hasHistory || isCompacting}
             onClick={() => {
               onCompact(s.root)
@@ -266,8 +268,8 @@ function StorageMenu({
             return (
               <StorageMenuItem
                 key={c.key}
-                label={`Clear ${c.label}`}
-                hint={b > 0 ? fmtBytes(b) : 'empty'}
+                label={t('menu.clear', { cat: t(`cat.${c.key}`) })}
+                hint={b > 0 ? fmtBytes(b) : t('menu.empty')}
                 disabled={b <= 0}
                 danger
                 onClick={() => {
@@ -294,6 +296,7 @@ function logText(e: Record<string, unknown>): string {
 }
 
 export function JobsDialog(): JSX.Element {
+  const { t } = useTranslation('jobs')
   const open = useWorkspace((s) => s.jobsOpen)
   const setOpen = useWorkspace((s) => s.setJobsOpen)
   const progress = useWorkspace((s) => s.ingestProgress)
@@ -367,12 +370,13 @@ export function JobsDialog(): JSX.Element {
   const runPct = active ? (active.steps.length ? Math.round((doneCount(active) / active.steps.length) * 100) : 0) : 0
   const runEta = active?.etaMs ?? null
 
+  const queueColumns = buildQueueColumns(t)
   const scaleMax = storage.reduce((m, s) => Math.max(m, storageTotal(s)), 0)
   const storageColumns: Column<StorageRow>[] = [
-    { id: 'name', header: 'Project', width: 180, truncate: true, sortable: true, sortValue: (s) => s.name.toLowerCase(),
+    { id: 'name', header: t('column.project'), width: 180, truncate: true, sortable: true, sortValue: (s) => s.name.toLowerCase(),
       cell: (s) => <span className="text-foreground" title={s.name}>{s.name}</span> },
-    { id: 'comp', header: barMode === 'absolute' ? 'Footprint' : 'Composition', grow: true, cell: (s) => <StorageBar s={s} mode={barMode} scaleMax={scaleMax} /> },
-    { id: 'total', header: 'Total', align: 'right', width: 92, sortable: true, sortValue: (s) => s.totalBytes,
+    { id: 'comp', header: barMode === 'absolute' ? t('column.footprint') : t('column.composition'), grow: true, cell: (s) => <StorageBar s={s} mode={barMode} scaleMax={scaleMax} /> },
+    { id: 'total', header: t('column.total'), align: 'right', width: 92, sortable: true, sortValue: (s) => s.totalBytes,
       cell: (s) => <span className="font-medium tabular-nums text-foreground">{fmtBytes(s.totalBytes)}</span> },
     { id: 'actions', header: '', align: 'right', width: 44,
       cell: (s) => <StorageMenu s={s} compacting={compacting} onCompact={doCompact} onClear={(row, kind) => setPendingClear({ root: row.root, name: row.name, kind })} /> }
@@ -383,28 +387,28 @@ export function JobsDialog(): JSX.Element {
       region="jobsDialog"
       open={open}
       onClose={() => setOpen(false)}
-      title="Jobs"
+      title={t('title')}
       size="workspace"
       bodyClassName="flex min-h-0 flex-col p-0"
     >
       {/* Toolbar — tabs + queue controls */}
       <div className="flex shrink-0 items-center gap-3 border-b border-border px-3 py-1.5 text-[11px]">
         <div className="flex items-center gap-1">
-          {(['queue', 'logs', 'storage'] as const).map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn('rounded px-2 py-0.5 capitalize', tab === t ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}>
-              {t}
+          {(['queue', 'logs', 'storage'] as const).map((id) => (
+            <button key={id} onClick={() => setTab(id)} className={cn('rounded px-2 py-0.5 capitalize', tab === id ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}>
+              {t(`tab.${id}`)}
             </button>
           ))}
         </div>
-        <span className="text-faint">{tab === 'queue' ? `${rows.length} job${rows.length === 1 ? '' : 's'}` : logRoot ? '' : 'no project'}</span>
+        <span className="text-faint">{tab === 'queue' ? t('jobCount', { count: rows.length }) : logRoot ? '' : t('noProject')}</span>
         <div className="ml-auto flex items-center gap-2">
           {active ? (
             <Button variant="outline" size="sm" onClick={() => void window.nvs.cancelIngestRun()}>
-              <Square className="mr-1 size-3" /> Pause
+              <Square className="mr-1 size-3" /> {t('button.pause')}
             </Button>
           ) : (
             <Button size="sm" disabled={!project} onClick={() => void startIngestRun()}>
-              <Play className="mr-1 size-3" /> Start analysis
+              <Play className="mr-1 size-3" /> {t('button.startAnalysis')}
             </Button>
           )}
         </div>
@@ -413,19 +417,19 @@ export function JobsDialog(): JSX.Element {
       {tab === 'queue' ? (
         <div className="min-h-0 flex-1 overflow-auto">
           <DataTable
-            columns={QUEUE_COLUMNS}
+            columns={queueColumns}
             rows={rows}
             rowKey={(r) => r.id}
-            emptyMessage="No jobs yet — run analysis on a project."
+            emptyMessage={t('empty.queue')}
             rowClassName={(r) => (active && r.id === active.sessionId ? 'bg-panel-soft' : undefined)}
           />
         </div>
       ) : tab === 'logs' ? (
         <div className="min-h-0 flex-1 overflow-auto bg-canvas px-3 py-2 font-mono text-[10.5px] leading-relaxed text-muted-foreground">
           {!logRoot ? (
-            <p className="text-faint">Open or run a project to see its analysis logs.</p>
+            <p className="text-faint">{t('empty.logsNoProject')}</p>
           ) : logs.length === 0 ? (
-            <p className="text-faint">No telemetry yet — it appears once a run reads its first scene.</p>
+            <p className="text-faint">{t('empty.logsNoTelemetry')}</p>
           ) : (
             logs.map((e, i) => (
               <div key={i} className="whitespace-pre-wrap break-all">
@@ -442,7 +446,7 @@ export function JobsDialog(): JSX.Element {
             {STORAGE_CATS.map((c) => (
               <span key={c.key} className="inline-flex items-center gap-1">
                 <span className={cn('size-2 rounded-[2px]', c.bar)} />
-                {c.label}
+                {t(`cat.${c.key}`)}
               </span>
             ))}
             {/* Scale toggle: Relative = each bar fills 100% (composition only); Absolute = bars scaled to the
@@ -452,10 +456,10 @@ export function JobsDialog(): JSX.Element {
                 <button
                   key={m}
                   onClick={() => setBarMode(m)}
-                  title={m === 'relative' ? 'Each bar fills 100% — shows composition only' : 'Bars scaled to the largest project — shows actual size'}
+                  title={m === 'relative' ? t('tooltip.scaleRelative') : t('tooltip.scaleAbsolute')}
                   className={cn('rounded px-2 py-0.5 capitalize transition-colors', barMode === m ? 'bg-panel text-foreground' : 'text-muted-foreground hover:text-foreground')}
                 >
-                  {m}
+                  {t(`scale.${m}`)}
                 </button>
               ))}
             </div>
@@ -465,7 +469,7 @@ export function JobsDialog(): JSX.Element {
               columns={storageColumns}
               rows={storage}
               rowKey={(s) => s.root}
-              emptyMessage="No projects yet."
+              emptyMessage={t('empty.storage')}
               density="cozy"
               defaultSort={{ id: 'total', dir: 'desc' }}
             />
@@ -478,10 +482,10 @@ export function JobsDialog(): JSX.Element {
         <div className="shrink-0 border-t border-border bg-panel-soft px-4 py-3">
           <div className="flex items-center gap-2 text-xs">
             <Loader2 className="size-3.5 animate-spin text-thread" />
-            <span className="text-foreground">{isCoherence(active) ? 'Coherence' : 'Analysis'} · {active.projectName || 'project'}</span>
+            <span className="text-foreground">{isCoherence(active) ? t('kind.coherence') : t('kind.analysis')} · {active.projectName || t('projectFallback')}</span>
             <span className="ml-auto tabular-nums text-muted-foreground">
-              Elapsed {fmtDur(Date.now() - Date.parse(active.startedAt))}
-              {runEta != null && <> · Remaining {fmtDur(runEta)}</>}
+              {t('label.elapsed')} {fmtDur(Date.now() - Date.parse(active.startedAt))}
+              {runEta != null && <> · {t('label.remaining')} {fmtDur(runEta)}</>}
             </span>
           </div>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-border">
@@ -490,20 +494,20 @@ export function JobsDialog(): JSX.Element {
           <p className="mt-1.5 truncate text-[11px] text-muted-foreground" title={active.steps.find((s) => s.status === 'running')?.label}>
             {active.steps.find((s) => s.status === 'running')?.label ?? '…'}
           </p>
-          {active.error && <p className="mt-1 text-[11px] text-flag">Paused on a connection wall: {active.error.message}</p>}
+          {active.error && <p className="mt-1 text-[11px] text-flag">{t('error.connectionWall')} {active.error.message}</p>}
         </div>
       )}
 
       <div className="shrink-0 border-t border-border px-4 py-1.5 text-[10px] text-faint">
-        History is universal — every project's runs, wherever you are. Pause is safe (resumes where it left off). Cost / memory / provider are machine-local.
+        {t('footer')}
       </div>
 
       <ConfirmDialog
         open={!!pendingClear}
-        title={pendingClear ? CLEAR_COPY[pendingClear.kind].title : ''}
+        title={pendingClear ? t(`clear.${pendingClear.kind}.title`) : ''}
         danger
-        confirmLabel="Clear"
-        message={pendingClear ? (<>{CLEAR_COPY[pendingClear.kind].message}{'\n\n'}<span className="text-foreground">{pendingClear.name}</span></>) : ''}
+        confirmLabel={t('button.clear')}
+        message={pendingClear ? (<>{t(`clear.${pendingClear.kind}.message`)}{'\n\n'}<span className="text-foreground">{pendingClear.name}</span></>) : ''}
         onConfirm={() => void doClear()}
         onCancel={() => setPendingClear(null)}
       />

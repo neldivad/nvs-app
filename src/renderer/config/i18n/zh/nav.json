@@ -1,0 +1,19 @@
+{
+  "editor": "编辑器",
+  "world": "世界观",
+  "custody": "保管",
+  "corkboard": "软木板",
+  "timeline": "时间线",
+  "cast": "角色阵容",
+  "relationships": "关系",
+  "threads": "线索",
+  "coherence": "连贯性",
+  "library": "库",
+  "disabledNoProject": "{{label}}（请先打开项目）",
+  "disabledSoon": "{{label}}（即将推出）",
+  "action": {
+    "structure": "项目结构（{{shortcut}}）",
+    "info": "项目信息",
+    "share": "分享项目"
+  }
+}

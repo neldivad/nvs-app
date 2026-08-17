@@ -1,0 +1,170 @@
+{
+  "loading": "正在加载软木板…",
+  "common": {
+    "clear": "清除",
+    "cancel": "取消",
+    "delete": "删除",
+    "remove": "移除",
+    "rename": "重命名"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "min": "{{n}}分钟前",
+    "hr": "{{n}}小时前",
+    "day_one": "{{count}}天前",
+    "day_other": "{{count}}天前",
+    "mo": "{{n}}个月前",
+    "yr": "{{n}}年前"
+  },
+  "refChip": {
+    "pageFallback": "页面",
+    "makePriority": "设为优先（优先显示）",
+    "remove": "移除"
+  },
+  "card": {
+    "untitled": "无标题卡片",
+    "doubleClickToOpen": "双击打开…"
+  },
+  "fab": {
+    "help": "软木板使用方法"
+  },
+  "board": {
+    "fullNotice": "此软木板已满 — {{max}} 张卡片。请打开其他软木板。",
+    "full": "此软木板已满 — {{max}} 张卡片",
+    "newBoard": "新建软木板",
+    "newBoardTitle": "将接下来的笔记移至新软木板",
+    "emptyCue": "右键点击软木板以添加第一条笔记",
+    "boards": "画板",
+    "maxTitle": "最多 {{max}} 个看板",
+    "limitReached": "您已达到 {{max}} 个看板的上限。",
+    "emptyBoards": "还没有看板。"
+  },
+  "group": {
+    "selected": "已选择 {{n}} 项",
+    "connectAll": "全部连接到…",
+    "disconnectAll": "全部断开连接",
+    "setGroup": "设置分组",
+    "delete": "删除",
+    "connectHint": "点击一张卡片，将已选择的 {{n}} 项全部连接到该卡片"
+  },
+  "feed": {
+    "show": "显示动态（{{n}}）",
+    "title": "动态 · {{n}}",
+    "dragResize": "拖动以调整大小",
+    "closeAllTitle": "关闭所有帖子",
+    "closeAll": "全部关闭",
+    "collapse": "收起"
+  },
+  "post": {
+    "cardRemoved": "卡片已移除。",
+    "removeFromFeed": "从动态中移除",
+    "removeAllLinks": "移除所有链接",
+    "clear": "清除",
+    "linksMax": "最多 {{max}} 个链接",
+    "searchPages": "搜索页面…",
+    "attachTitle": "附加页面",
+    "attach": "附加",
+    "deleteAllNotes": "删除所有笔记",
+    "clearAll": "全部清除",
+    "noNotes": "还没有笔记 — 在下方添加一条。",
+    "noteFallback": "笔记",
+    "deleteNote": "删除笔记",
+    "noteLimit": "已达到笔记上限（{{max}}）",
+    "addNotePlaceholder": "添加备注… (⌘↵)",
+    "addNoteTitle": "添加备注 (⌘↵)",
+    "add": "添加",
+    "pageFallback": "页面"
+  },
+  "help": {
+    "title": "软木板 — 工作方式",
+    "addEdit": {
+      "title": "添加和编辑",
+      "rows": [
+        {
+          "k": "右键点击画板",
+          "v": "右键点击画板"
+        },
+        {
+          "k": "在卡片标题中输入",
+          "v": "在卡片标题栏中输入"
+        },
+        {
+          "k": "双击卡片",
+          "v": "双击卡片"
+        },
+        {
+          "k": "拖动标题拖柄",
+          "v": "拖动标题栏手柄"
+        },
+        {
+          "k": "拖动角落",
+          "v": "拖动卡片角落"
+        },
+        {
+          "k": "悬停 → ×",
+          "v": "悬停 → ×"
+        }
+      ]
+    },
+    "linkPages": {
+      "title": "链接页面",
+      "rows": [
+        {
+          "k": "附加（在帖子中）",
+          "v": "附加（在帖子中）"
+        },
+        {
+          "k": "点击标签上的 ⭐",
+          "v": "点击标签上的 ⭐"
+        },
+        {
+          "k": "点击标签",
+          "v": "点击标签"
+        }
+      ]
+    },
+    "connect": {
+      "title": "连接",
+      "rows": [
+        {
+          "k": "右侧圆点 → 一张卡片",
+          "v": "右侧圆点 → 卡片"
+        },
+        {
+          "k": "选择一个组 → 将全部连接到",
+          "v": "选择一个组 → 将全部连接到"
+        }
+      ]
+    },
+    "selectGroup": {
+      "title": "选择组",
+      "rows": [
+        {
+          "k": "⇧ 拖动",
+          "v": "⇧ 拖动"
+        },
+        {
+          "k": "组浮标（右上角）",
+          "v": "组浮窗（右上角）"
+        },
+        {
+          "k": "Backspace / Delete",
+          "v": "Backspace / Delete"
+        }
+      ]
+    },
+    "boards": {
+      "title": "画板",
+      "rows": [
+        {
+          "k": "左侧边栏",
+          "v": "左侧边栏"
+        },
+        {
+          "k": "100 张卡片 · 100 个画板",
+          "v": "一块画板填满后，打开另一块画板"
+        }
+      ]
+    }
+  }
+}

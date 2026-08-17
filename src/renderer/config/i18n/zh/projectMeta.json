@@ -1,0 +1,87 @@
+{
+  "title": "项目详情",
+  "steps": {
+    "details": "详情",
+    "cover": "封面",
+    "classification": "分类",
+    "credits": "创作人员",
+    "review": "审核"
+  },
+  "nav": {
+    "cancel": "取消",
+    "back": "返回",
+    "next": "下一步",
+    "save": "保存"
+  },
+  "discard": {
+    "title": "放弃更改？",
+    "message": "你对这个项目所做的编辑不会保存。",
+    "confirm": "放弃"
+  },
+  "details": {
+    "kindLabel": "类别",
+    "kindHint": "小说或非小说——书架上的大类。（将在后续更新中影响分析；目前仅作为标签。）",
+    "titleLabel": "标题",
+    "titleHint": "作品的名称。",
+    "subtitleLabel": "副标题",
+    "subtitleHint": "可选的第二行文字（例如“……系列第一部”）。",
+    "subtitlePlaceholder": "可选",
+    "taglineLabel": "宣传语",
+    "taglineHint": "一句话的吸引点——就像电影宣传语一样。",
+    "taglinePlaceholder": "在一个充满骗子的王国里，唯有一个真相留存。",
+    "synopsisLabel": "简介",
+    "synopsisHint": "封底简介——一两段即可，不是整本书。",
+    "synopsisPlaceholder": "女王病倒后，宫廷四分五裂……",
+    "synopsisCount": "{{n}} / {{max}}",
+    "mediumLabel": "媒介",
+    "mediumHint": "这是什么类型的作品？",
+    "statusLabel": "状态",
+    "statusHint": "它目前处于什么阶段？"
+  },
+  "cover": {
+    "label": "封面",
+    "hint": "封面让项目在你的资料库中拥有自己的面貌。",
+    "change": "更换封面",
+    "drop": "将图片拖放到此处",
+    "browse": "或点击浏览",
+    "choose": "选择图片…",
+    "formats": "JPG、PNG、GIF 或 WEBP。显示在你的资料库书架和项目书卡上。"
+  },
+  "classification": {
+    "languageLabel": "语言",
+    "languageHint": "作品使用哪些语言创作？",
+    "languagePlaceholder": "搜索语言…",
+    "subjectLabel": "主题",
+    "genreLabel": "体裁",
+    "shelfHint": "它所在的书架。",
+    "subjectPlaceholder": "搜索主题…",
+    "genrePlaceholder": "搜索体裁…",
+    "themesLabel": "主题",
+    "themesHint": "作品真正探讨的内容——相比体裁，这更能帮助发现作品。",
+    "themesPlaceholder": "搜索主题…",
+    "warningsLabel": "内容警告",
+    "warningsHint": "用于提示敏感内容。",
+    "warningsPlaceholder": "搜索警告…",
+    "keywordsLabel": "关键词",
+    "keywordsHint": "任意自由格式标签，用逗号分隔。",
+    "keywordsPlaceholder": "宫廷阴谋，慢热"
+  },
+  "credits": {
+    "authorLabel": "作者",
+    "authorHint": "主要作者。",
+    "authorPlaceholder": "你的姓名",
+    "contributorsLabel": "贡献者",
+    "contributorsHint": "其他参与者——请注明每人的角色（作者、译者、作曲家……）。",
+    "namePlaceholder": "名称",
+    "remove": "移除",
+    "rolePlaceholder": "搜索或输入角色…",
+    "add": "添加贡献者"
+  },
+  "picker": {
+    "remove": "移除",
+    "searchCustom": "搜索或输入自定义内容…",
+    "search": "搜索…",
+    "addCustom": "+ 添加“{{q}}”",
+    "noMatches": "没有匹配项"
+  }
+}

@@ -8,6 +8,7 @@
  * strategy (collapse / boards / LOD) is settled.
  */
 import { useEffect, useMemo, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import {
   ReactFlow,
   Background,
@@ -102,6 +103,7 @@ function Btn({
 }
 
 function BenchCanvas(): JSX.Element {
+  const { t } = useTranslation('timeline')
   const [count, setCount] = useState(2000)
   const [withEdges, setWithEdges] = useState(false)
   const [cull, setCull] = useState(true)
@@ -140,7 +142,7 @@ function BenchCanvas(): JSX.Element {
         className="flex flex-col gap-2 rounded-lg border border-border bg-panel/95 p-2.5 text-[11px] shadow-xl"
       >
         <div className="flex items-center gap-2">
-          <span className="font-semibold uppercase tracking-wide text-muted-foreground">Perf bench</span>
+          <span className="font-semibold uppercase tracking-wide text-muted-foreground">{t('bench.enter')}</span>
           <FpsMeter />
         </div>
         <div className="flex items-center gap-1">
@@ -152,19 +154,18 @@ function BenchCanvas(): JSX.Element {
         </div>
         <div className="flex items-center gap-1">
           <Btn active={cull} onClick={() => setCull((v) => !v)}>
-            culling {cull ? 'on' : 'off'}
+            {t(cull ? 'bench.cullingOn' : 'bench.cullingOff')}
           </Btn>
           <Btn active={withEdges} onClick={() => setWithEdges((v) => !v)}>
-            edges {withEdges ? 'on' : 'off'}
+            {t(withEdges ? 'bench.edgesOn' : 'bench.edgesOff')}
           </Btn>
-          <Btn onClick={() => void fitView({ duration: 200 })}>fit</Btn>
+          <Btn onClick={() => void fitView({ duration: 200 })}>{t('bench.fit')}</Btn>
         </div>
         <div className="text-faint">
-          {nodes.length.toLocaleString()} nodes · {edges.length.toLocaleString()} edges
+          {t('bench.count', { nodes: nodes.length.toLocaleString(), edges: edges.length.toLocaleString() })}
         </div>
         <div className="max-w-44 text-[10px] leading-snug text-faint">
-          Fit = all nodes on screen (worst case; culling can&apos;t help). Zoom in + pan to feel the
-          realistic case. Watch the fps tone.
+          {t('bench.hint')}
         </div>
       </Panel>
     </ReactFlow>

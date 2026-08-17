@@ -1,0 +1,87 @@
+{
+  "title": "Character arc",
+  "all": "all",
+  "highlight": "Highlight",
+  "clear": "clear",
+  "row": {
+    "noFacet": "{{name}} — no {{facet}}",
+    "openPage": "{{name}} — open page",
+    "povScene": "{{name}} — POV scene",
+    "band_one": "{{name}} · {{title}}: {{count}} event",
+    "band_other": "{{name}} · {{title}}: {{count}} events"
+  },
+  "panel": {
+    "charactersNoun": "characters",
+    "rangeLabel": "Range",
+    "rangeTitle": "Trim characters by event count — drag the low thumb up to hide the barely-developed and focus the busiest arcs."
+  },
+  "detail": {
+    "firstAppears": "First appears",
+    "lastAppears": "Last appears",
+    "appearsIn": "Appears in",
+    "appearsCount_one": "{{count}} scene",
+    "appearsCount_other": "{{count}} scenes",
+    "wants": "Wants",
+    "goal": "Goal",
+    "status": "Status",
+    "tension": "Tension",
+    "over": "Over",
+    "with": "With",
+    "changes": "Changes",
+    "type": "Type",
+    "change": "Change",
+    "summary": "Summary",
+    "changesThisChapter_one": "{{count}} change this chapter",
+    "changesThisChapter_other": "{{count}} changes this chapter",
+    "changeCount_one": "{{count}} change",
+    "changeCount_other": "{{count}} changes",
+    "openCharPage": "Open character page",
+    "metaEvents_one": "{{count}} event",
+    "metaEvents_other": "{{count}} events",
+    "metaWindows_one": "{{count}} window",
+    "metaWindows_other": "{{count}} windows",
+    "journey": "Journey",
+    "heatCell": "{{title}} — {{count}} ln"
+  },
+  "help": {
+    "title": "Character arc — how to read it",
+    "grid": {
+      "title": "The grid",
+      "items": [
+        "Each **row** is a character; **columns** are scenes in reading order.",
+        "The **bands** group scenes into chapters (folders) — a character's changes are accumulated per chapter, not per scene, because a trait emerges over a stretch.",
+        "A cell's **dots** are the changes in that chapter, colored by kind; click a row to read them all."
+      ]
+    },
+    "facet": {
+      "title": "What changed (the facet)"
+    },
+    "change": {
+      "title": "How it changed",
+      "rows": {
+        "● gains": "they acquire it (a goal, an ally, leverage)",
+        "● loses": "they lose it",
+        "● revealed": "it becomes known — exposed to others or the reader"
+      }
+    },
+    "sheet": {
+      "title": "The Sheet (click a character)",
+      "items": [
+        "The sheet is a **chapter railway**: each chapter is a **station** — a stop (●) where the character changes, a hollow stop (○ ··) for a chapter they're **offstage or static**.",
+        "Open a station to read that chapter's **summary**, what they **want**, their **tension** (and with whom), and the **changes** themselves."
+      ]
+    },
+    "provenance": {
+      "title": "Provenance",
+      "items": [
+        "Arc is the analysis agent's reading of the dialogue — its understanding, not authored truth. Re-running analysis refreshes it."
+      ]
+    }
+  },
+  "graph": {
+    "edgeTip": "{{a}} — {{b}} · {{value}} — click for the relationship",
+    "nodeTip": "{{name}} · {{value}}",
+    "needTwo": "Need at least two characters to graph relationships.",
+    "group": "Group {{n}}"
+  }
+}

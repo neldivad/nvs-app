@@ -17,15 +17,17 @@ import { cn } from '@/lib/utils'
 import { StoreCard, Chip } from '@/components/store/StoreCard'
 import { BookCard } from '@/components/store/ProjectCard'
 import type { DownloadEntry, ProjectInfo, RegistryIndex, RegistryWork, WorkCard } from '@shared/ipc'
+import type { TFunction } from 'i18next'
+import { useTranslation } from 'react-i18next'
 
 type SubTab = 'browse' | 'library' | 'history'
 
 /** The "Size" line — scene / world / custody page counts. Beats are dropped on purpose: a raw beat count
  *  says nothing to a reader. World/custody are optional on registry entries (thin/older index) → omit what's absent. */
-function sizeMeta(scenes: number, world?: number, custody?: number): string {
-  const parts = [`${scenes} scene${scenes === 1 ? '' : 's'}`]
-  if (world != null) parts.push(`${world} world`)
-  if (custody != null) parts.push(`${custody} custody`)
+function sizeMeta(t: TFunction, scenes: number, world?: number, custody?: number): string {
+  const parts = [t('size.scenes', { count: scenes })]
+  if (world != null) parts.push(t('size.world', { n: world }))
+  if (custody != null) parts.push(t('size.custody', { n: custody }))
   return parts.join(' · ')
 }
 
@@ -56,14 +58,15 @@ function registryWorkToProjectInfo(w: RegistryWork): ProjectInfo {
 /** A scrollable strip of in-app screenshots (RegistryWork.previews) — what the work looks like INSIDE NVS, so a
  *  reader can inspect the writing experience before installing. Click to zoom; renders nothing when there are none. */
 function PreviewStrip({ previews }: { previews?: { label: string; url: string }[] }): JSX.Element | null {
+  const { t } = useTranslation('community')
   const [zoom, setZoom] = useState<string | null>(null)
   if (!previews?.length) return null
   return (
     <div className="mt-5">
-      <div className="mb-2 type-caption font-medium uppercase tracking-wide text-faint">Inside the app</div>
+      <div className="mb-2 type-caption font-medium uppercase tracking-wide text-faint">{t('preview.heading')}</div>
       <div className="flex gap-3 overflow-x-auto pb-1">
         {previews.map((p) => (
-          <button key={p.url} type="button" onClick={() => setZoom(p.url)} title={`${p.label} — click to enlarge`} className="group shrink-0 text-left">
+          <button key={p.url} type="button" onClick={() => setZoom(p.url)} title={t('tooltip.enlarge', { label: p.label })} className="group shrink-0 text-left">
             <img src={p.url} alt={p.label} loading="lazy" className="h-40 w-auto rounded-md border border-border object-cover transition-transform group-hover:scale-[1.015]" />
             <div className="mt-1 type-caption text-muted-foreground">{p.label}</div>
           </button>
@@ -79,6 +82,7 @@ function PreviewStrip({ previews }: { previews?: { label: string; url: string }[
 }
 
 export function CommunityPage({ search }: { search: string }): JSX.Element {
+  const { t } = useTranslation('community')
   const works = useWorkspace((s) => s.works)
   const loadWorks = useWorkspace((s) => s.loadWorks)
   const openWork = useWorkspace((s) => s.openWork)
@@ -130,12 +134,12 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
       await loadWorks()
       loadDownloads() // the reading list just gained a row
     } else {
-      setInstalls((s) => ({ ...s, [w.id]: { status: 'error', error: res.error ?? 'install failed' } }))
+      setInstalls((s) => ({ ...s, [w.id]: { status: 'error', error: res.error ?? t('error.installFailed') } }))
     }
   }
   const open = (path: string): void => { void openWork(path); setDiscoverOpen(null) }
   async function remove(w: WorkCard): Promise<void> {
-    if (!confirm(`Remove "${w.title ?? w.name}" from your library? The files are deleted from disk.`)) return
+    if (!confirm(t('confirm.remove', { title: w.title ?? w.name }))) return
     await window.nvs.deleteWork(w.path)
     await loadWorks()
     setSelected(null)
@@ -157,20 +161,20 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
       const installed = st?.status === 'done' || inLibrary(w)
       return (
         <DetailShell onBack={() => setSelected(null)} actions={
-          st?.status === 'done' ? <Button size="sm" onClick={() => open(st.path)}>Open</Button>
-            : installed ? <span className="flex items-center gap-1 type-caption text-ok"><Check className="size-3.5" /> Installed</span>
-            : st?.status === 'installing' ? <Button size="sm" disabled><Loader2 className="size-3.5 animate-spin" /> Installing…</Button>
-            : tooOld(w) ? <Button size="sm" variant="outline" disabled>Needs NVS ≥ {w.minAppVersion}</Button>
-            : <Button size="sm" onClick={() => void install(w)}><Download className="size-3.5" /> Install</Button>
+          st?.status === 'done' ? <Button size="sm" onClick={() => open(st.path)}>{t('button.open')}</Button>
+            : installed ? <span className="flex items-center gap-1 type-caption text-ok"><Check className="size-3.5" /> {t('status.installed')}</span>
+            : st?.status === 'installing' ? <Button size="sm" disabled><Loader2 className="size-3.5 animate-spin" /> {t('button.installing')}</Button>
+            : tooOld(w) ? <Button size="sm" variant="outline" disabled>{t('button.needsVersion', { version: w.minAppVersion })}</Button>
+            : <Button size="sm" onClick={() => void install(w)}><Download className="size-3.5" /> {t('button.install')}</Button>
         }>
           <BookCard info={registryWorkToProjectInfo(w)} fallbackTitle={w.title} />
           <PreviewStrip previews={w.previews} />
           <div className="mt-4 flex flex-wrap items-center gap-3 type-caption text-muted-foreground">
-            <span>{sizeMeta(w.scenes, w.worldPages, w.custodyPages)}</span>
+            <span>{sizeMeta(t, w.scenes, w.worldPages, w.custodyPages)}</span>
             <span>{(w.sizeBytes / 1024).toFixed(0)} KB</span>
-            {w.oracleScore >= 1 && <span className="flex items-center gap-0.5 text-ok"><ShieldCheck className="size-3" /> verified clean</span>}
+            {w.oracleScore >= 1 && <span className="flex items-center gap-0.5 text-ok"><ShieldCheck className="size-3" /> {t('status.verifiedClean')}</span>}
           </div>
-          <p className="mt-3 type-caption text-muted-foreground">A verified community work. Installing downloads the bundle, checks its integrity (sha256), and adds a copy to your library — yours to edit.</p>
+          <p className="mt-3 type-caption text-muted-foreground">{t('detail.registryBlurb')}</p>
           {st?.status === 'error' && <p className="mt-2 type-caption text-flag">{st.error}</p>}
         </DetailShell>
       )
@@ -178,11 +182,11 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
     const w = selected.w
     return (
       <DetailShell onBack={() => setSelected(null)} actions={<>
-        <Button size="sm" onClick={() => open(w.path)}>Open</Button>
-        <Button size="sm" variant="outline" onClick={() => void remove(w)} title="Delete from your library"><Trash2 className="size-3.5" /> Remove</Button>
+        <Button size="sm" onClick={() => open(w.path)}>{t('button.open')}</Button>
+        <Button size="sm" variant="outline" onClick={() => void remove(w)} title={t('tooltip.deleteFromLibrary')}><Trash2 className="size-3.5" /> {t('button.remove')}</Button>
       </>}>
         {libInfo ? <BookCard info={libInfo} fallbackTitle={w.title ?? w.name} basePath={w.path} /> : <div className="flex h-40 items-center justify-center text-faint"><Loader2 className="size-5 animate-spin" /></div>}
-        <p className="mt-3 type-caption text-muted-foreground">In your library. Open it to write + analyze, or remove it from disk.</p>
+        <p className="mt-3 type-caption text-muted-foreground">{t('detail.libraryBlurb')}</p>
       </DetailShell>
     )
   }
@@ -192,9 +196,9 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
     <div>
       <SubTabs sub={sub} setSub={setSub} libraryCount={works.length} historyCount={downloads.length} />
       {sub === 'browse' ? (
-        index === 'loading' ? <Loading text="Fetching registry…" />
-        : index === 'unreachable' ? <Empty text="Registry unreachable. Check your connection — or set NVS_REGISTRY_URL to a local index.json." />
-        : registryWorks.length === 0 ? <Empty text={q ? 'No works match your search.' : 'No works in the registry.'} />
+        index === 'loading' ? <Loading text={t('loading.registry')} />
+        : index === 'unreachable' ? <Empty text={t('empty.registryUnreachable')} />
+        : registryWorks.length === 0 ? <Empty text={q ? t('empty.noMatch') : t('empty.noWorks')} />
         : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {registryWorks.map((w) => {
@@ -207,11 +211,11 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
                   icon={BookOpen}
                   title={w.title}
                   subtitle={w.author ?? undefined}
-                  badge={w.oracleScore >= 1 ? <span title="Verified clean"><ShieldCheck className="size-3.5 shrink-0 text-ok" /></span> : undefined}
+                  badge={w.oracleScore >= 1 ? <span title={t('tooltip.verifiedClean')}><ShieldCheck className="size-3.5 shrink-0 text-ok" /></span> : undefined}
                   meta={<>
-                    <span>{sizeMeta(w.scenes, w.worldPages, w.custodyPages)}</span>
+                    <span>{sizeMeta(t, w.scenes, w.worldPages, w.custodyPages)}</span>
                     {(Array.isArray(w.genre) ? w.genre : []).slice(0, 2).map((g) => <Chip key={g}>{g}</Chip>)}
-                    {installed && <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> in library</span>}
+                    {installed && <span className="flex items-center gap-0.5 text-ok"><Check className="size-3" /> {t('status.inLibrary')}</span>}
                   </>}
                   onOpen={() => setSelected({ kind: 'registry', w })}
                 />
@@ -226,7 +230,7 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
             <RestoreExamples onDone={loadWorks} />
           </div>
           {libraryWorks.length === 0 ? (
-            <Empty text={q ? 'No works match your search.' : 'Your library is empty — install a work from Browse, or restore the examples above.'} />
+            <Empty text={q ? t('empty.noMatch') : t('empty.libraryEmpty')} />
           ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {libraryWorks.map((w) => (
@@ -235,11 +239,11 @@ export function CommunityPage({ search }: { search: string }): JSX.Element {
                 icon={BookOpen}
                 title={w.title ?? w.name}
                 subtitle={w.author ?? undefined}
-                meta={<span>{sizeMeta(w.scenes, w.worldPages, w.custodyPages)}</span>}
+                meta={<span>{sizeMeta(t, w.scenes, w.worldPages, w.custodyPages)}</span>}
                 onOpen={() => setSelected({ kind: 'work', w })}
                 actions={<>
-                  <Button size="sm" variant="ghost" onClick={() => void remove(w)} title="Remove from library"><Trash2 className="size-3.5" /></Button>
-                  <Button size="sm" onClick={() => open(w.path)}>Open</Button>
+                  <Button size="sm" variant="ghost" onClick={() => void remove(w)} title={t('tooltip.removeFromLibrary')}><Trash2 className="size-3.5" /></Button>
+                  <Button size="sm" onClick={() => open(w.path)}>{t('button.open')}</Button>
                 </>}
               />
             ))}
@@ -264,7 +268,8 @@ function History({ rows, works, registryWorks, q, onOpen, onGetAgain, installs }
   onGetAgain: (w: RegistryWork) => Promise<void>
   installs: Record<string, InstallState>
 }): JSX.Element {
-  if (rows.length === 0) return <Empty text={q ? 'No downloads match your search.' : "Your reading list is empty — anything you install from Browse shows up here, and stays even if you later delete the local copy."} />
+  const { t } = useTranslation('community')
+  if (rows.length === 0) return <Empty text={q ? t('empty.noDownloadMatch') : t('empty.historyEmpty')} />
   const byPath = new Map(works.map((w) => [w.path, w]))
   const byRegistryId = new Map(registryWorks.map((w) => [w.id, w]))
   return (
@@ -278,18 +283,18 @@ function History({ rows, works, registryWorks, q, onOpen, onGetAgain, installs }
             <Clock className="size-4 shrink-0 text-faint" />
             <div className="min-w-0 flex-1">
               <div className="type-card-title truncate">{d.title}</div>
-              <div className="type-caption truncate text-faint">{[d.author, `v${d.version}`, ago(d.at)].filter(Boolean).join(' · ')}</div>
+              <div className="type-caption truncate text-faint">{[d.author, `v${d.version}`, ago(t, d.at)].filter(Boolean).join(' · ')}</div>
             </div>
             {onDisk ? (
-              <Button size="sm" onClick={() => onOpen(onDisk.path)}>Open</Button>
+              <Button size="sm" onClick={() => onOpen(onDisk.path)}>{t('button.open')}</Button>
             ) : st?.status === 'done' ? (
-              <Button size="sm" onClick={() => onOpen(st.path)}>Open</Button>
+              <Button size="sm" onClick={() => onOpen(st.path)}>{t('button.open')}</Button>
             ) : st?.status === 'installing' ? (
               <Button size="sm" disabled><Loader2 className="size-3.5 animate-spin" /></Button>
             ) : reget ? (
-              <Button size="sm" variant="outline" onClick={() => void onGetAgain(reget)} title="Download it again"><Download className="size-3.5" /> Get again</Button>
+              <Button size="sm" variant="outline" onClick={() => void onGetAgain(reget)} title={t('tooltip.downloadAgain')}><Download className="size-3.5" /> {t('button.getAgain')}</Button>
             ) : (
-              <span className="type-caption text-faint">no longer in registry</span>
+              <span className="type-caption text-faint">{t('status.notInRegistry')}</span>
             )}
           </div>
         )
@@ -301,11 +306,12 @@ function History({ rows, works, registryWorks, q, onOpen, onGetAgain, installs }
 /** DetailView shell for content — Back + body + a right-aligned actions row. The body is a BookCard, which owns
  *  its own rich header (cover/title/facts), so this shell deliberately has no header of its own (no double title). */
 function DetailShell({ onBack, actions, children }: { onBack: () => void; actions: JSX.Element; children: React.ReactNode }): JSX.Element {
+  const { t } = useTranslation('community')
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-4 flex items-center justify-between gap-2">
         <button onClick={onBack} className="type-caption flex items-center gap-1 rounded-md px-1.5 py-1 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground">
-          <ArrowLeft className="size-4" /> Back
+          <ArrowLeft className="size-4" /> {t('button.back')}
         </button>
         <div className="flex shrink-0 items-center gap-2">{actions}</div>
       </div>
@@ -317,6 +323,7 @@ function DetailShell({ onBack, actions, children }: { onBack: () => void; action
 /** Re-add the bundled examples (Getting Started + demos) the user has deleted — pristine from the app bundle,
  *  skipping any still present. The shipped pre-analysed content is therefore never permanently losable. */
 function RestoreExamples({ onDone }: { onDone: () => Promise<void> | void }): JSX.Element {
+  const { t } = useTranslation('community')
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const run = async (): Promise<void> => {
@@ -325,43 +332,44 @@ function RestoreExamples({ onDone }: { onDone: () => Promise<void> | void }): JS
     const r = await window.nvs.restoreExamples()
     await onDone()
     setBusy(false)
-    setMsg(r.restored.length ? `Restored ${r.restored.length}` : 'All examples already present')
+    setMsg(r.restored.length ? t('restore.restored', { n: r.restored.length }) : t('restore.allPresent'))
   }
   return (
     <div className="flex items-center gap-2">
       {msg && <span className="type-caption text-faint">{msg}</span>}
-      <Button size="sm" variant="outline" disabled={busy} onClick={() => void run()} title="Re-add the bundled Getting Started + demo projects (skips any you still have)">
-        {busy ? <Loader2 className="size-3.5 animate-spin" /> : <RotateCcw className="size-3.5" />} Restore examples
+      <Button size="sm" variant="outline" disabled={busy} onClick={() => void run()} title={t('tooltip.restoreExamples')}>
+        {busy ? <Loader2 className="size-3.5 animate-spin" /> : <RotateCcw className="size-3.5" />} {t('button.restoreExamples')}
       </Button>
     </div>
   )
 }
 
 function SubTabs({ sub, setSub, libraryCount, historyCount }: { sub: SubTab; setSub: (t: SubTab) => void; libraryCount: number; historyCount: number }): JSX.Element {
-  const btn = (t: SubTab, label: string): JSX.Element => (
-    <button onClick={() => setSub(t)} className={cn('type-caption rounded-md px-2.5 py-1 transition-colors', sub === t ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}>{label}</button>
+  const { t } = useTranslation('community')
+  const btn = (tab: SubTab, label: string): JSX.Element => (
+    <button onClick={() => setSub(tab)} className={cn('type-caption rounded-md px-2.5 py-1 transition-colors', sub === tab ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:text-foreground')}>{label}</button>
   )
   return (
     <div className="mb-4 flex items-center gap-1">
-      {btn('browse', 'Browse')}
-      {btn('library', `Library${libraryCount ? ` · ${libraryCount}` : ''}`)}
-      {btn('history', `History${historyCount ? ` · ${historyCount}` : ''}`)}
+      {btn('browse', t('tab.browse'))}
+      {btn('library', `${t('tab.library')}${libraryCount ? ` · ${libraryCount}` : ''}`)}
+      {btn('history', `${t('tab.history')}${historyCount ? ` · ${historyCount}` : ''}`)}
     </div>
   )
 }
 
 /** Coarse relative time — good enough for a reading-list timestamp (no date lib). */
-function ago(at: number): string {
+function ago(t: TFunction, at: number): string {
   const s = Math.max(0, Math.floor((Date.now() - at) / 1000))
-  if (s < 60) return 'just now'
+  if (s < 60) return t('time.justNow')
   const m = Math.floor(s / 60)
-  if (m < 60) return `${m}m ago`
+  if (m < 60) return t('time.minutes', { n: m })
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h ago`
+  if (h < 24) return t('time.hours', { n: h })
   const d = Math.floor(h / 24)
-  if (d < 30) return `${d}d ago`
+  if (d < 30) return t('time.days', { n: d })
   const mo = Math.floor(d / 30)
-  return mo < 12 ? `${mo}mo ago` : `${Math.floor(mo / 12)}y ago`
+  return mo < 12 ? t('time.months', { n: mo }) : t('time.years', { n: Math.floor(mo / 12) })
 }
 
 const Loading = ({ text }: { text: string }): JSX.Element => <div className="type-body-sm flex items-center justify-center gap-2 p-16 text-muted-foreground"><Loader2 className="size-4 animate-spin" /> {text}</div>

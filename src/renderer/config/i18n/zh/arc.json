@@ -1,0 +1,87 @@
+{
+  "title": "角色弧光",
+  "all": "全部",
+  "highlight": "高亮",
+  "clear": "清除",
+  "row": {
+    "noFacet": "{{name}} — 无 {{facet}}",
+    "openPage": "{{name}} — 打开页面",
+    "povScene": "{{name}} — POV 场景",
+    "band_one": "{{name}} · {{title}}：{{count}} 个事件",
+    "band_other": "{{name}} · {{title}}：{{count}} 个事件"
+  },
+  "panel": {
+    "charactersNoun": "角色",
+    "rangeLabel": "范围",
+    "rangeTitle": "按事件数筛选角色 — 向上拖动下限滑块，隐藏发展不足的角色，聚焦最活跃的角色弧光。"
+  },
+  "detail": {
+    "firstAppears": "首次出现",
+    "lastAppears": "最后出现",
+    "appearsIn": "出现于",
+    "appearsCount_one": "{{count}} 个场景",
+    "appearsCount_other": "{{count}} 个场景",
+    "wants": "愿望",
+    "goal": "目标",
+    "status": "状态",
+    "tension": "张力",
+    "over": "关于",
+    "with": "与",
+    "changes": "变化",
+    "type": "类型",
+    "change": "变化",
+    "summary": "摘要",
+    "changesThisChapter_one": "本章 {{count}} 处变化",
+    "changesThisChapter_other": "本章 {{count}} 处变化",
+    "changeCount_one": "{{count}} 处变化",
+    "changeCount_other": "{{count}} 处变化",
+    "openCharPage": "打开角色页面",
+    "metaEvents_one": "{{count}} 个事件",
+    "metaEvents_other": "{{count}} 个事件",
+    "metaWindows_one": "{{count}} 个窗口",
+    "metaWindows_other": "{{count}} 个窗口",
+    "journey": "旅程",
+    "heatCell": "{{title}} — {{count}} 行"
+  },
+  "help": {
+    "title": "人物弧线——如何阅读",
+    "grid": {
+      "title": "网格",
+      "items": [
+        "每一**行**代表一个角色；**列**按阅读顺序排列场景。",
+        "**色带**将场景按章节（文件夹）分组——角色的变化按章节累积，而不是按场景累积，因为特质是在一段过程中逐渐显现的。",
+        "单元格中的**圆点**表示该章节中的变化，并按类型着色；点击一行即可查看全部变化。"
+      ]
+    },
+    "facet": {
+      "title": "发生了什么变化（维度）"
+    },
+    "change": {
+      "title": "变化方式",
+      "rows": {
+        "● gains": "他们获得了它（目标、盟友、筹码）",
+        "● loses": "他们失去了它",
+        "● revealed": "它变得为人所知——被他人或读者发现"
+      }
+    },
+    "sheet": {
+      "title": "角色表（点击一个角色）",
+      "items": [
+        "角色表是一条**章节铁路**：每个章节都是一个**车站**——实心站点（●）表示角色在此发生变化，空心站点（○ ··）表示角色在该章节**不在场或没有变化**。",
+        "打开一个车站，即可查看该章节的**摘要**、他们**想要什么**、他们的**张力**（以及与谁之间），还有具体的**变化**。"
+      ]
+    },
+    "provenance": {
+      "title": "来源",
+      "items": [
+        "人物弧线是分析代理对对话的解读——是它的理解，并非作者明确设定的事实。重新运行分析即可刷新。"
+      ]
+    }
+  },
+  "graph": {
+    "edgeTip": "{{a}} — {{b}} · {{value}} — 点击查看关系",
+    "nodeTip": "{{name}} · {{value}}",
+    "needTwo": "至少需要两个角色才能生成关系图。",
+    "group": "分组 {{n}}"
+  }
+}

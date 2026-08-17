@@ -9,6 +9,7 @@
  * app-rendered version would have been a cheat: the core implementing each extension's face.
  */
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, Square, Loader2 } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
@@ -18,6 +19,7 @@ const isLive = (s: ExtensionStatus['state']): boolean => s === 'running' || s ==
 
 /** One extension's floating panel: the app chrome around a sandboxed iframe it forwards events into. */
 function Panel({ id, name, entry, status }: { id: string; name: string; entry: string; status: ExtensionStatus }): JSX.Element {
+  const { t } = useTranslation('extensions')
   const dismiss = useWorkspace((s) => s.dismissExtensionRun)
   const setRun = useWorkspace((s) => s.setExtensionRun)
   const frame = useRef<HTMLIFrameElement>(null)
@@ -50,17 +52,17 @@ function Panel({ id, name, entry, status }: { id: string; name: string; entry: s
         {live && <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-thread" />}
         <span className="min-w-0 flex-1 truncate">{name}</span>
         {live ? (
-          <button onClick={() => void window.nvs.stopExtension(id).then(() => setRun(id, name, { ...status, state: 'stopped' })).catch(() => {})} title="Stop" className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-panel-soft hover:text-flag">
+          <button onClick={() => void window.nvs.stopExtension(id).then(() => setRun(id, name, { ...status, state: 'stopped' })).catch(() => {})} title={t('panel.stop')} className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-panel-soft hover:text-flag">
             {status.state === 'starting' ? <Loader2 className="size-3 animate-spin" /> : <Square className="size-2.5 fill-current" />}
           </button>
         ) : (
-          <button onClick={() => dismiss(id)} title="Dismiss" className="flex size-5 items-center justify-center rounded text-faint hover:bg-panel-soft hover:text-foreground"><X className="size-3" /></button>
+          <button onClick={() => dismiss(id)} title={t('panel.dismiss')} className="flex size-5 items-center justify-center rounded text-faint hover:bg-panel-soft hover:text-foreground"><X className="size-3" /></button>
         )}
       </div>
       {/* The extension's own UI. sandbox="allow-scripts" (no allow-same-origin) → opaque origin, no storage/parent/network. */}
       <iframe
         ref={frame}
-        title={`${name} panel`}
+        title={t('panel.title', { name })}
         src={`nvs-ext://${id}/${entry}`}
         sandbox="allow-scripts"
         className="block h-[84px] w-full border-0 bg-transparent"

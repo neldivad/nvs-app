@@ -1,0 +1,122 @@
+{
+  "loading": "Loading corkboard…",
+  "common": {
+    "clear": "clear",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "remove": "Remove",
+    "rename": "Rename"
+  },
+  "time": {
+    "justNow": "just now",
+    "min": "{{n}} min ago",
+    "hr": "{{n}} hr ago",
+    "day_one": "{{count}} day ago",
+    "day_other": "{{count}} days ago",
+    "mo": "{{n}} mo ago",
+    "yr": "{{n}} yr ago"
+  },
+  "refChip": {
+    "pageFallback": "page",
+    "makePriority": "Make priority (show first)",
+    "remove": "Remove"
+  },
+  "card": {
+    "untitled": "Untitled card",
+    "doubleClickToOpen": "Double-click to open…"
+  },
+  "fab": {
+    "help": "How the corkboard works"
+  },
+  "board": {
+    "fullNotice": "This board is full — {{max}} cards. Open another board.",
+    "full": "This board is full — {{max}} cards",
+    "newBoard": "New board",
+    "newBoardTitle": "Move your next notes to a fresh board",
+    "emptyCue": "Right-click the board to add your first note",
+    "boards": "Boards",
+    "maxTitle": "Max {{max}} boards",
+    "limitReached": "You’ve reached the {{max}}-board limit.",
+    "emptyBoards": "No boards yet."
+  },
+  "group": {
+    "selected": "{{n}} selected",
+    "connectAll": "Connect all to…",
+    "disconnectAll": "Disconnect all",
+    "setGroup": "Set group",
+    "delete": "Delete",
+    "connectHint": "Click a card to connect all {{n}} selected to it"
+  },
+  "feed": {
+    "show": "Show feed ({{n}})",
+    "title": "Feed · {{n}}",
+    "dragResize": "Drag to resize",
+    "closeAllTitle": "Close all posts",
+    "closeAll": "Close all",
+    "collapse": "Collapse"
+  },
+  "post": {
+    "cardRemoved": "Card removed.",
+    "removeFromFeed": "Remove from feed",
+    "removeAllLinks": "Remove all links",
+    "clear": "Clear",
+    "linksMax": "{{max}} links max",
+    "searchPages": "Search pages…",
+    "attachTitle": "Attach a page",
+    "attach": "Attach",
+    "deleteAllNotes": "Delete all notes",
+    "clearAll": "Clear all",
+    "noNotes": "No notes yet — add one below.",
+    "noteFallback": "note",
+    "deleteNote": "Delete note",
+    "noteLimit": "Note limit reached ({{max}})",
+    "addNotePlaceholder": "Add a note… (⌘↵)",
+    "addNoteTitle": "Add note (⌘↵)",
+    "add": "Add",
+    "pageFallback": "Page"
+  },
+  "help": {
+    "title": "Corkboard — how it works",
+    "addEdit": {
+      "title": "Add & edit",
+      "rows": [
+        { "k": "Right-click the board", "v": "Add a card where you click" },
+        { "k": "Type in the card header", "v": "Name it — a headline like “Childe is a secret Fatui”" },
+        { "k": "Double-click a card", "v": "Open it as a post in the feed — add notes, attach pages" },
+        { "k": "Drag the header grip", "v": "Move a card" },
+        { "k": "Drag a corner", "v": "Resize a card" },
+        { "k": "Hover → ×", "v": "Delete a card" }
+      ]
+    },
+    "linkPages": {
+      "title": "Link pages",
+      "rows": [
+        { "k": "Attach (in a post)", "v": "Search scenes & world pages — chips are colored by type" },
+        { "k": "⭐ on a chip", "v": "Make it the priority link (leads the row)" },
+        { "k": "Click a chip", "v": "Open that scene/page" }
+      ]
+    },
+    "connect": {
+      "title": "Connect",
+      "rows": [
+        { "k": "Right dot → a card", "v": "Draw a connection — release anywhere on the target card" },
+        { "k": "Select a group → Connect all to", "v": "Link every selected card to one target (many-to-one)" }
+      ]
+    },
+    "selectGroup": {
+      "title": "Select a group",
+      "rows": [
+        { "k": "⇧ drag", "v": "Draw a selection box — any card the box touches is picked up" },
+        { "k": "Group float (top-right)", "v": "Connect all to · Set group color · Delete" },
+        { "k": "Backspace / Delete", "v": "Remove the selection" }
+      ]
+    },
+    "boards": {
+      "title": "Boards",
+      "rows": [
+        { "k": "Left sidebar", "v": "Switch, rename, or delete boards" },
+        { "k": "100 cards · 100 boards", "v": "Open another board when one fills up" }
+      ]
+    }
+  }
+}

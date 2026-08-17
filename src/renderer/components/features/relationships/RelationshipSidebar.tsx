@@ -4,6 +4,7 @@
  * from the store, so this column and the pane stay in sync. Reuses the shared `Roster` + ranking hook.
  */
 import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { Roster, rankChars, useCastRanking } from '@/components/features/relationships/RelationshipPanel'
 import { SidebarHeader } from '@/components/layout/SidebarKit'
@@ -11,6 +12,7 @@ import type { SearchResult } from '@/components/ui/SearchPopover'
 import { compactNumber } from '@/lib/utils'
 
 export function RelationshipSidebar(): JSX.Element {
+  const { t } = useTranslation('relationships')
   const characters = useWorkspace((s) => s.characters)
   const relA = useWorkspace((s) => s.relA)
   const relB = useWorkspace((s) => s.relB)
@@ -25,7 +27,7 @@ export function RelationshipSidebar(): JSX.Element {
   }
   return (
     <div className="flex h-full flex-col bg-panel">
-      <SidebarHeader title="Reference" search={{ results: searchResults, onSelect: setRelA, placeholder: 'Search characters…' }} />
+      <SidebarHeader title={t('sidebar.reference')} search={{ results: searchResults, onSelect: setRelA, placeholder: t('panel.searchCharacters') }} />
       <div className="min-h-0 flex-1">
         <Roster chars={ranked} selected={relA} disabled={relB} onPick={setRelA} metric={appearances} />
       </div>

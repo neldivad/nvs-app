@@ -1,0 +1,126 @@
+{
+  "view": {
+    "write": "写作",
+    "preview": "预览",
+    "source": "源码",
+    "chart": "图表",
+    "records": "记录"
+  },
+  "action": {
+    "properties": "属性",
+    "print": "打印",
+    "save": "保存",
+    "cancel": "取消",
+    "apply": "应用",
+    "openProperties": "打开属性"
+  },
+  "tooltip": {
+    "unsaved": "未保存",
+    "showOutline": "显示大纲",
+    "hideOutline": "隐藏大纲",
+    "showInspector": "显示场景检查器 — 摘要、角色、线程、标记、揭示",
+    "hideInspector": "隐藏场景检查器",
+    "print": "打印 / 另存为 PDF（纸张预览）",
+    "goToLine": "转到源码中的第 {{line}} 行",
+    "viewFullImage": "查看完整图片"
+  },
+  "find": {
+    "placeholder": "在页面中查找"
+  },
+  "empty": {
+    "pick": "从侧边栏选择一个页面，开始写作。",
+    "scene": "此场景为空。",
+    "page": "此 {{kind}} 页面为空。",
+    "sceneHint": {
+      "typing": "直接开始输入旁白",
+      "blockPre": "类型",
+      "blockPost": "以创建区块 — 说话、思考、动作、转场",
+      "speaker": "设置说话者",
+      "propertiesPre": "打开",
+      "propertiesPost": "设置角色与节拍（目标 · 冲突 · 结果）"
+    },
+    "worldHint": {
+      "propertiesPre": "打开",
+      "propertiesPost": "设置页面的详细信息和阶段",
+      "markdownPre": "使用 Markdown 编写 — 以",
+      "markdownMid": "开头（或输入",
+      "markdownPost": "）",
+      "preview": "切换到预览以查看 wiki 面板"
+    }
+  },
+  "confirm": {
+    "replaceTitle": "替换整个页面？",
+    "replace": "替换",
+    "replaceLead": "这将替换全部",
+    "replaceTrail": "为 AI 版本（按一次 Ctrl/Cmd+Z 即可撤销）。",
+    "replaceEdited": "此操作执行后你还编辑过页面 — 这些编辑将丢失。"
+  },
+  "property": {
+    "titleScene": "场景属性",
+    "titleOther": "{{kind}} 属性",
+    "phase": "阶段",
+    "media": "媒体",
+    "sections": "分区",
+    "sectionsHintPre": "在下方页面中。输入",
+    "sectionsHintPost": "即可在撰写选项卡中添加。",
+    "cover": "封面",
+    "avatar": "头像",
+    "remove": "移除",
+    "addImages": "添加图片",
+    "firstImageScene": "第一张图片是时间线上显示的封面。",
+    "firstImageWorld": "第一张图片是列表中使用的头像。",
+    "openPage": "打开页面",
+    "noPages": "world/{{kind}}s 中尚无 {{kind}} 页面。",
+    "defaultsToPre": "默认为",
+    "defaultsToPost": "（场景的主要发言者）——选择以覆盖默认值。",
+    "searchPlaceholder": "@ 搜索 {{label}}…",
+    "commaSeparated": "用逗号分隔",
+    "select": "选择…",
+    "none": "无"
+  },
+  "timing": {
+    "relative": "相对",
+    "absolute": "绝对"
+  },
+  "preview": {
+    "untitled": "无标题",
+    "mentionedBy": "提及者",
+    "more": "另有 {{count}} 个",
+    "speakerIsA": "是你场景中的发言者，但尚无角色页面。",
+    "speakerCreates": "创建角色页面后会添加",
+    "createCharacter": "创建角色页面",
+    "close": "关闭",
+    "openCharacter": "打开角色页面",
+    "linkNoId": "没有 id 为 \"{{id}}\" 的页面或已发现概念",
+    "linkLearnMore": "{{label}} — 尚无页面 · 了解更多"
+  },
+  "tab": {
+    "allOpen": "所有打开的标签页",
+    "close": "关闭",
+    "closeOthers": "关闭其他标签页",
+    "closeAll": "全部关闭"
+  },
+  "findBar": {
+    "placeholder": "查找",
+    "prev": "上一个（{{keys}}）",
+    "next": "下一个（{{keys}}）",
+    "closeBtn": "关闭（{{keys}}）"
+  },
+  "slashMenu": {
+    "added": "已添加"
+  },
+  "outline": {
+    "title": "大纲"
+  },
+  "aside": {
+    "resize": "拖动以调整大小"
+  },
+  "print": {
+    "titleWith": "打印 — {{title}}",
+    "previewHint": "预览 — 滚动查看；PDF 将使用此主题",
+    "light": "浅色",
+    "dark": "深色",
+    "save": "打印 / 另存为 PDF",
+    "iframeTitle": "打印预览"
+  }
+}

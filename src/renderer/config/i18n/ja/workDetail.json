@@ -1,0 +1,9 @@
+{
+  "untitled": "無題",
+  "confirm": "<name>{{name}}</name> をシステムのゴミ箱に移動しますか？（復元可能）",
+  "cancel": "キャンセル",
+  "moveToTrash": "ゴミ箱に移動",
+  "delete": "削除",
+  "fork": "フォーク",
+  "open": "プロジェクトを開く"
+}

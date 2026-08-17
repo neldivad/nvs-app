@@ -1,0 +1,92 @@
+{
+  "help": {
+    "title": "Lore — 工作原理",
+    "whatItShows": {
+      "title": "展示内容",
+      "items": [
+        "每个**行**代表一个故事不断提及的世界事实（一条规则、一段背景故事或某件物品的历史）——由分析找出，而非人工撰写。",
+        "从**左到右**阅读一行：它表示该事实的**揭示节奏**——何时进入故事，以及如何在各个场景中逐步呈现给读者。"
+      ]
+    },
+    "markers": {
+      "title": "标记说明",
+      "rows": {
+        "Debut — soft shade": "该事实的首次揭示——它进入故事的位置",
+        "Support — solid dot": "后续揭示，为该事实补充内容或再次提及",
+        "Paradox — red ◆": "与此前 canon 相矛盾的揭示",
+        "a line across a row": "该事实的跨度，从首次到最后一次揭示：长 = WOVEN，短 = DUMPED",
+        "debut far right": "该事实很晚才引入——检查它是否在发挥作用前已有铺垫",
+        "columns": "按阅读顺序排列的场景；色带按幕/章节对场景分组"
+      }
+    },
+    "filters": {
+      "title": "筛选器",
+      "rows": {
+        "Paradox": "彼此矛盾的事实——优先修复这些问题",
+        "No page": "该事实反复出现，但你从未为它撰写 lore 页面——“意外形成的 canon”",
+        "Has page": "你已为其撰写 lore 页面的事实"
+      }
+    },
+    "decisions": {
+      "title": "它能指导的决策",
+      "items": [
+        "**修复矛盾**——Paradox 标记表示两次揭示互不一致；打开该主题即可查看（更深入的跨场景检查位于 Coherence 中）。",
+        "**提前铺垫**——如果某个事实很晚才首次出现，却在前面早已被依赖，就应更早埋下线索。",
+        "**记录下来**——反复出现的“No page”事实属于意外形成的 canon；打开它，将其正式整理成 lore 页面。"
+      ]
+    }
+  },
+  "filters": {
+    "all": "全部",
+    "paradox": "悖论",
+    "noPage": "无页面",
+    "hasPage": "有页面",
+    "noPageTitle": "尚未有书面设定页面的事实——意外成为正典",
+    "hasPageTitle": "你已为其撰写设定页面的事实"
+  },
+  "rail": {
+    "name": "背景知识",
+    "caption": "设定——揭示节奏",
+    "noTopicsInFilter": "此筛选条件中没有主题。",
+    "topicsNoun": "主题",
+    "rangeLabel": "范围",
+    "rangeAll": "全部",
+    "rangeTitle": "按披露次数筛选事实——向上拖动下限滑块，以隐藏只提及一次的内容，聚焦于相互交织的事实。"
+  },
+  "row": {
+    "hasPageTitle": "{{label}}——有设定页面",
+    "byAccidentTitle": "{{label}}——意外成为正典（无页面）",
+    "unauthored": "未撰写"
+  },
+  "detail": {
+    "openLorePage": "打开设定页面",
+    "openPage": "{{name}} — 打开页面",
+    "paradox": "悖论",
+    "reveals_one": "{{count}} 次揭示",
+    "reveals_other": "{{count}} 次揭示",
+    "learnMore": "了解更多",
+    "suggestPage": "建议创建页面",
+    "revealsTab": "揭示",
+    "firstRevealed": "首次揭示",
+    "lastRevealed": "最近揭示",
+    "revealsEndpoint": "揭示",
+    "revealsEndpointValue": "{{count}}",
+    "revealsEndpointValueParadox": "{{count}} · 存在悖论",
+    "sceneSummary": "场景摘要",
+    "cast": "角色阵容",
+    "heatLabel_one": "{{title}}——{{count}} 次揭示",
+    "heatLabel_other": "{{title}}——{{count}} 次揭示",
+    "createTitle": "创建设定页面？",
+    "createMessage": "为“{{label}}”创建一个**设定**页面，然后将 AI 草稿（根据这些揭示生成）加入队列，供你在任务收件箱中审核并应用。应用前不会向页面写入任何内容。",
+    "createConfirm": "创建并生成草稿",
+    "createFailTitle": "无法创建页面",
+    "createFailBody": "页面 id \"{{id}}\" 可能已存在。"
+  },
+  "roster": {
+    "paradox": "悖论",
+    "noPage": "无页面",
+    "hasPage": "有页面",
+    "reading": "正在阅读…",
+    "empty": "尚无披露——运行分析。"
+  }
+}

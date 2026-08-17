@@ -1,0 +1,9 @@
+{
+  "untitled": "Untitled",
+  "confirm": "Move <name>{{name}}</name> to the system Trash? (recoverable)",
+  "cancel": "Cancel",
+  "moveToTrash": "Move to Trash",
+  "delete": "Delete",
+  "fork": "Fork",
+  "open": "Open project"
+}

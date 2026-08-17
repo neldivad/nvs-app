@@ -1,0 +1,15 @@
+{
+  "title": "Ask AI to write this page",
+  "placeholder": "Describe what to write or change… (⌘/Ctrl+Enter to queue)",
+  "cat": {
+    "all": "All",
+    "maintenance": "Maintenance",
+    "generation": "Generation"
+  },
+  "searchPlaceholder": "Search prompts…",
+  "noMatch": "No prompts match.",
+  "library": "Library",
+  "managePrompts": "Manage prompts",
+  "background": "runs in the background → Tasks",
+  "queueEdit": "Queue edit"
+}

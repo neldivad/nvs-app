@@ -1,0 +1,88 @@
+{
+  "title": "Help & reference",
+  "sceneFormat": {
+    "title": "Scene format — the Fountain dialect",
+    "intro": "Scenes are plain text. The block editor reads and writes this dialect, so what you type in Source round-trips with the Write view.",
+    "rows": [
+      { "k": "ALL CAPS line", "v": "Speaker cue — the next line(s) become their dialogue" },
+      { "k": "(THINKING) after a cue", "v": "Inner monologue instead of spoken dialogue" },
+      { "k": "(mood) after a cue", "v": "Delivery/mood tag, e.g. (angry) — show/hide via Settings" },
+      { "k": "[00:01:23 → 00:01:27] line", "v": "Timing tag — a beat’s start → end timecodes (subtitle / transcript)" },
+      { "k": "> line", "v": "Action beat (stage direction)" },
+      { "k": "= line", "v": "Transition (e.g. \"Two weeks earlier\")" },
+      { "k": "plain line", "v": "Narration" },
+      { "k": "**bold**  *italic*", "v": "Inline emphasis, in any block" }
+    ]
+  },
+  "settings": {
+    "title": "Settings — global toggles",
+    "intro": "Per-user preferences (the gear in the status bar). The first two change only what the **Write** view shows — your prose and the Source view always keep the tags.",
+    "rows": [
+      { "k": "Show mood tags", "v": "Delivery (mood) parentheticals in Write — for visual-novel-style writing" },
+      { "k": "Show timing tags", "v": "[start → end] timecodes in Write — for subtitle / transcript work" },
+      { "k": "Edit source directly", "v": "Advanced: makes Source editable, saved to the file verbatim — lets you change form-locked frontmatter (like a page’s id). Off by default; a bad edit is written as-is." }
+    ]
+  },
+  "slash": {
+    "title": "Slash palette — type / in a block",
+    "rows": [
+      { "k": "/sp", "v": "Speech" },
+      { "k": "/th", "v": "Thinking" },
+      { "k": "/na", "v": "Narration" },
+      { "k": "/ac", "v": "Action" },
+      { "k": "/tr", "v": "Transition" },
+      { "k": "@name", "v": "Convert to speech and set the speaker" }
+    ]
+  },
+  "worldPages": {
+    "title": "World pages",
+    "items": [
+      "Add a page from the World sidebar — hover a group and click +.",
+      "**Properties** edits the page's fields and its **phase** (draft → developing → canon → archived).",
+      "**Phase** is editorial maturity; **status** is in-world state (active, deceased…).",
+      "Preview renders the wiki panel; Source is the raw Markdown an agent reads."
+    ]
+  },
+  "ai": {
+    "title": "AI assistant — the right rail",
+    "rows": [
+      { "k": "Chat", "v": "Ask about the open work — it reads scenes/world pages and can queue page edits for you" },
+      { "k": "Tasks", "v": "Background page edits (from Chat or /agent) — run while you keep writing; review & apply each" },
+      { "k": "/agent (in a page)", "v": "Describe a change to the open page — it’s queued as a Task, not applied inline" },
+      { "k": "Prompt library", "v": "Saved, reusable instructions (Reformat, Placeholders, your own) — the picker in /agent" }
+    ]
+  },
+  "pageEdits": {
+    "title": "Page edits — append vs replace",
+    "intro": "Every saved prompt (and queued edit) is one of two kinds. Applying a finished edit is a single step, so one **Cmd/Ctrl+Z** undoes it.",
+    "rows": [
+      { "k": "Append", "v": "The AI returns only new text, added to the end of the page — for drafting / scaffolding" },
+      { "k": "Replace", "v": "The AI returns the whole page rewritten — for reformatting / revising existing text" }
+    ]
+  },
+  "shortcuts": {
+    "title": "Shortcuts",
+    "search": "Search & jump to any page",
+    "pageTab": "Switch the view tab — Write · Preview · Source (custody: Chart · Records · Write · Preview · Source)",
+    "save": "Save the open page",
+    "undo": "Undo the last applied edit — add Shift to redo",
+    "find": "Find in the open page",
+    "projectConfig": "Open Project Structure",
+    "compose": "Composition mode — hide all chrome (Esc exits)",
+    "paneHelp": "Open this pane’s help",
+    "blockNav": "Move between blocks",
+    "split": "Split the block at the caret (new block below)",
+    "commit": "Commit the selected block type",
+    "rename": "Rename the scene or folder"
+  },
+  "corkboard": {
+    "title": "Corkboard",
+    "rows": [
+      { "k": "Double-click a card", "v": "Open it as a post — add notes, attach pages" },
+      { "k": "C, then click a card", "v": "Connect all selected cards to that target" },
+      { "k": "X", "v": "Disconnect all selected cards" },
+      { "k": "Backspace / Delete", "v": "Remove the selected card(s)" },
+      { "k": "Hover → ×", "v": "Delete a single card" }
+    ]
+  }
+}

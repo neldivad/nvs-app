@@ -1,0 +1,87 @@
+{
+  "title": "プロジェクトの詳細",
+  "steps": {
+    "details": "詳細",
+    "cover": "カバー",
+    "classification": "分類",
+    "credits": "クレジット",
+    "review": "確認"
+  },
+  "nav": {
+    "cancel": "キャンセル",
+    "back": "戻る",
+    "next": "次へ",
+    "save": "保存"
+  },
+  "discard": {
+    "title": "変更を破棄しますか？",
+    "message": "このプロジェクトへの編集内容は保存されません。",
+    "confirm": "破棄"
+  },
+  "details": {
+    "kindLabel": "種類",
+    "kindHint": "フィクションまたはノンフィクション — 本棚の最上位の分類です。（後のアップデートで分析に反映されます。現在はラベルとして使用します。）",
+    "titleLabel": "タイトル",
+    "titleHint": "作品の名前です。",
+    "subtitleLabel": "サブタイトル",
+    "subtitleHint": "任意の2行目（例：「… 第1巻」）。",
+    "subtitlePlaceholder": "任意",
+    "taglineLabel": "キャッチコピー",
+    "taglineHint": "映画のキャッチコピーのような、1行のフックです。",
+    "taglinePlaceholder": "嘘つきの王国で、ひとつの真実が残る。",
+    "synopsisLabel": "あらすじ",
+    "synopsisHint": "裏表紙の紹介文です。本全体ではなく、1〜2段落にまとめてください。",
+    "synopsisPlaceholder": "女王が病に倒れると、宮廷は分裂する…",
+    "synopsisCount": "{{n}} / {{max}}",
+    "mediumLabel": "媒体",
+    "mediumHint": "これはどのような作品ですか？",
+    "statusLabel": "ステータス",
+    "statusHint": "現在どの段階にありますか？"
+  },
+  "cover": {
+    "label": "カバー",
+    "hint": "カバーがあると、ライブラリでプロジェクトを見分けやすくなります。",
+    "change": "カバーを変更",
+    "drop": "ここに画像をドロップ",
+    "browse": "またはクリックして参照",
+    "choose": "画像を選択…",
+    "formats": "JPG、PNG、GIF、または WEBP。ライブラリの本棚とプロジェクトのブックカードに表示されます。"
+  },
+  "classification": {
+    "languageLabel": "言語",
+    "languageHint": "どの言語で書かれていますか？",
+    "languagePlaceholder": "言語を検索…",
+    "subjectLabel": "主題",
+    "genreLabel": "ジャンル",
+    "shelfHint": "配置する本棚です。",
+    "subjectPlaceholder": "分野を検索…",
+    "genrePlaceholder": "ジャンルを検索…",
+    "themesLabel": "テーマ",
+    "themesHint": "本当のテーマです。ジャンルよりも作品の発見に役立ちます。",
+    "themesPlaceholder": "テーマを検索…",
+    "warningsLabel": "コンテンツの注意事項",
+    "warningsHint": "センシティブな内容について事前に知らせます。",
+    "warningsPlaceholder": "警告を検索…",
+    "keywordsLabel": "キーワード",
+    "keywordsHint": "自由形式のタグをカンマ区切りで入力してください。",
+    "keywordsPlaceholder": "宮廷の陰謀, スローバーン"
+  },
+  "credits": {
+    "authorLabel": "著者",
+    "authorHint": "主な執筆者。",
+    "authorPlaceholder": "あなたの名前",
+    "contributorsLabel": "貢献者",
+    "contributorsHint": "その他の貢献者と、それぞれの役割（執筆者、翻訳者、作曲者など）。",
+    "namePlaceholder": "名前",
+    "remove": "削除",
+    "rolePlaceholder": "役割を検索または入力…",
+    "add": "貢献者を追加"
+  },
+  "picker": {
+    "remove": "削除",
+    "searchCustom": "検索または自由入力…",
+    "search": "検索…",
+    "addCustom": "+ 「{{q}}」を追加",
+    "noMatches": "一致する項目はありません"
+  }
+}

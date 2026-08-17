@@ -1,0 +1,77 @@
+{
+  "title": "故事",
+  "search": {
+    "placeholder": "搜索场景和文件夹…"
+  },
+  "action": {
+    "expandAll": "展开所有文件夹",
+    "collapseAll": "折叠所有文件夹",
+    "new": "新建…"
+  },
+  "placeholder": {
+    "sceneTitle": "场景标题…",
+    "folderName": "文件夹名称…"
+  },
+  "badge": {
+    "locked": "已锁定"
+  },
+  "tooltip": {
+    "archivedInside_one": "其中有 {{count}} 个已归档场景（显示在“已归档”列表中）",
+    "archivedInside_other": "其中有 {{count}} 个已归档场景（显示在“已归档”列表中）"
+  },
+  "empty": {
+    "relaunch": "请完全退出并重新启动应用，以加载故事树——这是新的后端功能。你的场景已安全保存在磁盘上；仅重新加载渲染器无法识别它。",
+    "hintPrefix": "为空。右键点击或使用",
+    "hintSuffix": "来添加文件夹或场景。"
+  },
+  "archived": {
+    "heading": "已归档"
+  },
+  "folder": {
+    "root": "/（根目录）"
+  },
+  "kind": {
+    "folder": "文件夹",
+    "scene": "场景"
+  },
+  "error": {
+    "dupExists": "此处已存在名为“{{name}}”的{{kind}}。",
+    "badName": "“{{name}}”不是可用的{{kind}}名称——请尝试使用其他字符。"
+  },
+  "row": {
+    "restore": "恢复",
+    "archive": "归档",
+    "delete": "删除"
+  },
+  "menu": {
+    "newScene": "新建场景",
+    "newFolder": "新建文件夹",
+    "labelAs": "标记为",
+    "clear": "清除",
+    "exportMd": "导出 .md…",
+    "rename": "重命名",
+    "delete": "删除",
+    "phaseEveryScene": "阶段 — 内部所有场景",
+    "selectedCount": "已选择 {{count}} 项",
+    "setPhase": "设置阶段",
+    "moveToFolder": "移动到文件夹…",
+    "bulkDelete": "删除 {{count}} 个…"
+  },
+  "confirm": {
+    "titleFolder": "删除文件夹？",
+    "titleScene": "删除场景？",
+    "delete": "删除",
+    "prefix": "删除",
+    "folderInside": "以及其中的所有内容",
+    "suffix": "？这会将其从磁盘中移除。",
+    "alsoArchived_one": "⚠ 这也会删除其中仍有的 {{count}} 个已归档场景（显示在“已归档”列表中）。",
+    "alsoArchived_other": "⚠ 这也会删除其中仍有的 {{count}} 个已归档场景（显示在“已归档”列表中）。"
+  },
+  "bulkConfirm": {
+    "title_one": "删除 {{count}} 个项目？",
+    "title_other": "删除 {{count}} 个项目？",
+    "prefix": "删除",
+    "suffix_one": "个选定项目（文件夹会删除其中的所有内容）？这会将它们从磁盘中移除。",
+    "suffix_other": "个选定项目（文件夹会删除其中的所有内容）？这会将它们从磁盘中移除。"
+  }
+}

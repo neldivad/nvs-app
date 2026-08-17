@@ -1,0 +1,44 @@
+{
+  "menu": {
+    "file": "文件",
+    "project": "项目",
+    "view": "视图",
+    "help": "帮助"
+  },
+  "item": {
+    "openFolder": "打开文件夹…",
+    "importProject": "导入项目…",
+    "importStructured": "导入结构化 JSON…",
+    "returnToLibrary": "返回库",
+    "structure": "结构…",
+    "info": "信息…",
+    "share": "分享…",
+    "exportManuscript": "导出手稿",
+    "toggleConsole": "切换控制台",
+    "toggleAssistant": "切换助手",
+    "compositionMode": "创作模式",
+    "toggleDevTools": "切换开发者工具",
+    "referenceDocs": "参考资料与文档",
+    "tour": "浏览应用导览",
+    "useWithClaude": "将 NVS 与 Claude 搭配使用…",
+    "supportCommunity": "支持与社区",
+    "pro": "NVS Pro",
+    "proActive": "NVS Pro — 已启用",
+    "whatsNew": "最新动态"
+  },
+  "appName": "Novel Visual Studio",
+  "search": {
+    "placeholder": "搜索…",
+    "tooltip": "搜索场景、世界、线索… ({{shortcut}})"
+  },
+  "saveToLibrary": {
+    "label": "保存到库",
+    "saving": "正在保存…",
+    "tooltip": "此项目从库外部打开（{{root}}）。将副本保存到“我的作品”，即可在欢迎页面显示。"
+  },
+  "window": {
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "close": "关闭"
+  }
+}

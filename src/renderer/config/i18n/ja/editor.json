@@ -1,0 +1,126 @@
+{
+  "view": {
+    "write": "執筆",
+    "preview": "プレビュー",
+    "source": "ソース",
+    "chart": "チャート",
+    "records": "記録"
+  },
+  "action": {
+    "properties": "プロパティ",
+    "print": "印刷",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "apply": "適用",
+    "openProperties": "プロパティを開く"
+  },
+  "tooltip": {
+    "unsaved": "未保存",
+    "showOutline": "アウトラインを表示",
+    "hideOutline": "アウトラインを非表示",
+    "showInspector": "シーンインスペクターを表示 — 概要、キャスト、スレッド、フラグ、伏線",
+    "hideInspector": "シーンインスペクターを非表示",
+    "print": "印刷 / PDFとして保存（用紙プレビュー）",
+    "goToLine": "ソースの{{line}}行目へ移動",
+    "viewFullImage": "画像全体を表示"
+  },
+  "find": {
+    "placeholder": "ページ内を検索"
+  },
+  "empty": {
+    "pick": "サイドバーからページを選んで執筆を始めましょう。",
+    "scene": "このシーンは空です。",
+    "page": "この{{kind}}ページは空です。",
+    "sceneHint": {
+      "typing": "入力を始めるだけでナレーションになります",
+      "blockPre": "タイプ",
+      "blockPost": "ブロックの場合 — セリフ、思考、アクション、トランジション",
+      "speaker": "話者を設定します",
+      "propertiesPre": "ページの詳細とフェーズの設定は",
+      "propertiesPost": "を開きます"
+    },
+    "worldHint": {
+      "propertiesPre": "ページの詳細とフェーズの設定は",
+      "propertiesPost": "を開きます",
+      "markdownPre": "Markdownで記述 — セクションの開始には",
+      "markdownMid": "（または",
+      "markdownPost": "と入力）",
+      "preview": "プレビューに切り替えてウィキパネルを表示"
+    }
+  },
+  "confirm": {
+    "replaceTitle": "ページ全体を置き換えますか？",
+    "replace": "置き換え",
+    "replaceLead": "これは",
+    "replaceTrail": "をAIのバージョンに置き換えます（Ctrl/Cmd+Zで1回元に戻せます）。",
+    "replaceEdited": "この処理の後にページも編集しています — その編集内容は失われます。"
+  },
+  "property": {
+    "titleScene": "シーンのプロパティ",
+    "titleOther": "{{kind}}のプロパティ",
+    "phase": "フェーズ",
+    "media": "メディア",
+    "sections": "セクション",
+    "sectionsHintPre": "下のページで、",
+    "sectionsHintPost": "をWriteタブで入力して追加します。",
+    "cover": "カバー",
+    "avatar": "アバター",
+    "remove": "削除",
+    "addImages": "画像を追加",
+    "firstImageScene": "1枚目の画像がタイムラインに表示されるカバーです。",
+    "firstImageWorld": "1枚目の画像がリストで使用されるアバターです。",
+    "openPage": "ページを開く",
+    "noPages": "world/{{kind}}s に {{kind}}ページはまだありません。",
+    "defaultsToPre": "デフォルトは",
+    "defaultsToPost": "（シーンのメイン話者）です。上書きする場合は選択してください。",
+    "searchPlaceholder": "@ {{label}}を検索…",
+    "commaSeparated": "カンマ区切り",
+    "select": "選択…",
+    "none": "なし"
+  },
+  "timing": {
+    "relative": "相対",
+    "absolute": "絶対"
+  },
+  "preview": {
+    "untitled": "無題",
+    "mentionedBy": "メンションした人",
+    "more": "+{{count}}件以上",
+    "speakerIsA": "シーンの話者ですが、キャラクターページはまだありません。",
+    "speakerCreates": "作成すると、",
+    "createCharacter": "キャラクターページを作成",
+    "close": "閉じる",
+    "openCharacter": "キャラクターページを開く",
+    "linkNoId": "id \"{{id}}\" のページまたは発見されたコンセプトはありません",
+    "linkLearnMore": "{{label}} — ページはまだありません · 詳細を見る"
+  },
+  "tab": {
+    "allOpen": "すべての開いているタブ",
+    "close": "閉じる",
+    "closeOthers": "他を閉じる",
+    "closeAll": "すべて閉じる"
+  },
+  "findBar": {
+    "placeholder": "検索",
+    "prev": "前へ ({{keys}})",
+    "next": "次へ ({{keys}})",
+    "closeBtn": "閉じる ({{keys}})"
+  },
+  "slashMenu": {
+    "added": "追加済み"
+  },
+  "outline": {
+    "title": "アウトライン"
+  },
+  "aside": {
+    "resize": "サイズ変更するにはドラッグ"
+  },
+  "print": {
+    "titleWith": "印刷 — {{title}}",
+    "previewHint": "プレビュー — スクロールして確認できます。PDFにもこのテーマが適用されます",
+    "light": "ライト",
+    "dark": "ダーク",
+    "save": "印刷 / PDFとして保存",
+    "iframeTitle": "印刷プレビュー"
+  }
+}

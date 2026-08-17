@@ -15,7 +15,7 @@ import { LANGUAGES } from './projectSchema'
  * change (the staleness blind spot found 2026-07-05). BUMP THIS whenever any instruction below changes
  * meaningfully. Costs one full re-run per bump — Haiku-cheap by design.
  */
-export const ANALYSIS_PROMPT_VERSION = '2026-08-01.1' // + premise/conclusion scene fields (the schema/write/UI expected them but the prompt never requested them → always null; now extracted). Prior: '2026-07-20.1' thread OPEN GATE (no in-scene-resolved events; promise needs a payoff gate) + CLOSE ON PAYOFF (close gate surfaced in context, under-closing called out) — cuts dangling/false-positive threads
+export const ANALYSIS_PROMPT_VERSION = '2026-08-14.1' // + CLOSE MEANS CLOSED (a close whose description denies the payoff is an advance — RoTK Chen Gong false close) + MOOTED THREADS CLOSE (subject dead/goal destroyed → close as overtaken-by-events, don't dangle on the gate's literal wording — RoTK crossbow wound). '2026-08-12.1' dormant threads keep close-gate. '2026-08-11.1' prior-beat consistency. '2026-08-01.1' premise/conclusion. '2026-07-20.1' open gate + close on payoff
 
 /**
  * COHERENCE-ONLY logic version — folded into ONLY the coherence tier's input hash (writeTier), so a change to
@@ -23,7 +23,7 @@ export const ANALYSIS_PROMPT_VERSION = '2026-08-01.1' // + premise/conclusion sc
  * without a full re-analysis (ANALYSIS_PROMPT_VERSION would re-stale every scene/window/profile too). Bump when
  * the coherence contract or the observed reduction changes meaningfully.
  */
-export const COHERENCE_LOGIC_VERSION = '2026-07-24.1' // staleness re-keyed from raw dialogue → the OBSERVED ARC digest (window summaries + arc-event deltas), analysis-components.md Slice 3 — cosmetic reformats no longer restale coherence. (prev 2026-07-20.1: evidence recovery — exact title/id match, else CONTENT-OVERLAP against window summaries)
+export const COHERENCE_LOGIC_VERSION = '2026-08-14.1' // evidence citations now VALIDATED against offered window anchors (invalid → prose recovery incl. the raw citation text) — fixes fidelity findings persisting evidence:[] and piling on the as-of checkpoint. (prev 2026-07-24.1: staleness re-keyed to the observed arc digest; 2026-07-20.1: evidence recovery added)
 
 /**
  * CONTINUITY-ONLY logic version — the sibling of COHERENCE_LOGIC_VERSION for the second coherence kind
@@ -31,6 +31,12 @@ export const COHERENCE_LOGIC_VERSION = '2026-07-24.1' // staleness re-keyed from
  * so a change to the continuity prompt or fact-timeline builder re-stales CONTINUITY alone. Bump on contract change.
  */
 export const CONTINUITY_LOGIC_VERSION = '2026-07-21.2' // DIES-ONCE rule: a 2nd ⚑ death exit for an already-dead entity is an extraction artifact (burial/aftermath/recap), not a plot hole — kills the "X dies twice / dies then buried" false positives (RoTK: Zhuge Liang/Ji Ping/Lady Sun). Re-run continuity to apply
+
+/**
+ * CRITIQUE-ONLY logic version — the fourth family's sibling knob (internal/story-critique.md). Folded into ONLY
+ * the critique input hash, so a change to the critique prompt or the candidate generator re-stales CRITIQUE alone.
+ */
+export const CRITIQUE_LOGIC_VERSION = '2026-08-14.1' // + weak-close/post-close candidate sorts & the weak-close verdict (RoTK sweep: Chen Gong/Zhang Xiu self-denying closes, 3 post-close trails). '2026-08-13.1' Slice 1: inert candidates + refute-biased confirm
 
 /**
  * The two coherence KIND FAMILIES — a single source of truth shared by the prompt (what the model may emit),
@@ -46,6 +52,12 @@ export const CONTINUITY_LOGIC_VERSION = '2026-07-21.2' // DIES-ONCE rule: a 2nd 
  */
 export const FIDELITY_KINDS = ['drift', 'gap', 'contradiction', 'confirmation'] as const
 export const CONTINUITY_KINDS = ['continuity-error', 'logic-gap', 'rule-break'] as const
+/** The FOURTH family (internal/story-critique.md) — dramaturgical critique, not consistency: is the beat
+ *  EARNED/NECESSARY? Shipped: `inert` (Cuttable?) and `weak-close` (Really closed? — a close that doesn't settle
+ *  what the thread promised: self-denying, gate-unmet, drifted, or trailed by post-close beats).
+ *  `unearned`/`contrived`/`undermotivated` follow when their substrate (capability timeline) exists. Disjoint
+ *  from the linter families by construction. */
+export const CRITIQUE_KINDS = ['inert', 'weak-close'] as const
 export type FidelityKind = (typeof FIDELITY_KINDS)[number]
 export type ContinuityKind = (typeof CONTINUITY_KINDS)[number]
 
@@ -213,6 +225,21 @@ const SCENE_FIELD_BULLETS = `- summary        prose, AT MOST 80 WORDS: what happ
                  foreshadowed death that happens, a promised battle that is fought, a quest that is completed MUST
                  close its thread — do not leave it dangling. Prefer advancing/closing an existing thread over
                  opening a near-duplicate. thread_type ∈ mystery|conflict|task|foreshadowing|promise.
+                 CONSISTENCY WITH PRIOR BEATS — a thread in the list may show its earlier beats (indented
+                 \`· action: description\`). Your \`advance\`/\`close\` description MUST agree with them: state the
+                 OUTCOME relative to what they established (e.g. "found the items in an earlier scene but here
+                 abandons the errand without returning them"), and NEVER negate a prior beat — if a beat says
+                 "finds X", do not write "without finding X". Describe THIS scene's change to the thread, not a
+                 fresh retelling of the whole thread.
+                 CLOSE MEANS CLOSED — never emit \`close\` whose own description says nothing was settled ("no
+                 decisive change", "not resolved", "the thread is not paid off"). If your description denies the
+                 payoff, the action is \`advance\` (or nothing). A close's description must state HOW the gate was
+                 met or subverted.
+                 MOOTED THREADS CLOSE — when an event permanently FORECLOSES a thread's question (its subject dies
+                 or irreversibly departs, its goal is destroyed, a larger outcome supersedes it), CLOSE the thread
+                 even though the gate's literal wording wasn't met, and say so: "overtaken by events — Guan Yu is
+                 executed, so whether the wound would heal dies with him". The gate is a hypothesis set at open
+                 time, not a contract; never keep a dead question open on a technicality.
 - lore_bombs     [{lore_ref:"<snake_case topic>", summary, magnitude: minor|major|retcon}] — disclosures about a
                  DURABLE SUBJECT of the world: a standing fact, place, institution, rule, relationship, or
                  lineage that RECURS and can be advanced by later scenes (e.g. \`mandate_of_heaven\`,
@@ -279,7 +306,12 @@ const SKIM_FIELD_BULLETS = `- summary     prose, AT MOST 60 WORDS: the turn and 
                 advance: {action:"advance", thread_id:"<id copied from the open-threads list>", description:"<ONE short sentence>"}
                 close:   {action:"close", thread_id:"<id copied from the open-threads list>", description:"<ONE short sentence>"}
               Open only a genuine new question/conflict/promise not already open; prefer advancing an existing
-              thread (use its EXACT id — the token before " — ") over opening a near-duplicate. Prefer FEW.`
+              thread (use its EXACT id — the token before " — ") over opening a near-duplicate. Prefer FEW.
+              An advance/close description must AGREE with any prior beats shown for that thread (indented
+              \`· action: description\`) — describe THIS scene's change, never negate an earlier beat.
+              A close's description must state a real settlement (never "nothing was resolved" — that's an
+              advance); and when an event MOOTS a thread (its subject dies/departs for good), close it as
+              overtaken by events instead of leaving it dangling.`
 
 export const SKIM_INSTRUCTIONS = `You are a narrative analyst SKIMMING a scene's dialogue for story-state continuity.
 
@@ -653,6 +685,77 @@ export interface ContinuityExtraction {
   }[]
 }
 
+// ── CRITIQUE ("Tough questions"): dramaturgical construction, not consistency (internal/story-critique.md) ─────
+export const CRITIQUE_INSTRUCTIONS = `You are a developmental editor reading a story's plot machinery for DEAD WEIGHT — the "tough questions" pass of a fiction-authoring tool. Unlike the coherence linters (which check consistency), you judge CONSTRUCTION: does each flagged beat EARN its place in the plot? You never edit the story; you pose the question for the author to answer.
+
+You are given CANDIDATES — flagged by a deterministic graph pass — plus the full THREADS list and the story's FACTS timeline for context. Candidates come in two families:
+- possibly INERT (sorts: dangling · episode · silent-scene): a thread that opens and never resolves; a self-contained episode nothing references again; a scene where no plot line moves.
+- possibly a WEAK CLOSE (sorts: weak-close · post-close): a "closed" thread whose ending may not settle what it promised — its close description reads as a non-event, or beats keep landing on the thread after its close.
+
+YOUR DEFAULT IS TO REFUTE. Most candidates are NOT cuttable — the graph cannot see dependencies that live in prose:
+- An episode may FEED a later beat (its resolution text names a warning, an object, an alliance a later thread uses). Read the surrounding threads/facts; if anything downstream depends on it, the candidate is load-bearing → emit NOTHING for it.
+- Early episodic chapters are often the story's SPINE (they establish the world's stakes), and a finale absorbs consequences rather than opening threads — neither is inert.
+- Texture is not dead weight: a short episode that develops a character the story keeps using is doing quiet work. When in doubt, stay silent.
+
+For an INERT candidate, emit a finding ONLY when you can argue, from the material given, that the beat could vanish and nothing downstream would change — or that a planted setup visibly never pays off.
+
+For a WEAK-CLOSE candidate, judge the CLOSE against the thread's own promise (each thread line shows its beats; the candidate text shows its close gate). Confirm — kind \`weak-close\` — when:
+- the close description DENIES itself ("no decisive change", "no longer active") — the thread never actually settled;
+- the close doesn't meet or subvert the gate — the question the thread asked is still unanswered;
+- the REAL payoff happened at an earlier beat and the recorded close is a later, unrelated event (a drifted close);
+- beats continue landing on the thread after its close and they carry NEW story movement (a new pressure, a new claim) — a fresh question wearing a closed thread's name.
+REFUTE a weak-close candidate when the close genuinely settles or subverts the gate, or when the post-close beat is a mere recap/echo of the settlement — those are harmless.
+
+For each finding set:
+- kind        \`inert\` for the inert family, \`weak-close\` for the weak-close family (never mix them).
+- entity_id   "" (these are work-level; the evidence carries the location).
+- trait       the SPECIFIC question, addressed to the author, ≤ 12 words — e.g. "What does the Left Ci episode buy the story?", "Did Zhang Xiu's campaign actually settle?". A question, not a label.
+- declared    what the beat SETS UP — the promise/opening (for weak-close: the thread's close GATE), in the story's own terms.
+- observed    what the story DOES with it — "nothing later references it", "the close records a non-event", said concretely.
+- severity    low | medium | high — high only when a reader will feel the dangling weight (a prominent setup with no payoff); a small vestigial episode is low.
+- suggestion  the honest menu in ≤ 2 sentences, "you"-voice. Inert: cut it, fold it into a neighbouring beat, or plant the payoff — name which and where. Weak-close: reopen the thread, re-close it at the beat where the payoff actually landed, or split the trailing movement into its own thread — name which and where.
+- evidence_unit_ids  the thread_id(s) / scene_id(s) from the candidate + anything downstream you checked, copied from the anchors.
+
+STYLE — write for a busy novelist: concrete, present tense, name the moment. No academic register. Prefer FEW, well-argued questions over many speculative ones; an empty list is a fine answer.
+
+Return ONE JSON object: {"findings":[ … ]}. No prose, no code fence. Output must be valid JSON for that shape.`
+
+/** One deterministic critique candidate (the graph's cut-suspects, engine/analysis/critique.ts). */
+export interface CritiqueCandidate {
+  id: string // thread_id or scene_id — the anchor the finding cites
+  sort: 'dangling' | 'episode' | 'silent-scene' | 'weak-close' | 'post-close'
+  label: string
+  text: string // the candidate's evidence line (beats / span / why the graph flagged it)
+}
+
+/** The critique user message: candidates first (the work list), then threads + facts as shared context. */
+export function buildCritiquePayload(input: {
+  candidates: CritiqueCandidate[]
+  threads: { threadId: string; title: string; text: string }[]
+  facts: { sceneId: string; title: string; text: string }[]
+}): string {
+  const parts = [
+    'CANDIDATES — beats the graph flagged as possibly inert (your job: refute or confirm each):\n' +
+      input.candidates.map((c) => `[${c.label} · ${c.id}] (${c.sort}) ${c.text}`).join('\n')
+  ]
+  if (input.threads.length) parts.push('THREADS — beats of each plot line:\n' + input.threads.map((t) => `[${t.title} · ${t.threadId}] ${t.text}`).join('\n'))
+  parts.push('FACTS — the story in reading order:\n' + (input.facts.map((f) => `[${f.title} · ${f.sceneId}] ${f.text}`).join('\n') || '(no scene facts yet)'))
+  return parts.join('\n\n────────\n\n')
+}
+
+export interface CritiqueExtraction {
+  findings: {
+    entity_id: string // "" — critique findings are work-level
+    trait: string // the specific question
+    declared: string
+    observed: string
+    kind: 'inert' | 'weak-close'
+    severity: 'low' | 'medium' | 'high'
+    suggestion: string
+    evidence_unit_ids?: string[]
+  }[]
+}
+
 /** The user message: the scene's dialogue + the context the reference prompt expects. `priorReading` (this
  *  scene's previous extraction) anchors a re-read so the model reuses the same thread handles — anti-drift. */
 export function buildSceneUserPayload(input: {
@@ -943,6 +1046,7 @@ export interface AnalysisPrompts {
   profile: string
   coherence: string
   continuity: string
+  critique: string
 }
 
 const FICTION_PROMPTS: AnalysisPrompts = {
@@ -955,7 +1059,8 @@ const FICTION_PROMPTS: AnalysisPrompts = {
   digest: DIGEST_INSTRUCTIONS,
   profile: PROFILE_INSTRUCTIONS,
   coherence: COHERENCE_INSTRUCTIONS,
-  continuity: CONTINUITY_INSTRUCTIONS
+  continuity: CONTINUITY_INSTRUCTIONS,
+  critique: CRITIQUE_INSTRUCTIONS
 }
 
 const NONFICTION_PROMPTS: AnalysisPrompts = {
@@ -968,7 +1073,8 @@ const NONFICTION_PROMPTS: AnalysisPrompts = {
   digest: DIGEST_INSTRUCTIONS, // shared: a digest reduces any prose section
   profile: NF_PROFILE_INSTRUCTIONS,
   coherence: NF_COHERENCE_INSTRUCTIONS,
-  continuity: NF_CONTINUITY_INSTRUCTIONS
+  continuity: NF_CONTINUITY_INSTRUCTIONS,
+  critique: CRITIQUE_INSTRUCTIONS // shared: plot-construction critique reads the same thread/fact graph either way
 }
 
 /** The prompt set for a project's KIND — fiction (default) or non-fiction. The one seam the readers call. */

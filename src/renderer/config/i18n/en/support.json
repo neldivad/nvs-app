@@ -1,0 +1,34 @@
+{
+  "title": "Support & community",
+  "apps": "Our apps",
+  "community": "Community",
+  "usingThis": "You're using this",
+  "comingSoon": "Coming soon",
+  "soon": "soon",
+  "inDevelopment": "In development — follow the socials for launch news.",
+  "appBy": "An app by",
+  "status": {
+    "live": "Live",
+    "beta": "Beta",
+    "soon": "Coming soon"
+  },
+  "social": {
+    "discord": "Discord",
+    "twitter": "X / Twitter",
+    "github": "GitHub",
+    "youtube": "YouTube"
+  },
+  "cta": {
+    "productPage": "Product page",
+    "followForLaunch": "Follow for launch",
+    "open": "Open"
+  },
+  "heading": {
+    "status": "Status",
+    "highlights": "Highlights"
+  },
+  "legal": {
+    "privacy": "Privacy",
+    "terms": "Terms"
+  }
+}

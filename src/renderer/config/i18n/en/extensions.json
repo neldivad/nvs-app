@@ -1,0 +1,77 @@
+{
+  "install": "Install",
+  "installReady": "Grant the listed capabilities and install",
+  "uninstall": "Uninstall",
+  "uninstallTitle": "Remove this extension",
+  "status": {
+    "compatible": "compatible",
+    "incompatible": "incompatible",
+    "disabled": "disabled",
+    "installed": "installed",
+    "installedTitle": "Installed",
+    "compatibleTitle": "Compatible"
+  },
+  "incompatibleReasons": "Incompatible: {{reasons}}",
+  "empty": {
+    "updates": "No updates available. (Update detection needs the registry-vs-installed version check — coming with the extension registry.)",
+    "search": "No extensions match your search.",
+    "installed": "No extensions installed yet.",
+    "browse": "No extensions found (bundled sample missing?)."
+  },
+  "subtabs": {
+    "browse": "Browse",
+    "installed": "Installed",
+    "installedCount": "Installed · {{n}}",
+    "updates": "Updates"
+  },
+  "toggle": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enabledTitle": "Enabled — click to disable",
+    "disabledTitle": "Disabled — click to enable"
+  },
+  "claudePlugin": {
+    "title": "Claude Desktop plugin",
+    "builtIn": "built in",
+    "desc": "Ask Claude about your novel — threads, plot holes, any scene. Download it, add it to Claude, type",
+    "saved": "Saved",
+    "download": "Download",
+    "saving": "Saving…",
+    "restart": "Restart NVS to pick up this feature.",
+    "buildError": "could not build the plugin"
+  },
+  "runState": {
+    "starting": "Starting…",
+    "running": "Running",
+    "done": "Done",
+    "stopped": "Stopped",
+    "crashed": "Crashed",
+    "unresponsive": "Unresponsive"
+  },
+  "launcher": {
+    "title": "Extension tools",
+    "footerNote": "Run an installed extension; it works in its own process.",
+    "getMore": "Get more in Store",
+    "emptyTitle": "No runnable extensions installed.",
+    "emptyHint": "Active extensions — tools that do a thing on demand — show up here once installed. Ambient ones (like a font) just apply while enabled.",
+    "browseStore": "Browse the Store",
+    "wontRun": "won't run in this app",
+    "disabledHint": "Disabled — enable it in the Store to run",
+    "failedToStart": "failed to start",
+    "run": "Run",
+    "stop": "Stop"
+  },
+  "permissions": {
+    "noAccessNeeded": "no access needed",
+    "moreCount": "+{{n}} more",
+    "noAccessDetail": "No access needed — this extension can't read or change anything in your work.",
+    "optional": "(optional)",
+    "heading": "What this extension can access",
+    "sandboxNote": "Extensions run in a separate process and get only the access listed here — nothing else on your machine."
+  },
+  "panel": {
+    "stop": "Stop",
+    "dismiss": "Dismiss",
+    "title": "{{name}} panel"
+  }
+}

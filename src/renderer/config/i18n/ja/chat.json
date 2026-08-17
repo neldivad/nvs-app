@@ -1,0 +1,99 @@
+{
+  "empty": {
+    "noProject": "作品を開くとエージェントとチャットできます。",
+    "transcript": "開いている作品についてエージェントに質問できます。シーンを読み取り、分析を書けます。「第1幕を分析して」や、ページを開いた状態で「このページのスレッドを探して」などと試してみてください。",
+    "noPages": "ページなし",
+    "noChats": "チャットなし",
+    "noChatsYet": "まだチャットはありません"
+  },
+  "context": {
+    "prefix": "コンテキスト: ",
+    "page": "@ {{title}}",
+    "wholeProject": "プロジェクト全体"
+  },
+  "button": {
+    "clear": "消去",
+    "sendAnyway": "このまま送信",
+    "copy": "コピー",
+    "copied": "コピー済み",
+    "delete": "削除",
+    "deleteN": "{{count}}件を削除",
+    "all": "すべて",
+    "untitled": "無題"
+  },
+  "placeholder": {
+    "composer": "エージェントに質問…  （Shift+Enterで改行）",
+    "attach": "シーンまたはページを添付…",
+    "searchChats": "チャットを検索…"
+  },
+  "tooltip": {
+    "weakModel": "このモデルは複数ステップのタスクが苦手な場合があります",
+    "newChat": "新しいチャット",
+    "deleteChat": "チャットを削除",
+    "remove": "削除",
+    "stop": "停止",
+    "sendTooBig": "大きすぎます — 内容を短くするか「このまま送信」を使ってください",
+    "send": "送信",
+    "copyMarkdown": "Markdownとしてコピー",
+    "attachPage": "ページをコンテキストとして添付",
+    "analysisPrompts": "分析プロンプト",
+    "openPage": "このページを開く",
+    "select": "選択"
+  },
+  "tokens": {
+    "count": "約{{tokens}}トークン",
+    "tooBig": "約{{tokens}}トークン — 大きすぎて送信できません。コンテキストウィンドウを圧迫し、使用量を消費します。内容を短くするか、一度に1章または1ページずつ分析してください。"
+  },
+  "weakModel": {
+    "struggle": "{{model}}はこの作業が苦手な場合があります",
+    "explain": "小型・高速モデルは、シーンの検索や一括編集のキュー登録など、複数ステップのツール操作でループしたり誤動作したりしがちです。複雑なエージェント作業には:",
+    "driveFromClaude": "ClaudeからNVSを操作",
+    "pluginHint": " — プラグイン（Store → Claudeで使う）。",
+    "orPick": "または、より高性能なモデルを",
+    "settingsAi": "設定 → AI",
+    "orPickEnd": "で選択してください。"
+  },
+  "working": {
+    "readingTheWork": "作品を読んでいます",
+    "thinkingItThrough": "じっくり考えています",
+    "pullingTheThreads": "糸口をたどっています",
+    "checkingTheCast": "登場人物を確認しています",
+    "weighingIt": "検討しています",
+    "almostThere": "もうすぐです"
+  },
+  "tools": {
+    "used_one": "{{count}}個のツールを使用",
+    "used_other": "{{count}}個のツールを使用",
+    "usedWithNames_one": "{{count}}個のツールを使用 · {{names}}",
+    "usedWithNames_other": "{{count}}個のツールを使用 · {{names}}"
+  },
+  "analysis": {
+    "header": "分析 — ここでチャットに回答しました"
+  },
+  "confirm": {
+    "deleteTitle": "チャットを削除しますか？",
+    "deleteTitleN": "{{count}}件のチャットを削除しますか？",
+    "deleteSingle_this": "このチャット",
+    "messageN": "<strong>{{count}}件のチャット</strong>とその記録を完全に削除します。この操作は取り消せません。",
+    "messageOne": "<strong>{{title}}</strong>とその記録を完全に削除します。この操作は取り消せません。",
+    "selected": "{{count}}件を選択中"
+  },
+  "error": {
+    "requestFailed": "⚠ リクエストに失敗しました — {{message}}。APIキーを確認してください（ドック → Agent）。またはヘルプ（?）を開いてください。"
+  },
+  "kind": {
+    "scene": "シーン",
+    "character": "登場人物",
+    "location": "場所",
+    "item": "アイテム",
+    "lore": "設定"
+  },
+  "time": {
+    "now": "今",
+    "minutes": "{{n}}分",
+    "hours": "{{n}}時間",
+    "days": "{{n}}日",
+    "weeks": "{{n}}週間",
+    "months": "{{n}}か月"
+  }
+}

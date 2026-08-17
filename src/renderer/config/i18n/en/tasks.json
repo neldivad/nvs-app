@@ -1,0 +1,38 @@
+{
+  "header": {
+    "caption": "background edits — apply lands as one undo step",
+    "clearDone": "Clear done",
+    "clearAll": "Clear all"
+  },
+  "empty": {
+    "noProject": "Open a work to run background edits.",
+    "noTasks": "No tasks yet. Type <1>/ag</1> in a page, or ask the chat to edit across pages."
+  },
+  "group": {
+    "edits_one": "{{count}} edit",
+    "edits_other": "{{count}} edits",
+    "applyAll": "Apply all",
+    "applyAllTitle": "Apply all done edits",
+    "dismissAllTitle": "Dismiss all"
+  },
+  "confirm": {
+    "title_one": "Apply {{count}} edit?",
+    "title_other": "Apply {{count}} edits?",
+    "message_one": "This applies the finished edits across {{count}} page — each replaces that page (one Ctrl/Cmd+Z per page undoes it). The editor will step through them.",
+    "message_other": "This applies the finished edits across {{count}} pages — each replaces that page (one Ctrl/Cmd+Z per page undoes it). The editor will step through them.",
+    "label": "Apply {{count}}"
+  },
+  "status": {
+    "running": "running",
+    "queued": "queued"
+  },
+  "card": {
+    "cancel": "Cancel",
+    "dismiss": "Dismiss",
+    "took": "took {{time}}",
+    "undo": "Undo",
+    "redo": "Redo",
+    "reviewApply": "Review & apply",
+    "applied": "applied ✓"
+  }
+}

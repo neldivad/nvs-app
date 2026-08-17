@@ -23,6 +23,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/Select'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { regionAttrs } from '@/config/regions'
 import { SearchField } from '@/components/ui/SearchField'
 import { useWorkspace } from '@/stores/workspace'
@@ -96,6 +98,7 @@ type Anchor = { id: string; name: string; kind: 'item' | 'information'; cat: str
 
 // ── sidebar ─────────────────────────────────────────────────────────────────────────────────────────────
 export function CustodySidebar(): JSX.Element {
+  const { t } = useTranslation('custody')
   const { topics, custody, secrets, roster, ready, reload } = usePossessionData()
   const entityTracks = useWorkspace((s) => s.entityTracks)
   const characters = useWorkspace((s) => s.characters)
@@ -165,9 +168,9 @@ export function CustodySidebar(): JSX.Element {
       const a = add(p.id, p.name, p.kind === 'item' ? 'item' : 'information', p.kind)
       if (a) out.push(a)
     }
-    for (const t of entityTracks ?? []) if (t.type === 'item') { const a = add(t.id, t.name, 'item', 'item · analysis'); if (a) out.push(a) }
+    for (const tr of entityTracks ?? []) if (tr.type === 'item') { const a = add(tr.id, tr.name, 'item', t('sidebar.itemAnalysisCat')); if (a) out.push(a) }
     return out
-  }, [topics, entityTracks, worldPages])
+  }, [t, topics, entityTracks, worldPages])
 
   async function createAnchored(anchor: Anchor & { trackId?: string }): Promise<void> {
     if (anchor.src === 'secret') return createPage('secret', anchor.id, anchor.name)
@@ -207,23 +210,23 @@ export function CustodySidebar(): JSX.Element {
         n: seedN * 10 + presence, // rank: seedable possession events dominate, presence breaks ties
         reason:
           seedN > 0
-            ? `${seedN} possession event${seedN === 1 ? '' : 's'} to seed from`
+            ? t('sidebar.reason.seedFrom', { count: seedN })
             : presence > 0
-              ? `features in ${presence} scene${presence === 1 ? '' : 's'} — no hand-offs observed`
-              : 'not tracked yet'
+              ? t('sidebar.reason.features', { count: presence })
+              : t('sidebar.reason.notTracked')
       }
     })
     const fromSecrets = unpagedSecrets.map((r) => ({
       id: r.id,
       name: r.id,
       kind: 'information' as const,
-      cat: 'declared secret',
+      cat: t('sidebar.declaredSecretCat'),
       src: 'secret' as const,
       n: r.n * 10,
-      reason: r.n > 0 ? `${r.n} scene${r.n === 1 ? '' : 's'} touch it` : `declared on ${r.ownerName}’s page`
+      reason: r.n > 0 ? t('sidebar.reason.scenesTouch', { count: r.n }) : t('sidebar.reason.declaredOn', { owner: r.ownerName })
     }))
     return [...fromAnchors, ...fromSecrets].sort((x, y) => y.n - x.n)
-  }, [anchors, custody, unpagedSecrets, entityTracks])
+  }, [t, anchors, custody, unpagedSecrets, entityTracks])
 
   // Standalone topic — no world anchor. The engine takes subject:null fine; it just won't auto-seed from the
   // observed/analysis layer (that's the trade for an unanchored, hand-authored chart).
@@ -275,12 +278,12 @@ export function CustodySidebar(): JSX.Element {
   return (
     <div {...regionAttrs('custodySidebar')} className="flex h-full flex-col bg-panel">
       <SidebarHeader
-        title="Custody"
+        title={t('title')}
         action={
           <div className="flex items-center gap-1">
             {aiEnabled && (
               <button
-                title="AI suggest — topics worth creating + queued record drafting"
+                title={t('sidebar.aiSuggestTip')}
                 onClick={() => setAiOpen(true)}
                 className="rounded p-0.5 text-faint transition-colors hover:text-lore"
               >
@@ -288,7 +291,7 @@ export function CustodySidebar(): JSX.Element {
               </button>
             )}
             <button
-              title="New custody topic — anchor it to a world page, or create a standalone one"
+              title={t('sidebar.newTopicTip')}
               onClick={(e) => setAnchorMenu({ x: e.clientX, y: e.clientY })}
               className="rounded p-0.5 text-faint transition-colors hover:text-foreground"
             >
@@ -303,50 +306,48 @@ export function CustodySidebar(): JSX.Element {
         </div>
       ) : (
         <SidebarScroll className="px-1 pb-2">
-          <SidebarLabel count={topics.length}>Topics</SidebarLabel>
-          {topics.map((t) =>
+          <SidebarLabel count={topics.length}>{t('sidebar.topics')}</SidebarLabel>
+          {topics.map((tp) =>
             row(
-              `topic:${t.pageId}`,
-              t.topic === 'item' ? <Box className="size-3.5 shrink-0 text-lore" /> : <KeyRound className="size-3.5 shrink-0 text-lore" />,
-              t.name,
-              `${t.topic} · ${t.records.length} checkpoint${t.records.length === 1 ? '' : 's'}${t.errors.length ? ` · ${t.errors.length} ⚠` : ''}`,
+              `topic:${tp.pageId}`,
+              tp.topic === 'item' ? <Box className="size-3.5 shrink-0 text-lore" /> : <KeyRound className="size-3.5 shrink-0 text-lore" />,
+              tp.name,
+              `${t('sidebar.topicSub', { kind: tp.topic, count: tp.records.length })}${tp.errors.length ? ` · ${tp.errors.length} ⚠` : ''}`,
               <button
-                title="Delete this topic page"
-                onClick={() => setConfirmDel(t)}
+                title={t('sidebar.deleteTopicTip')}
+                onClick={() => setConfirmDel(tp)}
                 className="shrink-0 rounded p-1 text-faint opacity-0 transition-opacity hover:text-flag group-hover/row:opacity-100"
               >
                 <Trash2 className="size-3.5" />
               </button>,
               () => {
-                if (selection?.kind === 'topic' && selection.id === t.pageId) select(null)
-                else void openPage({ path: t.path, title: t.name, kind: 'custody' })
+                if (selection?.kind === 'topic' && selection.id === tp.pageId) select(null)
+                else void openPage({ path: tp.path, title: tp.name, kind: 'custody' })
               },
-              selection?.kind === 'topic' && selection.id === t.pageId
+              selection?.kind === 'topic' && selection.id === tp.pageId
             )
           )}
           {topics.length === 0 && (
             <SidebarEmpty>
-              No topic pages yet. A custody page is YOUR chart — its <span className="font-mono">Timeline</span> is drawn exactly as
-              written. Hit <Plus className="inline size-3" /> to add one — anchor it to a world page, or make a standalone topic.
+              {t('sidebar.emptyTopics.before')} <span className="font-mono">{t('sidebar.emptyTopics.timeline')}</span> {t('sidebar.emptyTopics.mid')}{' '}
+              <Plus className="inline size-3" /> {t('sidebar.emptyTopics.after')}
             </SidebarEmpty>
           )}
 
           {topics.length === 0 && characters.length === 0 && (
             <SidebarEmpty>
-              Custody is a <b>revision-phase</b> tool — it declares where items and information travel across
-              scenes you've already written. Anchoring to world pages auto-seeds the chart from analysis, but you can
-              start a standalone topic any time.
+              {t('sidebar.emptyStart.before')} <b>{t('sidebar.emptyStart.bold')}</b> {t('sidebar.emptyStart.after')}
             </SidebarEmpty>
           )}
         </SidebarScroll>
       )}
       {anchorMenu && (
         <ContextMenuShell x={anchorMenu.x} y={anchorMenu.y} onClose={() => { setAnchorMenu(null); setAnchorQuery('') }}>
-          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">New custody topic</div>
+          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('sidebar.newTopicHeading')}</div>
           <div className="px-2 pb-1 pt-0.5">
-            <SearchField autoFocus value={anchorQuery} onChange={setAnchorQuery} placeholder="Name a topic, or search to anchor…" />
+            <SearchField autoFocus value={anchorQuery} onChange={setAnchorQuery} placeholder={t('sidebar.searchPlaceholder')} />
           </div>
-          {anchors.length > 0 && <div className="px-3 pb-0.5 text-[10px] text-faint">Anchor to an existing page:</div>}
+          {anchors.length > 0 && <div className="px-3 pb-0.5 text-[10px] text-faint">{t('sidebar.anchorTo')}</div>}
           {filteredAnchors.slice(0, 10).map((a) => (
             <button
               key={a.id}
@@ -358,7 +359,7 @@ export function CustodySidebar(): JSX.Element {
               <span className="shrink-0 text-[9px] text-faint">{a.cat}</span>
             </button>
           ))}
-          {filteredAnchors.length > 10 && <div className="px-3 py-0.5 text-[10px] text-faint">+{filteredAnchors.length - 10} more — keep typing (categories match too: “location”, “lore”…)</div>}
+          {filteredAnchors.length > 10 && <div className="px-3 py-0.5 text-[10px] text-faint">{t('sidebar.moreHint', { count: filteredAnchors.length - 10 })}</div>}
           {anchorQuery.trim() && !filteredAnchors.some((a) => a.name.toLowerCase() === anchorQuery.trim().toLowerCase()) && (
             <div className="mt-0.5 border-t border-border pt-0.5">
               {/* Create-new — a topic never needs a world anchor; you can make a standalone one, or also spin up a
@@ -368,14 +369,14 @@ export function CustodySidebar(): JSX.Element {
                 className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-foreground hover:bg-panel-soft"
               >
                 <FilePlus2 className="size-3.5 shrink-0 text-lore" />
-                <span className="min-w-0 flex-1 truncate">New topic “{anchorQuery.trim()}” <span className="text-faint">— standalone</span></span>
+                <span className="min-w-0 flex-1 truncate">{t('sidebar.newTopicNamed', { name: anchorQuery.trim() })} <span className="text-faint">{t('sidebar.standaloneSuffix')}</span></span>
               </button>
               <button
                 onMouseDown={(e) => { e.preventDefault(); setAnchorMenu(null); const q = anchorQuery.trim(); setAnchorQuery(''); void createInfoAndTopic(q) }}
                 className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-foreground hover:bg-panel-soft"
               >
                 <FilePlus2 className="size-3.5 shrink-0 text-faint" />
-                <span className="min-w-0 flex-1 truncate">…and add a world <span className="text-lore">information page</span> too</span>
+                <span className="min-w-0 flex-1 truncate">{t('sidebar.andInfo.before')} <span className="text-lore">{t('sidebar.andInfo.link')}</span> {t('sidebar.andInfo.after')}</span>
               </button>
             </div>
           )}
@@ -398,9 +399,9 @@ export function CustodySidebar(): JSX.Element {
       />
       <ConfirmDialog
         open={confirmDel != null}
-        title="Delete topic page"
-        message={confirmDel ? <>Delete <b>{confirmDel.name}</b>? The page file ({confirmDel.path.split('/').pop()}) is removed — its chart disappears; scenes and world pages are untouched.</> : ''}
-        confirmLabel="Delete"
+        title={t('sidebar.deleteTopicTitle')}
+        message={confirmDel ? <>{t('sidebar.deleteMsg.before')} <b>{confirmDel.name}</b>{t('sidebar.deleteMsg.after', { file: confirmDel.path.split('/').pop() })}</> : ''}
+        confirmLabel={t('delete')}
         danger
         onCancel={() => setConfirmDel(null)}
         onConfirm={() => {
@@ -431,7 +432,7 @@ type Lane = {
 
 type Resolved = { key: string; label: string; kind?: string }
 
-function makeResolveWho(characters: { id: string; name: string }[], worldPages: { id: string; name: string; kind: string }[] = []): (tok: string) => Resolved {
+function makeResolveWho(t: TFunction, characters: { id: string; name: string }[], worldPages: { id: string; name: string; kind: string }[] = []): (tok: string) => Resolved {
   const pages = new Map<string, { name: string; kind: string }>()
   for (const p of worldPages) {
     pages.set(p.id.toLowerCase(), { name: p.name, kind: p.kind })
@@ -440,9 +441,9 @@ function makeResolveWho(characters: { id: string; name: string }[], worldPages: 
   const byId = new Map(characters.map((c) => [c.id.toLowerCase(), c.name]))
   const byName = new Map(characters.map((c) => [c.name.toLowerCase(), c.name]))
   return (tok) => {
-    if (tok === 'reader') return { key: '__reader', label: 'READER' }
-    if (tok === 'audience') return { key: '__audience', label: 'AUDIENCE' }
-    if (tok === 'public') return { key: '__public', label: 'PUBLIC' }
+    if (tok === 'reader') return { key: '__reader', label: t('lanes.reader') }
+    if (tok === 'audience') return { key: '__audience', label: t('lanes.audience') }
+    if (tok === 'public') return { key: '__public', label: t('lanes.public') }
     const lc = tok.toLowerCase()
     const page = pages.get(lc)
     if (page) return { key: page.name.toLowerCase(), label: page.name, kind: page.kind }
@@ -465,7 +466,7 @@ const KIND_ORDER = ['character', 'item', 'information', 'location', 'faction', '
  *  preview. GRAMMAR v2: gain opens a span, lost closes it, public floods. On an ITEM topic a character's
  *  gain CLOSES every other character's span (possession is exclusive — the baton emerges); the specials
  *  (audience) ride alongside as knowledge. `scene: start` = column 0, true before page one. */
-function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'information', colOf: Map<string, number>, lastCol: number, resolveWho: (tok: string) => Resolved): Lane[] {
+function foldTopicRecords(t: TFunction, recordsIn: CustodyRecord[], kind: 'item' | 'information', colOf: Map<string, number>, lastCol: number, resolveWho: (tok: string) => Resolved): Lane[] {
   const recs = recordsIn
     .map((r) => ({ ...r, col: r.scene === 'start' ? 0 : colOf.get(r.scene) }))
     .filter((r): r is typeof r & { col: number } => r.col != null)
@@ -499,7 +500,7 @@ function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'informatio
       for (const w of whos) {
         const l = laneFor(w)
         if (l.open == null) l.open = r.col
-        l.marks.push({ col: r.col, kind: 'handoff', title: r.note || (kind === 'item' && !isSpecial(w.key) ? 'takes it here' : 'learns it here') })
+        l.marks.push({ col: r.col, kind: 'handoff', title: r.note || (kind === 'item' && !isSpecial(w.key) ? t('marks.takes') : t('marks.learns')) })
       }
     }
     if (r.event === 'lost') {
@@ -508,24 +509,24 @@ function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'informatio
         for (const [key, l] of lanes) {
           if (isSpecial(key)) continue
           close(l, r.col)
-          l.marks.push({ col: r.col, kind: 'slip', title: r.note || 'lost here' })
+          l.marks.push({ col: r.col, kind: 'slip', title: r.note || t('marks.lostHere') })
         }
       } else if (r.who.some((tok) => resolveWho(tok).key === '__public')) {
         // GLOBAL amnesia/destruction: everyone in-world loses it — only the audience remembers
         for (const [key, l] of lanes) {
           if (key === '__audience') continue
           close(l, r.col)
-          l.marks.push({ col: r.col, kind: 'slip', title: r.note || (kind === 'item' ? 'destroyed — gone for everyone' : 'global amnesia — everyone forgets') })
+          l.marks.push({ col: r.col, kind: 'slip', title: r.note || (kind === 'item' ? t('marks.destroyedAll') : t('marks.globalAmnesia')) })
         }
-        const pl = laneFor({ key: '__public', label: 'PUBLIC' })
+        const pl = laneFor({ key: '__public', label: t('lanes.public') })
         close(pl, r.col)
-        if (!pl.marks.some((m) => m.col === r.col)) pl.marks.push({ col: r.col, kind: 'slip', title: r.note || 'gone for everyone' })
+        if (!pl.marks.some((m) => m.col === r.col)) pl.marks.push({ col: r.col, kind: 'slip', title: r.note || t('marks.goneForEveryone') })
       } else {
         for (const tok of r.who) {
           const w = resolveWho(tok)
           const l = laneFor(w)
           close(l, r.col)
-          l.marks.push({ col: r.col, kind: 'slip', title: r.note || (kind === 'item' ? 'loses it here' : 'forgets it here') })
+          l.marks.push({ col: r.col, kind: 'slip', title: r.note || (kind === 'item' ? t('marks.losesHere') : t('marks.forgetsHere')) })
         }
       }
     }
@@ -552,7 +553,7 @@ function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'informatio
   // AUDIENCE pinned first
   lanesOut.push({
     key: '__audience',
-    label: 'AUDIENCE',
+    label: t('lanes.audience'),
     fills: audienceSpans,
     marks: aud ? aud.marks : recs.map((r) => ({ col: r.col, kind: 'slip' as const, title: r.note || r.event }))
   })
@@ -579,7 +580,7 @@ function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'informatio
   }
   // PUBLIC pinned second — present whenever anything went public; shaded like any knower
   if (publicSpans.length || pub) {
-    const publicLane: Lane = { key: '__public', label: 'PUBLIC', fills: publicSpans.map((sp) => ({ ...sp })), marks: pub?.marks ?? [] }
+    const publicLane: Lane = { key: '__public', label: t('lanes.public'), fills: publicSpans.map((sp) => ({ ...sp })), marks: pub?.marks ?? [] }
     lanesOut.push(publicLane)
     shade(publicLane, publicSpans)
   }
@@ -605,7 +606,7 @@ function foldTopicRecords(recordsIn: CustodyRecord[], kind: 'item' | 'informatio
     }
     for (const r of merged) audienceLane.fills.push({ ...r, faint: true, tone: 'mystery' })
   }
-  if (publicAt != null) for (const l of lanesOut) l.marks.push({ col: publicAt, kind: 'public', title: 'public — everyone knows' })
+  if (publicAt != null) for (const l of lanesOut) l.marks.push({ col: publicAt, kind: 'public', title: t('marks.publicEveryone') })
   return lanesOut
 }
 
@@ -630,7 +631,7 @@ function windowLanes(lanes: Lane[], lo: number, hi: number): Lane[] {
 
 /** Lanes → LifecycleGantt rows — one renderer so every custody chart (real or hypothetical) looks
  *  identical. `onGhostClick` makes the ANALYSIS lane's ghosts actionable (click → draft the checkpoint). */
-function lanesToGanttRows(lanes: Lane[], onGhostClick?: (col: number) => void): GanttRow[] {
+function lanesToGanttRows(t: TFunction, lanes: Lane[], onGhostClick?: (col: number) => void): GanttRow[] {
   return lanes.map((l) => ({
   key: l.key,
   gutter: (
@@ -657,7 +658,7 @@ function lanesToGanttRows(lanes: Lane[], onGhostClick?: (col: number) => void): 
           key={`f${i}`}
           className={cn('absolute top-1/2 h-2.5 -translate-y-1/2 rounded-sm', f.faint ? (f.tone === 'mystery' ? 'bg-thread/20' : 'bg-flag/15') : 'bg-lore/50')}
           style={{ left: f.from * colW + 1, width: Math.max(colW - 2, (f.to - f.from + 1) * colW - 2) }}
-          title={f.faint ? (f.tone === 'mystery' ? 'MYSTERY zone — someone knows what the audience doesn’t yet' : 'SUSPENSE zone — the audience knows what they don’t') : undefined}
+          title={f.faint ? (f.tone === 'mystery' ? t('zones.mystery') : t('zones.suspense')) : undefined}
         />
       ))}
       {l.marks.map((m, i) =>
@@ -674,7 +675,7 @@ function lanesToGanttRows(lanes: Lane[], onGhostClick?: (col: number) => void): 
               m.kind === 'ghost' && onGhostClick && 'cursor-pointer hover:scale-150 hover:animate-none hover:bg-thread/70'
             )}
             style={{ left: m.col * colW + colW / 2 - (m.kind === 'ghost' ? 6 : 4) }}
-            title={m.kind === 'ghost' && onGhostClick ? `${m.title}\n\nclick → draft this checkpoint in Records` : m.title}
+            title={m.kind === 'ghost' && onGhostClick ? `${m.title}\n\n${t('marks.clickToDraft')}` : m.title}
             onClick={m.kind === 'ghost' && onGhostClick ? () => onGhostClick(m.col) : undefined}
           />
         )
@@ -685,6 +686,7 @@ function lanesToGanttRows(lanes: Lane[], onGhostClick?: (col: number) => void): 
 }
 
 export function CustodyPanel(): JSX.Element {
+  const { t } = useTranslation('custody')
   const { topics, custody, secrets, roster, ready, reload } = usePossessionData()
   const scenes = useWorkspace((s) => s.scenes)
   const graph = useWorkspace((s) => s.timelineGraph)
@@ -708,7 +710,7 @@ export function CustodyPanel(): JSX.Element {
   const [tab, setTab] = useState<'chart' | 'records' | 'write' | 'preview' | 'source'>('chart')
   // Leaving a tab with unsaved Records/Write edits prompts Save/Don't Save/Cancel (same guard as page-switch),
   // instead of silently discarding. requestNav is a no-op passthrough when nothing's dirty.
-  const changeTab = (t: typeof tab): void => requestNav(() => setTab(t))
+  const changeTab = (next: typeof tab): void => requestNav(() => setTab(next))
   useEffect(() => setTab('chart'), [selection?.id]) // a fresh topic opens on its chart (topic switch is already guarded via openPage)
   const [scenePreview, setScenePreview] = useState<{ path: string; title: string } | null>(null)
   // Save lives in the HEADER (matching scene/world pages) — the form registers its handler + state here
@@ -723,7 +725,7 @@ export function CustodyPanel(): JSX.Element {
 
   /** Resolve a who-token (entity id, name, or special) to a stable lane key + display label. */
   const worldPages = useWorkspace((s) => s.worldPages)
-  const resolveWho = useMemo(() => makeResolveWho(characters, worldPages), [characters, worldPages])
+  const resolveWho = useMemo(() => makeResolveWho(t, characters, worldPages), [t, characters, worldPages])
 
   const entityTracks = useWorkspace((s) => s.entityTracks)
   const showObserved = useWorkspace((s) => s.ganttLayers.observed)
@@ -749,17 +751,17 @@ export function CustodyPanel(): JSX.Element {
     // gain fills · lost un-fills · public floods; on items the baton emerges from exclusivity.
     // Shading: MYSTERY = char∧¬audience (bg-thread tint) · SUSPENSE = audience∧¬char (bg-flag tint).
     if (topic) {
-      const out = foldTopicRecords(topic.records, topic.topic, colOf, lastCol, resolveWho)
+      const out = foldTopicRecords(t, topic.records, topic.topic, colOf, lastCol, resolveWho)
       // ANALYSIS rides on TOP — the discrepancies are the attention item; the plan reads below them
       if (showObserved && observedGhosts.length)
         out.unshift({
           key: '__observed',
-          label: 'ANALYSIS',
+          label: t('lanes.analysis'),
           fills: [],
           marks: observedGhosts.map((g) => ({
             col: g.col,
             kind: 'ghost' as const,
-            title: `observed, undeclared — ${g.e.change}${g.e.target ? ` → ${g.e.target}` : ''}: ${(g.e.description || g.e.value).slice(0, 140)}`
+            title: `${t('panel.observedUndeclared')} ${g.e.change}${g.e.target ? ` → ${g.e.target}` : ''}: ${(g.e.description || g.e.value).slice(0, 140)}`
           }))
         })
       return out
@@ -799,7 +801,7 @@ export function CustodyPanel(): JSX.Element {
             }
           }
         }
-        const hh = h ?? { id: '?', name: 'unresolved' }
+        const hh = h ?? { id: '?', name: t('lanes.unresolved') }
         const lane = laneFor(hh.id, hh.name)
         lane.fills.push({ from, to })
         lane.marks.push({ col: from, kind: 'handoff', title: `${e.change}: ${e.value}` })
@@ -824,15 +826,15 @@ export function CustodyPanel(): JSX.Element {
         else if (e.target && !knownFrom.has(e.target)) knownFrom.set(e.target, col)
       }
     }
-    const out: Lane[] = [{ key: '__reader', label: 'READER', fills: readerFrom != null ? [{ from: readerFrom, to: lastCol }] : [], marks: [] }]
+    const out: Lane[] = [{ key: '__reader', label: t('lanes.reader'), fills: readerFrom != null ? [{ from: readerFrom, to: lastCol }] : [], marks: [] }]
     for (const [id, from] of knownFrom) {
       const lane: Lane = { key: id, label: nameOf.get(id) ?? (id === owner?.ownerId ? owner.ownerName : id), fills: [{ from, to: lastCol }], marks: [] }
       if (readerFrom != null && from > readerFrom) lane.fills.push({ from: readerFrom, to: from - 1, faint: true })
       out.push(lane)
     }
-    if (publicAt != null) for (const l of out) l.marks.push({ col: publicAt, kind: 'public', title: 'public' })
+    if (publicAt != null) for (const l of out) l.marks.push({ col: publicAt, kind: 'public', title: t('marks.public') })
     return out
-  }, [topic, selection, custody, secrets, roster, characters, colOf, lastCol, resolveWho, showObserved, observedGhosts])
+  }, [t, topic, selection, custody, secrets, roster, characters, colOf, lastCol, resolveWho, showObserved, observedGhosts])
 
   // Activity WINDOW — trim holder/knower lanes by how many spans+events they carry (drag the low thumb up to hide
   // barely-active lanes; same windowed slider the other rails use). Self-gates when lanes don't vary. The special
@@ -853,7 +855,7 @@ export function CustodyPanel(): JSX.Element {
   const [quickSeed, setQuickSeed] = useState<string | null>(null)
   const rows = useMemo<GanttRow[]>(
     () =>
-      lanesToGanttRows(scoped.shown, (col) => {
+      lanesToGanttRows(t, scoped.shown, (col) => {
         const g = observedGhosts.find((x) => x.col === col + win.lo) // windowed col → full-axis (marks were offset by lo)
         if (!g) return
         const verb = g.e.change === 'expose' && g.e.target === 'public' ? '!public' : /los|forget/.test(g.e.change) ? '!lost' : '!gain'
@@ -877,16 +879,16 @@ export function CustodyPanel(): JSX.Element {
         onReset: win.range ? () => win.setRange(null) : undefined,
         title: `${cols[win.lo]?.title ?? '?'} → ${cols[win.hi]?.title ?? '?'}`
       }}
-      page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: 'holders', page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
+      page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: t('panel.holdersNoun'), page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
       metric={{
-        label: 'Range',
+        label: t('panel.rangeLabel'),
         min: 1,
         max: maxAct,
         value: [loAct, hiAct],
         onChange: setActWin,
-        readout: actAll ? 'all' : `${loAct}${loAct !== hiAct ? `–${hiAct}` : ''}`,
+        readout: actAll ? t('all') : `${loAct}${loAct !== hiAct ? `–${hiAct}` : ''}`,
         onReset: actAll ? undefined : () => setActWin(null),
-        title: 'Trim lanes by activity — drag the low thumb up to hide barely-active holders/knowers.'
+        title: t('panel.rangeTip')
       }}
     />
   )
@@ -912,7 +914,7 @@ export function CustodyPanel(): JSX.Element {
               </span>
             )}
             {/* unsaved state = the same dirty dot scene/world use */}
-            {editing?.state.dirty && <span className="size-1.5 shrink-0 rounded-full bg-thread" title="unsaved" />}
+            {editing?.state.dirty && <span className="size-1.5 shrink-0 rounded-full bg-thread" title={t('unsaved')} />}
           </>
         }
         tabs={PAGE_TABS.custody}
@@ -924,7 +926,7 @@ export function CustodyPanel(): JSX.Element {
           editing ? (
             <Button size="sm" variant="ghost" className="shrink-0" disabled={!editing.state.dirty || editing.state.saving} onClick={() => editing.save.current?.()}>
               {editing.state.saving ? <Loader2 className="size-3.5 animate-spin" /> : <Save className="size-3.5" />}
-              Save
+              {t('save')}
             </Button>
           ) : undefined
         }
@@ -948,13 +950,13 @@ export function CustodyPanel(): JSX.Element {
                 const sc = sceneById.get(c.id)
                 if (sc) setScenePreview({ path: sc.path, title: sc.title })
               }}
-              empty="No checkpoints yet — add records in the Records tab (or queue the AI populate job)."
+              empty={t('panel.emptyChart')}
             />
             {scaleBar}
           </>
         )}
         {tab === 'chart' && (
-          <RailChrome region="custodyPanel" name="Custody" layers={['chapters', 'observed']} export={{ file: 'custody-rail', caption: () => 'Custody — the authored possession/revelation chart' }} help={CustodyHelp} />
+          <RailChrome region="custodyPanel" name={t('title')} layers={['chapters', 'observed']} export={{ file: 'custody-rail', caption: () => t('railCaption') }} help={CustodyHelp} />
         )}
         {scenePreview && <PageReadDialog path={scenePreview.path} kind="scene" title={scenePreview.title} onClose={() => setScenePreview(null)} />}
       </PageShell>
@@ -966,12 +968,12 @@ export function CustodyPanel(): JSX.Element {
         {selection ? (
           <>
             <span className="shrink-0 rounded border border-lore/40 bg-lore/10 px-1.5 py-0.5 text-[10px] text-lore">
-              extraction’s reading — create the page to own this chart
+              {t('panel.extractionBanner')}
             </span>
-            <span className="ml-auto shrink-0 text-faint">{selection.kind === 'item' ? 'segments = inferred holder' : '█ inferred knowledge'}</span>
+            <span className="ml-auto shrink-0 text-faint">{selection.kind === 'item' ? t('panel.inferredHolder') : t('panel.inferredKnowledge')}</span>
           </>
         ) : (
-          <span>Select a topic — or an unpaged object from analysis.</span>
+          <span>{t('panel.selectPrompt')}</span>
         )}
       </div>
       <LifecycleGantt
@@ -986,13 +988,13 @@ export function CustodyPanel(): JSX.Element {
         empty={
           selection
             ? selection.kind === 'secret'
-              ? 'No knowledge events cite this secret yet — run analysis, then lanes appear here (and Create page can draft your records from them).'
-              : 'No custody events for this item yet — run analysis.'
+              ? t('panel.emptySecret')
+              : t('panel.emptyItem')
             : <EmptyRailState rail="custody" />
         }
       />
       {scaleBar}
-      <RailChrome region="custodyPanel" name="Custody" layers={['chapters']} export={{ file: 'custody-rail', caption: () => 'Custody — the authored possession/revelation chart' }} help={CustodyHelp} />
+      <RailChrome region="custodyPanel" name={t('title')} layers={['chapters']} export={{ file: 'custody-rail', caption: () => t('railCaption') }} help={CustodyHelp} />
       {scenePreview && <PageReadDialog path={scenePreview.path} kind="scene" title={scenePreview.title} onClose={() => setScenePreview(null)} />}
     </div>
   )
@@ -1022,6 +1024,7 @@ function AiSuggestDialog({
   onCreate: (a: Anchor) => Promise<void>
   onChanged: () => void
 }): JSX.Element {
+  const { t } = useTranslation('custody')
   const tasks = useWorkspace((s) => s.tasks)
   const enqueueTask = useWorkspace((s) => s.enqueueTask)
   const scenes = useWorkspace((s) => s.scenes)
@@ -1056,7 +1059,7 @@ function AiSuggestDialog({
   const colOf = useMemo(() => new Map(orderedScenes.map((sc, idx) => [sc.sceneId, idx])), [orderedScenes])
   const sceneById = useMemo(() => new Map(orderedScenes.map((sc) => [sc.sceneId, sc])), [orderedScenes])
   const worldPages = useWorkspace((s) => s.worldPages)
-  const resolveWho = useMemo(() => makeResolveWho(characters, worldPages), [characters, worldPages])
+  const resolveWho = useMemo(() => makeResolveWho(t, characters, worldPages), [t, characters, worldPages])
 
   // what analysis noticed about the picked topic — the evidence the job drafts from
   const findings = useMemo(() => {
@@ -1076,8 +1079,8 @@ function AiSuggestDialog({
     if (job?.status === 'done' && job.result) void window.nvs.parseCustodyBlock(job.result).then(setHypo)
   }, [job?.id, job?.status, job?.result])
   const hypoRows = useMemo(
-    () => (hypo && topic ? lanesToGanttRows(foldTopicRecords(hypo.records, topic.topic, colOf, Math.max(0, orderedScenes.length - 1), resolveWho)) : []),
-    [hypo, topic, colOf, orderedScenes.length, resolveWho]
+    () => (hypo && topic ? lanesToGanttRows(t, foldTopicRecords(t, hypo.records, topic.topic, colOf, Math.max(0, orderedScenes.length - 1), resolveWho)) : []),
+    [t, hypo, topic, colOf, orderedScenes.length, resolveWho]
   )
 
   async function queue(t: CustodyTopic): Promise<void> {
@@ -1118,12 +1121,12 @@ function AiSuggestDialog({
   const undoWrite = useWorkspace((s) => s.undoPageWrite)
   // Apply writes the page directly (frontmatter preserved) and SNAPSHOTS the prior body into the
   // per-page history — rollback works from the topic header even after tasks are cleared.
-  async function apply(t: CustodyTopic, body: string, taskId: string): Promise<void> {
+  async function apply(tp: CustodyTopic, body: string, taskId: string): Promise<void> {
     setBusy(true)
     try {
-      const doc = await window.nvs.readScene(t.path)
-      pushHistory(t.path, doc?.body ?? '', `AI apply — ${t.name}`, taskId)
-      const ok = await window.nvs.writeScene(t.path, doc.frontmatter, body)
+      const doc = await window.nvs.readScene(tp.path)
+      pushHistory(tp.path, doc?.body ?? '', t('history.aiApply', { name: tp.name }), taskId)
+      const ok = await window.nvs.writeScene(tp.path, doc.frontmatter, body)
       if (ok) {
         markApplied(taskId, true)
         onChanged()
@@ -1132,10 +1135,10 @@ function AiSuggestDialog({
       setBusy(false)
     }
   }
-  async function unApply(t: CustodyTopic, taskId: string): Promise<void> {
+  async function unApply(tp: CustodyTopic, taskId: string): Promise<void> {
     setBusy(true)
     try {
-      await undoWrite(t.path)
+      await undoWrite(tp.path)
       markApplied(taskId, false)
       onChanged()
     } finally {
@@ -1163,22 +1166,22 @@ function AiSuggestDialog({
   const footerActions =
     tab === 'recommend' && pick ? (
       <Button size="sm" disabled={creating === pick.id} onClick={() => void onCreate(pick).then(() => setSel(null))}>
-        {creating === pick.id ? <Loader2 className="size-3 animate-spin" /> : <FilePlus2 className="size-3" />} Create topic page
+        {creating === pick.id ? <Loader2 className="size-3 animate-spin" /> : <FilePlus2 className="size-3" />} {t('ai.createTopicPage')}
       </Button>
     ) : tab === 'populate' && topic && !job ? (
-      <Button size="sm" disabled={busy} onClick={() => void queue(topic)}>{busy ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />} Queue job</Button>
+      <Button size="sm" disabled={busy} onClick={() => void queue(topic)}>{busy ? <Loader2 className="size-3 animate-spin" /> : <Sparkles className="size-3" />} {t('ai.queueJob')}</Button>
     ) : tab === 'populate' && topic && job?.status === 'failed' ? (
-      <Button size="sm" variant="outline" disabled={busy} onClick={() => void queue(topic)}><Sparkles className="size-3" /> Re-run</Button>
+      <Button size="sm" variant="outline" disabled={busy} onClick={() => void queue(topic)}><Sparkles className="size-3" /> {t('ai.reRun')}</Button>
     ) : doneResult ? (
       <>
         {!applied.has(job!.id) ? (
-          <Button size="sm" disabled={busy || !hypo || hypo.errors.length > 0} title={hypo && hypo.errors.length > 0 ? 'The draft has grammar errors — Re-run instead of accepting a broken block' : undefined} onClick={() => void apply(topic!, hypo?.canonical ?? job!.result!, job!.id)}>
-            <Save className="size-3" /> Accept
+          <Button size="sm" disabled={busy || !hypo || hypo.errors.length > 0} title={hypo && hypo.errors.length > 0 ? t('ai.grammarErrTip') : undefined} onClick={() => void apply(topic!, hypo?.canonical ?? job!.result!, job!.id)}>
+            <Save className="size-3" /> {t('ai.accept')}
           </Button>
         ) : (
-          <Button size="sm" variant="outline" disabled={busy} onClick={() => void unApply(topic!, job!.id)}>Undo — restore previous text</Button>
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => void unApply(topic!, job!.id)}>{t('ai.undoRestore')}</Button>
         )}
-        <Button size="sm" variant="outline" disabled={busy} onClick={() => void queue(topic!)}><Sparkles className="size-3" /> Re-run</Button>
+        <Button size="sm" variant="outline" disabled={busy} onClick={() => void queue(topic!)}><Sparkles className="size-3" /> {t('ai.reRun')}</Button>
       </>
     ) : null
 
@@ -1187,20 +1190,20 @@ function AiSuggestDialog({
     <SplitDialog
       open={open}
       onClose={onClose}
-      title="AI suggest — custody"
+      title={t('ai.dialogTitle')}
       leftClassName="w-1/2"
       footer={footerActions && <DialogFooter>{footerActions}</DialogFooter>}
       left={
         <>
           <div className="flex shrink-0 gap-0 border-b border-border px-3 py-2">
             <div className="flex overflow-hidden rounded-md border border-border text-xs">
-              {(['recommend', 'populate'] as const).map((t) => (
+              {(['recommend', 'populate'] as const).map((tb) => (
                 <button
-                  key={t}
-                  onClick={() => { setTab(t); setSel(null) }}
-                  className={cn('px-2 py-1 transition-colors', tab === t ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}
+                  key={tb}
+                  onClick={() => { setTab(tb); setSel(null) }}
+                  className={cn('px-2 py-1 transition-colors', tab === tb ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}
                 >
-                  {t === 'recommend' ? 'Recommended topics' : 'Auto-populate records'}
+                  {tb === 'recommend' ? t('ai.tabRecommend') : t('ai.tabPopulate')}
                 </button>
               ))}
             </div>
@@ -1209,17 +1212,17 @@ function AiSuggestDialog({
             {tab === 'recommend' && (
               <>
                 {suggestions.slice(0, 60).map((a) => listRow(a.id, sel === a.id, () => setSel(a.id), a.name, a.cat, a.reason))}
-                {suggestions.length > 60 && <p className="px-2 py-1 text-[10px] text-faint">+{suggestions.length - 60} more — or anchor directly via the sidebar + search</p>}
-                {suggestions.length === 0 && <p className="px-2 text-[11px] text-faint">Every eligible world page already has a topic.</p>}
+                {suggestions.length > 60 && <p className="px-2 py-1 text-[10px] text-faint">{t('ai.moreSuggestions', { count: suggestions.length - 60 })}</p>}
+                {suggestions.length === 0 && <p className="px-2 text-[11px] text-faint">{t('ai.allHaveTopic')}</p>}
               </>
             )}
             {tab === 'populate' && (
               <>
-                {topics.map((t) => {
-                  const j = tasks.filter((x) => x.pagePath === t.path).at(-1)
-                  return listRow(t.pageId, sel === t.pageId, () => setSel(t.pageId), t.name, j ? j.status : '', `${t.topic} · ${t.records.length} checkpoint${t.records.length === 1 ? '' : 's'}`)
+                {topics.map((tp) => {
+                  const j = tasks.filter((x) => x.pagePath === tp.path).at(-1)
+                  return listRow(tp.pageId, sel === tp.pageId, () => setSel(tp.pageId), tp.name, j ? j.status : '', t('sidebar.topicSub', { kind: tp.topic, count: tp.records.length }))
                 })}
-                {topics.length === 0 && <p className="px-2 text-[11px] text-faint">No topics yet — create one from the Recommended tab first.</p>}
+                {topics.length === 0 && <p className="px-2 text-[11px] text-faint">{t('ai.noTopicsYet')}</p>}
               </>
             )}
           </div>
@@ -1236,14 +1239,14 @@ function AiSuggestDialog({
           {tab === 'recommend' && pick && (
             <>
               <p className="pb-3 leading-relaxed text-muted-foreground">
-                <b className="text-foreground/90">{pick.name}</b> — {pick.reason}. Creating a topic makes a page that tracks{' '}
-                {pick.kind === 'item' ? <>who <b>holds</b> it</> : <>who <b>knows</b> it</>}, scene by scene, drawn as a chart.
+                <b className="text-foreground/90">{pick.name}</b> — {pick.reason}. {t('ai.creatingA')}{' '}
+                {pick.kind === 'item' ? <>{t('ai.who')}<b>{t('ai.holds')}</b>{t('ai.it')}</> : <>{t('ai.who')}<b>{t('ai.knows')}</b>{t('ai.it')}</>}{t('ai.sceneByScene')}
               </p>
               <div className="mb-3 rounded-md border border-border bg-canvas/40 p-2 leading-relaxed text-muted-foreground">
-                <div><span className="text-faint">page · </span>content/custody/{pick.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}{pick.src === 'secret' ? '' : '-custody'}.md</div>
+                <div><span className="text-faint">{t('ai.pageLabel')}</span>content/custody/{pick.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}{pick.src === 'secret' ? '' : '-custody'}.md</div>
                 <div>
-                  <span className="text-faint">starts with · </span>
-                  {pick.n > 0 ? `${pick.n} checkpoint${pick.n === 1 ? '' : 's'} drafted from what analysis noticed — yours to edit` : 'no checkpoints — add them by hand, or queue the auto-populate job after'}
+                  <span className="text-faint">{t('ai.startsWithLabel')}</span>
+                  {pick.n > 0 ? t('ai.draftedFrom', { count: pick.n }) : t('ai.noCheckpoints')}
                 </div>
               </div>
             </>
@@ -1251,13 +1254,12 @@ function AiSuggestDialog({
           {tab === 'populate' && topic && (
             <>
               <p className="pb-3 leading-relaxed text-muted-foreground">
-                <b className="text-foreground/90">{topic.name}</b> has {topic.records.length} declared checkpoint{topic.records.length === 1 ? '' : 's'}.
-                The job reads this page’s prose and drafts the missing checkpoints — who {topic.topic === 'item' ? 'holds' : 'learns'} it, at which
-                scene. You review the result here; nothing is written until you accept.
+                <b className="text-foreground/90">{topic.name}</b> {t('ai.hasDeclared', { count: topic.records.length })}{' '}
+                {t('ai.jobReads1')}{topic.topic === 'item' ? t('ai.holds') : t('ai.learns')}{t('ai.jobReads2')}
               </p>
               {findings.length > 0 && (
                 <>
-                  <p className="pb-1 text-[10px] font-semibold uppercase tracking-wide text-faint">What analysis noticed</p>
+                  <p className="pb-1 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('ai.whatNoticed')}</p>
                   <div className="mb-3 flex flex-col gap-0.5">
                     {findings.slice(0, 8).map((f, idx) => {
                       const sc = sceneById.get(f.sceneId)
@@ -1273,18 +1275,18 @@ function AiSuggestDialog({
                         </div>
                       )
                     })}
-                    {findings.length > 8 && <span className="text-[10px] text-faint">+{findings.length - 8} more</span>}
+                    {findings.length > 8 && <span className="text-[10px] text-faint">{t('ai.moreFindings', { count: findings.length - 8 })}</span>}
                   </div>
                 </>
               )}
               {job && (job.status === 'queued' || job.status === 'running') && (
-                <p className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-3 animate-spin" /> drafting…</p>
+                <p className="flex items-center gap-2 text-muted-foreground"><Loader2 className="size-3 animate-spin" /> {t('ai.drafting')}</p>
               )}
-              {job && job.status === 'failed' && <p className="pb-2 text-flag">failed — {job.error ?? 'unknown error'}</p>}
+              {job && job.status === 'failed' && <p className="pb-2 text-flag">{t('ai.failedPrefix')}{job.error ?? t('ai.unknownError')}</p>}
               {job && job.status === 'done' && job.result != null && (
                 <>
                   <p className="pb-1 text-[10px] font-semibold uppercase tracking-wide text-faint">
-                    If you accept, the chart becomes {applied.has(job.id) && '· applied ✓'}
+                    {t('ai.ifAccept')} {applied.has(job.id) && t('ai.appliedTag')}
                   </p>
                   {hypo && hypo.errors.length > 0 && (
                     <div className="mb-2 rounded border border-flag/40 bg-flag/10 px-2 py-1.5 text-[10px] text-flag">
@@ -1295,13 +1297,13 @@ function AiSuggestDialog({
                   )}
                   <div className="mb-3 overflow-auto rounded-md border border-border bg-canvas/40">
                     {hypo ? (
-                      <LifecycleGantt cols={orderedScenes.map((sc) => ({ id: sc.sceneId, title: sc.title }))} rows={hypoRows} empty="The draft contains no readable checkpoints." />
+                      <LifecycleGantt cols={orderedScenes.map((sc) => ({ id: sc.sceneId, title: sc.title }))} rows={hypoRows} empty={t('ai.emptyDraft')} />
                     ) : (
-                      <p className="flex items-center gap-2 p-3 text-muted-foreground"><Loader2 className="size-3 animate-spin" /> reading the draft…</p>
+                      <p className="flex items-center gap-2 p-3 text-muted-foreground"><Loader2 className="size-3 animate-spin" /> {t('ai.readingDraft')}</p>
                     )}
                   </div>
                   <details className="mt-3">
-                    <summary className="cursor-pointer text-[10px] text-faint">raw draft</summary>
+                    <summary className="cursor-pointer text-[10px] text-faint">{t('ai.rawDraft')}</summary>
                     <pre className="mt-1 max-h-60 overflow-auto whitespace-pre-wrap rounded-md border border-border bg-canvas/40 p-2 text-[10px] leading-relaxed text-muted-foreground">{job.result}</pre>
                   </details>
                 </>
@@ -1310,7 +1312,7 @@ function AiSuggestDialog({
           )}
           {((tab === 'recommend' && !pick) || (tab === 'populate' && !topic)) && (
             <p className="max-w-60 text-center text-[11px] leading-relaxed text-faint">
-              Pick {tab === 'recommend' ? 'a suggestion' : 'a topic'} on the left — this pane shows what will change before you confirm.
+              {t('ai.pickPre')}{tab === 'recommend' ? t('ai.aSuggestion') : t('ai.aTopic')}{t('ai.pickPost')}
             </p>
           )}
         </div>
@@ -1323,6 +1325,7 @@ function AiSuggestDialog({
 
 // ── WhoPicker: /speaker-style searchable multi-select — chips + a filtered world-page list ─────────────
 function WhoPicker({ value, onChange, single, disabled, noSpecials }: { value: string[]; onChange: (who: string[]) => void; single?: boolean; disabled?: boolean; noSpecials?: boolean }): JSX.Element {
+  const { t } = useTranslation('custody')
   const worldPages = useWorkspace((s) => s.worldPages)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
@@ -1379,7 +1382,7 @@ function WhoPicker({ value, onChange, single, disabled, noSpecials }: { value: s
             setOpen(true)
           }}
           onFocus={() => setOpen(true)}
-          placeholder={value.length ? '' : single ? 'holder…' : 'who…'}
+          placeholder={value.length ? '' : single ? t('who.holderPh') : t('who.whoPh')}
           className="min-w-10 flex-1 bg-transparent text-[11px] outline-none placeholder:text-faint"
         />
       )}
@@ -1423,6 +1426,7 @@ function QuickAdd({
   seed?: string | null // a ghost-click's drafted line — consumed once, then the line is yours to edit
   onSeedConsumed?: () => void
 }): JSX.Element {
+  const { t } = useTranslation('custody')
   const worldPages = useWorkspace((s) => s.worldPages)
   const [text, setText] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -1444,11 +1448,11 @@ function QuickAdd({
     if (trig.kind === '!')
       return (['gain', 'lost', 'public'] as const)
         .filter((v) => !trig.query || v.startsWith(trig.query))
-        .map((v) => ({ id: v, label: v === 'gain' ? 'takes / learns it' : v === 'lost' ? 'destroyed / forgets' : 'everyone in-world knows' }))
+        .map((v) => ({ id: v, label: v === 'gain' ? t('quickAdd.verbGain') : v === 'lost' ? t('quickAdd.verbLost') : t('quickAdd.verbPublic') }))
     if (trig.kind === '@') {
       const specials = [
-        { id: 'audience', label: 'audience — the reader' },
-        { id: 'public', label: 'public — everyone in-world' }
+        { id: 'audience', label: t('quickAdd.audienceOpt') },
+        { id: 'public', label: t('quickAdd.publicOpt') }
       ]
       const pages = worldPages.filter((p) => p.kind !== 'custody').map((p) => ({ id: p.id, label: `${p.name} · ${p.kind}` }))
       return [...specials, ...pages].filter((o) => !trig.query || o.id.toLowerCase().includes(trig.query) || o.label.toLowerCase().includes(trig.query)).slice(0, 6)
@@ -1537,24 +1541,24 @@ function QuickAdd({
           }
           if (e.key === 'Escape' && trig) setText(text.slice(0, trig.at))
         }}
-        placeholder={`quick add:  gain @${topic.topic === 'item' ? 'holder' : 'who'} @audience #scene …why  ⏎`}
+        placeholder={t('quickAdd.placeholder', { slot: topic.topic === 'item' ? t('quickAdd.holderSlot') : t('quickAdd.whoSlot') })}
         className="w-full rounded-md border border-border bg-canvas px-2.5 py-1.5 text-[11px] outline-none placeholder:text-faint focus:border-lore/40"
       />
       <div className="mt-1 flex flex-wrap items-center gap-1">
         {parsed.verb
           ? slotChip(true, false, `✓ !${parsed.verb}`)
-          : slotChip(false, nextSlot === 'verb', '!verb — type ! (gain if skipped)', () => insert('!'))}
+          : slotChip(false, nextSlot === 'verb', t('quickAdd.slotVerb'), () => insert('!'))}
         {parsed.who.length > 0
           ? parsed.badWho.length > 0
-            ? slotChip(false, false, `⚠ @${parsed.badWho.join(' @')} — no such page`, () => insert('@'))
+            ? slotChip(false, false, `⚠ @${parsed.badWho.join(' @')}${t('quickAdd.noSuchPage')}`, () => insert('@'))
             : slotChip(true, false, `✓ @${parsed.who.join(' @')}`)
-          : parsed.verb !== 'public' && slotChip(false, nextSlot === 'who', parsed.needsWho ? '@who — type @' : '@who (optional)', () => insert('@'))}
+          : parsed.verb !== 'public' && slotChip(false, nextSlot === 'who', parsed.needsWho ? t('quickAdd.slotWhoReq') : t('quickAdd.slotWhoOpt'), () => insert('@'))}
         {parsed.scene
           ? parsed.sceneOk
             ? slotChip(true, false, `✓ #${parsed.scene}`)
-            : slotChip(false, false, `⚠ #${parsed.scene} — no such scene`, () => insert('#'))
-          : slotChip(false, nextSlot === 'scene', '#scene — type #', () => insert('#'))}
-        {slotChip(false, false, parsed.ready ? (parsed.note ? '⏎ adds the checkpoint' : 'note (optional) · ⏎ adds') : 'note — just type')}
+            : slotChip(false, false, `⚠ #${parsed.scene}${t('quickAdd.noSuchScene')}`, () => insert('#'))
+          : slotChip(false, nextSlot === 'scene', t('quickAdd.slotScene'), () => insert('#'))}
+        {slotChip(false, false, parsed.ready ? (parsed.note ? t('quickAdd.readyNote') : t('quickAdd.noteOptional')) : t('quickAdd.noteType'))}
       </div>
       {trig && options.length > 0 && (
         <div className="absolute left-0 top-full z-30 mt-1 w-72 overflow-hidden rounded-md border border-border bg-panel shadow-lg">
@@ -1593,6 +1597,7 @@ function RecordsForm({
   seed?: string | null // ghost-click draft passed through to the quick-add line
   onSeedConsumed?: () => void
 }): JSX.Element {
+  const { t } = useTranslation('custody')
   const scenes = useWorkspace((s) => s.scenes)
   const setAiRequest = useWorkspace((s) => s.setCustodyAiRequest)
   const [rows, setRows] = useState<CustodyRecord[]>(() => topic.records.map((r) => ({ ...r, who: [...r.who] })))
@@ -1650,9 +1655,9 @@ function RecordsForm({
     setErr(null)
     try {
       const before = await window.nvs.readScene(topic.path)
-      pushHistory(topic.path, before?.body ?? '', 'records edit')
+      pushHistory(topic.path, before?.body ?? '', t('history.recordsEdit'))
       const updated = await window.nvs.updateCustodyRecords(topic.pageId, rows)
-      if (!updated) setErr('save failed — the page may have been moved or deleted')
+      if (!updated) setErr(t('saveFailed'))
       else {
         setDirty(false)
         onSaved()
@@ -1675,7 +1680,7 @@ function RecordsForm({
       <div className="flex flex-col gap-1.5">
         {rows.map((r, i) => (
           <div key={i} className="flex items-center gap-1.5 rounded-md border border-border bg-canvas/40 px-2 py-1.5">
-            <span className="shrink-0 text-[10px] text-faint">in</span>
+            <span className="shrink-0 text-[10px] text-faint">{t('records.inLabel')}</span>
             <ScenePicker value={r.scene} onChange={(v) => edit(i, { scene: v })} allowStart className="shrink-0" />
             <Select
               value={r.event}
@@ -1693,10 +1698,10 @@ function RecordsForm({
             <Input
               value={r.note ?? ''}
               onChange={(e) => edit(i, { note: e.target.value || null })}
-              placeholder="note — the why"
+              placeholder={t('records.notePh')}
               className="h-7 min-w-0 flex-1 text-[11px]"
             />
-            <button onClick={() => remove(i)} title="Delete checkpoint" className="shrink-0 rounded p-1 text-faint hover:text-flag">
+            <button onClick={() => remove(i)} title={t('records.deleteCheckpoint')} className="shrink-0 rounded p-1 text-faint hover:text-flag">
               <Trash2 className="size-3.5" />
             </button>
           </div>
@@ -1704,15 +1709,15 @@ function RecordsForm({
       </div>
       <div className="mt-2 flex items-center gap-2">
         <Button variant="outline" size="sm" onClick={add}>
-          <Plus className="size-3" /> Checkpoint
+          <Plus className="size-3" /> {t('records.checkpointBtn')}
         </Button>
         <Button
           variant="outline"
           size="sm"
-          title="Draft the missing checkpoints from this page's prose — you review the chart it would draw before anything is written"
+          title={t('records.askAiTip')}
           onClick={() => setAiRequest({ tab: 'populate', sel: topic.pageId })}
         >
-          <Sparkles className="size-3" /> Ask AI
+          <Sparkles className="size-3" /> {t('records.askAi')}
         </Button>
       </div>
     </div>
@@ -1721,6 +1726,7 @@ function RecordsForm({
 
 /** Read-only rendered view: prose via the wiki renderer (fence stripped) + checkpoints as a REAL component. */
 function TopicPreview({ topic }: { topic: CustodyTopic }): JSX.Element {
+  const { t } = useTranslation('custody')
   const scenes = useWorkspace((s) => s.scenes)
   const [doc, setDoc] = useState<{ frontmatter: Record<string, unknown>; body: string } | null>(null)
   const tick = useWorkspace((s) => s.custodyTick) // rollbacks rewrite the file — refetch on the shared tick
@@ -1746,7 +1752,7 @@ function TopicPreview({ topic }: { topic: CustodyTopic }): JSX.Element {
       <WikiPreview frontmatter={doc.frontmatter} body={prose} kind="custody" />
       {topic.records.length > 0 && (
         <div className="mx-auto mt-4 max-w-[var(--measure)]">
-          <h2 className="mb-2 border-b border-border pb-1 text-sm font-semibold">Checkpoints</h2>
+          <h2 className="mb-2 border-b border-border pb-1 text-sm font-semibold">{t('preview.checkpoints')}</h2>
           <div className="flex flex-col gap-1">
             {topic.records.map((r, i) => (
               <div key={i} className="flex items-baseline gap-2 rounded px-1 py-1 text-[12px]">
@@ -1778,6 +1784,7 @@ function TopicPreview({ topic }: { topic: CustodyTopic }): JSX.Element {
  *  the SAME grammar gate as AI applies: prose edits flow freely, but a hand-broken ```custody fence
  *  refuses to save (with the parse error shown) — and a clean save writes the CANONICAL form. */
 function TopicWrite({ topic, onSaved, saveRef, onState }: { topic: CustodyTopic; onSaved: () => void; saveRef: React.MutableRefObject<(() => void) | null>; onState: (st: { dirty: boolean; saving: boolean; err: string | null }) => void }): JSX.Element {
+  const { t } = useTranslation('custody')
   const [text, setText] = useState<string | null>(null)
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -1798,14 +1805,14 @@ function TopicWrite({ topic, onSaved, saveRef, onState }: { topic: CustodyTopic;
     try {
       const check = await window.nvs.parseCustodyBlock(text)
       if (check.errors.length > 0) {
-        setErr(`fence broken — ${check.errors[0]} (fix it, or edit records in the Records tab)`)
+        setErr(t('write.fenceBroken', { error: check.errors[0] }))
         return
       }
       const doc = await window.nvs.readScene(topic.path)
-      pushHistory(topic.path, doc?.body ?? '', 'prose edit')
+      pushHistory(topic.path, doc?.body ?? '', t('history.proseEdit'))
       const ok = await window.nvs.writeScene(topic.path, doc.frontmatter, check.canonical)
       if (!ok) {
-        setErr('save failed — the page may have been moved or deleted')
+        setErr(t('saveFailed'))
         return
       }
       setText(check.canonical)
@@ -1858,57 +1865,24 @@ function TopicSource({ path }: { path: string }): JSX.Element {
 
 /** How the Custody rail works — the flow, the syntax, and where it sits in the tier model. */
 function CustodyHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('custody')
   return (
-    <Dialog open={open} onClose={onClose} title="Custody — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="What it shows">
-          <HelpList
-            items={[
-              <>Each topic page's <b className="text-foreground/80">custody block</b> drawn <b className="text-foreground/80">exactly as written</b> — your declaration of where an item or a piece of information travels. No AI interpretation in this chart, ever.</>,
-              <><b className="text-foreground/80">Items</b> are a baton (one holder at a time — a character's gain takes it FROM the previous holder). <b className="text-foreground/80">Information</b> is a contagion (knowledge spreads; AUDIENCE is a lane; the faint tints are mystery/suspense).</>,
-              <>The purpose: <b className="text-foreground/80">learn the audience's experience</b> — when the reader learns what, and how long the suspense windows run.</>
-            ]}
-          />
+        <HelpSection title={t('help.shows.title')}>
+          <HelpList items={t('help.shows.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="How it gets built (the flow)">
-          <HelpTable
-            rows={[
-              ['1 · Write', 'Scenes + world pages first — custody is a revision-phase (2nd/3rd draft) tool that anchors to existing content.'],
-              ['2 · Run analysis', 'Extraction observes possession/knowledge events. Unpaged objects appear under "From analysis".'],
-              ['3 · Create the page', 'From an analysis suggestion (drafts the Timeline from observed events — data, not AI) or the + button (anchored to an existing character/item). Free-floating topics can’t be created.'],
-              ['4 · Curate', 'Edit the Timeline — add, correct, delete lines. The page is yours; the chart mirrors it verbatim.'],
-              ['5 · Iterate', 'Re-runs never touch your page. Analysis keeps watching and (soon) flags divergence — a character learning off-plan.']
-            ]}
-          />
+        <HelpSection title={t('help.flow.title')}>
+          <HelpTable rows={(t('help.flow.rows', { returnObjects: true }) as { k: string; v: string }[]).map((r) => [r.k, r.v] as [string, import('react').ReactNode])} />
         </HelpSection>
-        <HelpSection title="The grammar — three verbs, meaning from the topic kind">
-          <HelpTable
-            rows={[
-              ['gain · who: [x]', 'item: who REPLACES the holders (one record per handoff; several who = joint possession) · information: x now KNOWS it'],
-              ['lost · who: [x]', 'item with no who: destroyed/vanished · information: x forgets it (amnesia)'],
-              ['lost · who: [public]', 'GLOBAL event — destruction or mass amnesia: everyone in-world loses it; the audience remembers'],
-              ['public', 'everyone in-world knows — the flood line'],
-              ['scene: start', 'true before page one (e.g. Claudius always knew)'],
-              ['gain · who: [audience]', 'declares WHEN the reader learns it — without one, the AUDIENCE row falls back to the first checkpoint'],
-              ['old pages', 'v1 verbs (held-by · known-by · forgotten-by) and `since` still parse — saving rewrites them as v2']
-            ]}
-          />
+        <HelpSection title={t('help.grammar.title')}>
+          <HelpTable rows={(t('help.grammar.rows', { returnObjects: true }) as { k: string; v: string }[]).map((r) => [r.k, r.v] as [string, import('react').ReactNode])} />
         </HelpSection>
-        <HelpSection title="The Observed layer — the diff, live">
-          <HelpList
-            items={[
-              <>Your records are the <b className="text-foreground/80">plan</b>; analysis is the <b className="text-foreground/80">witness</b>. The ANALYSIS ghost lane (⟡ dashed marks) shows events analysis observed about this topic at scenes with <b className="text-foreground/80">no declared checkpoint</b> — an unplanned reveal, a handoff you dated differently, or a misread to ignore.</>,
-              <><b className="text-foreground/80">Silence is the success state</b>: when your ledger covers everything the witness saw, the lane disappears.</>,
-              <><b className="text-foreground/80">Click a ghost</b> → the Records tab opens with the quick-add line drafted from the observed event — review it, press ⏎ to accept, or just ignore the whisper. Toggle the lane off under LAYERS.</>
-            ]}
-          />
+        <HelpSection title={t('help.observed.title')}>
+          <HelpList items={t('help.observed.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Where it sits">
-          <HelpList
-            items={[
-              <>Custody is <b className="text-foreground/80">authored T3</b> — interpretation-altitude, like Coherence, but flipped: Coherence is what the <b className="text-foreground/80">AI surfaces</b>; Custody is what <b className="text-foreground/80">you declare</b>. The diff between them is where findings live.</>
-            ]}
-          />
+        <HelpSection title={t('help.where.title')}>
+          <HelpList items={t('help.where.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>

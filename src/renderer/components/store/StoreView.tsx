@@ -7,6 +7,7 @@
  */
 import { useState, type JSX } from 'react'
 import { ArrowLeft, Globe2, Puzzle, Search, X, Bot } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { regionAttrs } from '@/config/regions'
 import { cn } from '@/lib/utils'
@@ -15,6 +16,7 @@ import { ExtensionPage } from '@/components/store/ExtensionPage'
 import { ClaudeConnectPage } from '@/components/store/ClaudeConnectPage'
 
 export function StoreView(): JSX.Element | null {
+  const { t } = useTranslation('store')
   const page = useWorkspace((s) => s.discoverOpen)
   const setPage = useWorkspace((s) => s.setDiscoverOpen)
   const project = useWorkspace((s) => s.project)
@@ -31,9 +33,9 @@ export function StoreView(): JSX.Element | null {
   // (thread/indigo), NVS inside Claude (lore/amber). The accent stays lit even when inactive so the three
   // identities read apart at a glance instead of blurring into one tab strip.
   const TABS = {
-    community: { icon: Globe2, label: 'Works', hint: 'Stories shared by other writers', tint: 'text-character', active: 'bg-character/10 text-character' },
-    extensions: { icon: Puzzle, label: 'Extensions', hint: 'Tools that run inside NVS', tint: 'text-thread', active: 'bg-thread/10 text-thread' },
-    claude: { icon: Bot, label: 'Claude', hint: 'Use your novel from Claude', tint: 'text-lore', active: 'bg-lore/10 text-lore' }
+    community: { icon: Globe2, label: t('tab.works'), hint: t('tab.worksHint'), tint: 'text-character', active: 'bg-character/10 text-character' },
+    extensions: { icon: Puzzle, label: t('tab.extensions'), hint: t('tab.extensionsHint'), tint: 'text-thread', active: 'bg-thread/10 text-thread' },
+    claude: { icon: Bot, label: 'Claude', hint: t('tab.claudeHint'), tint: 'text-lore', active: 'bg-lore/10 text-lore' }
   } as const
 
   const pageTab = (id: keyof typeof TABS): JSX.Element => {
@@ -57,11 +59,11 @@ export function StoreView(): JSX.Element | null {
       {/* header: back · centered search · page tabs */}
       <div className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-b border-border px-4 py-2.5">
         <div className="flex items-center gap-3">
-          <button onClick={close} className="type-caption flex items-center gap-1 rounded-md px-1.5 py-1 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground" title={project ? 'Back to your work' : 'Back to your projects'}>
-            <ArrowLeft className="size-4" /> {project ? 'Back' : 'Projects'}
+          <button onClick={close} className="type-caption flex items-center gap-1 rounded-md px-1.5 py-1 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground" title={project ? t('nav.backToWork') : t('nav.backToProjects')}>
+            <ArrowLeft className="size-4" /> {project ? t('nav.back') : t('nav.projects')}
           </button>
           <div className="h-4 w-px bg-border" />
-          <span className="type-panel-heading">Store</span>
+          <span className="type-panel-heading">{t('shell.heading')}</span>
         </div>
         {/* top-center search (not on the instructional Claude tab) */}
         <div className="relative w-80 max-w-[40vw]">
@@ -71,7 +73,7 @@ export function StoreView(): JSX.Element | null {
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={`Search ${page === 'community' ? 'works' : 'extensions'}…`}
+                placeholder={page === 'community' ? t('search.works') : t('search.extensions')}
                 className="type-caption w-full rounded-md border border-border bg-panel/60 py-1.5 pl-8 pr-7 text-foreground outline-none placeholder:text-faint focus:border-thread/50"
               />
               {search && (

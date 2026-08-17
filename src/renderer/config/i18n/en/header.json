@@ -1,0 +1,44 @@
+{
+  "menu": {
+    "file": "File",
+    "project": "Project",
+    "view": "View",
+    "help": "Help"
+  },
+  "item": {
+    "openFolder": "Open Folder…",
+    "importProject": "Import Project…",
+    "importStructured": "Import Structured JSON…",
+    "returnToLibrary": "Return to Library",
+    "structure": "Structure…",
+    "info": "Info…",
+    "share": "Share…",
+    "exportManuscript": "Export Manuscript",
+    "toggleConsole": "Toggle Console",
+    "toggleAssistant": "Toggle Assistant",
+    "compositionMode": "Composition mode",
+    "toggleDevTools": "Toggle Developer Tools",
+    "referenceDocs": "Reference & Docs",
+    "tour": "Tour the app",
+    "useWithClaude": "Use NVS with Claude…",
+    "supportCommunity": "Support & community",
+    "pro": "NVS Pro",
+    "proActive": "NVS Pro — active",
+    "whatsNew": "What's new"
+  },
+  "appName": "Novel Visual Studio",
+  "search": {
+    "placeholder": "Search…",
+    "tooltip": "Search scenes, world, threads… ({{shortcut}})"
+  },
+  "saveToLibrary": {
+    "label": "Save to Library",
+    "saving": "Saving…",
+    "tooltip": "Opened from outside your library ({{root}}). Save a copy to My Works so it shows on the Welcome page."
+  },
+  "window": {
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close"
+  }
+}

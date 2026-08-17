@@ -1,0 +1,73 @@
+{
+  "help": {
+    "title": "Relationships — how it works",
+    "matchup": {
+      "title": "The matchup",
+      "items": [
+        "Two rosters frame the arena. The **left sidebar** (the \"Fighter\") ranks characters by total lines spoken — leads float up. Pick one, and the **right roster** (the \"Target\") re-ranks by how much each character *shares scenes* with that fighter: their closest partners rise, tinted and counted.",
+        "The **duo header** shows both portraits — click either to open its character page. Between them, the **⚔** carries a sort toggle that flips the spine between oldest- and newest-first.",
+        "The **spine** below runs every scene the pair shares, in reading order. If they never appear together it says so — pick a different pair."
+      ]
+    },
+    "layers": {
+      "title": "Layers",
+      "items": [
+        "**Presence** — back-to-back dialogue bars per scene (A ◀ cell ▶ B): who carries each shared scene.",
+        "**Chapters** — band the spine by chapter (folder), read from your story tree.",
+        "**Warmth** — replace the spine with the pair's warmth trajectory, on a Warm↔Cold axis.",
+        "**Events** — relationship shift markers flanking each scene; click one for the detail.",
+        "**Irony** — dramatic-irony bands from custody topics: where the reader knows what a fighter doesn't, the band sits on the *unknowing* side. Summoned, not ambient — off by default."
+      ]
+    },
+    "reading": {
+      "title": "Reading it",
+      "items": [
+        "A roster row's **tint and trailing number** are its metric — total lines for the left, lines-shared-with-the-fighter for the right. The selected row keeps its tint and gains a glow.",
+        "The rail spans the **active timeline's** scenes in its reading order — the same set every other rail shows, not the whole universe.",
+        "The declared bond (how the author describes the relationship) isn't shown here — it lives on each character's page, a click away via the portraits."
+      ]
+    }
+  },
+  "spine": {
+    "clickDetail": "Click for the shift detail",
+    "openScene": "{{title}} — open scene",
+    "warm": "Warm",
+    "familiarity": "familiarity",
+    "cold": "Cold",
+    "audienceAdvantage": "audience advantage",
+    "opponentAdvantage": "opponent advantage",
+    "noAsymmetry": "no knowledge asymmetry between this pair — no custody topic puts the reader or either fighter ahead",
+    "noScenesInRange": "No scenes in range.",
+    "scenesApart_one": "{{count}} scene apart",
+    "scenesApart_other": "{{count}} scenes apart"
+  },
+  "panel": {
+    "addTwo": "First: add at least two characters in <path>world/characters</path>.",
+    "noSharedScenes": {
+      "title": "No shared scenes",
+      "body": "{{a}} and {{b}} never appear in the same scene — no relationship recorded. Pick a different pair from the rosters."
+    },
+    "newestFirst": "Newest scenes first — click for oldest",
+    "oldestFirst": "Oldest scenes first — click for newest",
+    "target": "Target",
+    "searchCharacters": "Search characters…",
+    "openChar": "Open {{name}}"
+  },
+  "preview": {
+    "title": "Relationship",
+    "neverShare": "{{a}} and {{b}} never share a scene.",
+    "viewMore": "View more on the Relationships rail"
+  },
+  "detail": {
+    "noShifts": "No shifts here.",
+    "conflictMutual": "conflict · mutual",
+    "change": {
+      "gain": "gains",
+      "loss": "loses",
+      "expose": "exposes"
+    }
+  },
+  "sidebar": {
+    "reference": "Reference"
+  }
+}

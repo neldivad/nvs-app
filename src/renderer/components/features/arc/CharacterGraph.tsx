@@ -7,6 +7,7 @@
 import { useMemo, useState, type JSX } from 'react';
 import ReactECharts from 'echarts-for-react'
 import type { EChartsOption } from 'echarts'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { charsLabel } from '@/lib/utils'
 import { ColorTagMenu, resolveNodePalette } from '@/components/layout/ColorTagMenu'
@@ -27,6 +28,7 @@ export function CharacterGraph({
   /** Click an EDGE → the range-aware relationship dialog (the edge's story, reduced over the current window). */
   onEdge?: (aId: string, bId: string) => void
 }): JSX.Element {
+  const { t } = useTranslation('arc')
   const nodeColor = useWorkspace((s) => s.nodeColor)
   const paletteLabels = useWorkspace((s) => s.paletteLabels)
   const setPaletteLabel = useWorkspace((s) => s.setPaletteLabel)
@@ -74,8 +76,8 @@ export function CharacterGraph({
         confine: true,
         formatter: (p) => {
           const d = p as { dataType?: string; data: Record<string, unknown> }
-          if (d.dataType === 'edge') return `${nameById.get(d.data.source as string)} — ${nameById.get(d.data.target as string)} · ${charsLabel(d.data.value as number, true)} — click for the relationship`
-          return `${d.data.name as string} · ${charsLabel(d.data.value as number)}`
+          if (d.dataType === 'edge') return t('graph.edgeTip', { a: nameById.get(d.data.source as string), b: nameById.get(d.data.target as string), value: charsLabel(d.data.value as number, true) })
+          return t('graph.nodeTip', { name: d.data.name as string, value: charsLabel(d.data.value as number) })
         }
       },
       series: [
@@ -93,7 +95,7 @@ export function CharacterGraph({
         }
       ]
     }
-  }, [chars, sceneCast, nodeColor, palette])
+  }, [chars, sceneCast, nodeColor, palette, t])
 
   // Legend = the swatches in use; labels are editable here (the rename lives in the legend, not the menu).
   const usedIdx = useMemo(
@@ -104,7 +106,7 @@ export function CharacterGraph({
   if (chars.length < 2)
     return (
       <div className="flex h-full min-h-40 flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground">
-        Need at least two characters to graph relationships.
+        {t('graph.needTwo')}
       </div>
     )
 
@@ -119,7 +121,7 @@ export function CharacterGraph({
               <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: palette[i % palette.length] }} />
               <input
                 value={paletteLabels[i] ?? ''}
-                placeholder={`Group ${i + 1}`}
+                placeholder={t('graph.group', { n: i + 1 })}
                 onChange={(e) => setPaletteLabel(i, e.target.value)}
                 className="w-28 bg-transparent text-foreground outline-none placeholder:text-faint"
               />

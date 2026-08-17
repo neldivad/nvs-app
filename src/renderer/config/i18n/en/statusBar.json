@@ -1,0 +1,58 @@
+{
+  "label": {
+    "noProject": "no project",
+    "scenes": "{{count}} scenes",
+    "viewingPast": "viewing past version · return",
+    "noAi": "No AI",
+    "open": "{{count}} open",
+    "flags_one": "{{count}} flag",
+    "flags_other": "{{count}} flags"
+  },
+  "aria": {
+    "toggleDock": "Toggle the floating dock"
+  },
+  "tooltip": {
+    "variant": "Active tree variant \"{{name}}\" — click to switch, double-click to open the timeline",
+    "dockHide": "Hide the dock",
+    "dockShow": "Show the dock — Composition · Settings · Theme",
+    "viewingPast": "You're viewing a past analysis version (read-only). Click to return to current.",
+    "aiParallel": "{{label}} — parallel analysis available. Click for details.",
+    "aiSerial": "{{label}} — keyless, serial. Click for details.",
+    "aiNone": "No AI connected — click to compare options",
+    "consoleHide": "Hide the tracker console",
+    "consoleShow": "Show the tracker console — open threads & coherence flags",
+    "close": "Close",
+    "guide": "A fuller comparison is coming to the handbook"
+  },
+  "help": {
+    "title": "Which AI should I use?",
+    "intro": "Both run the <1>same analysis</1> — pick by what matters today. You can switch anytime; only speed and billing change.",
+    "bestFor": "Best for {{best}}",
+    "option": {
+      "api": {
+        "title": "API key",
+        "tag": "fast",
+        "best": "getting it done fast",
+        "body": "Reads many scenes in parallel, so a full re-analysis finishes in minutes. Billed per token; rate and credit limits apply."
+      },
+      "claude": {
+        "title": "Claude Code",
+        "tag": "keyless",
+        "best": "writing day-to-day",
+        "body": "Chat, agent tasks, and steady analysis on your existing Claude subscription — no per-token bill. Reads one scene at a time, so big batches take a while."
+      }
+    },
+    "table": {
+      "speed": { "label": "Speed", "api": "Parallel — fast batch", "claude": "One scene at a time" },
+      "cost": { "label": "Cost", "api": "Per token", "claude": "Your subscription" },
+      "model": { "label": "Model", "api": "You choose (e.g. Haiku for speed)", "claude": "Session default" },
+      "limits": { "label": "Limits", "api": "Rate + credit balance", "claude": "Session / usage limits" }
+    },
+    "matter": {
+      "summary": "Does it matter?",
+      "body": "Your pick changes <1>speed and billing, not the result</1> — both run the identical pipeline and write the same data, so switching providers won't rewrite your threads or coherence. The one quality lever is <3>which model reads</3> (a faster model can be a little looser at linking threads), and you can re-analyze on a stronger one anytime."
+    },
+    "guide": "Detailed guide — coming soon",
+    "manage": "Manage connections"
+  }
+}

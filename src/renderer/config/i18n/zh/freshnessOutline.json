@@ -1,0 +1,13 @@
+{
+  "state": {
+    "willRead": "将阅读",
+    "fresh": "最新",
+    "draft": "草稿",
+    "offVariant": "时间线外",
+    "read": "已读",
+    "notRun": "未运行"
+  },
+  "empty": "暂无可预览的场景。",
+  "moreScenes_one": "+{{count}} 个场景",
+  "moreScenes_other": "+{{count}} 个场景"
+}

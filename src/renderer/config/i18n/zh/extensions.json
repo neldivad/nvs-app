@@ -1,0 +1,77 @@
+{
+  "install": "安装",
+  "installReady": "授予列出的功能并安装",
+  "uninstall": "卸载",
+  "uninstallTitle": "移除此扩展",
+  "status": {
+    "compatible": "兼容",
+    "incompatible": "不兼容",
+    "disabled": "已禁用",
+    "installed": "已安装",
+    "installedTitle": "已安装",
+    "compatibleTitle": "兼容"
+  },
+  "incompatibleReasons": "不兼容：{{reasons}}",
+  "empty": {
+    "updates": "暂无可用更新。（更新检测需要比较注册表与已安装版本——将随扩展注册表推出。）",
+    "search": "没有扩展匹配你的搜索。",
+    "installed": "尚未安装任何扩展。",
+    "browse": "未找到扩展（捆绑示例缺失？）。"
+  },
+  "subtabs": {
+    "browse": "浏览",
+    "installed": "已安装",
+    "installedCount": "已安装 · {{n}}",
+    "updates": "更新"
+  },
+  "toggle": {
+    "enabled": "已启用",
+    "disabled": "已禁用",
+    "enabledTitle": "已启用 — 点击以禁用",
+    "disabledTitle": "已禁用 — 点击以启用"
+  },
+  "claudePlugin": {
+    "title": "Claude Desktop 插件",
+    "builtIn": "内置",
+    "desc": "向 Claude 询问你的小说——故事线、情节漏洞、任何场景。下载它，将其添加到 Claude，然后输入",
+    "saved": "已保存",
+    "download": "下载",
+    "saving": "正在保存…",
+    "restart": "重启 NVS 以启用此功能。",
+    "buildError": "无法构建插件"
+  },
+  "runState": {
+    "starting": "正在启动…",
+    "running": "运行中",
+    "done": "已完成",
+    "stopped": "已停止",
+    "crashed": "已崩溃",
+    "unresponsive": "无响应"
+  },
+  "launcher": {
+    "title": "扩展工具",
+    "footerNote": "运行已安装的扩展；它将在独立进程中运行。",
+    "getMore": "在商店中获取更多",
+    "emptyTitle": "未安装可运行的扩展。",
+    "emptyHint": "已安装的活动扩展——按需执行操作的工具——会显示在这里。环境型扩展（如字体）只会在启用时生效。",
+    "browseStore": "浏览商店",
+    "wontRun": "无法在此应用中运行",
+    "disabledHint": "已禁用——在商店中启用后即可运行",
+    "failedToStart": "启动失败",
+    "run": "运行",
+    "stop": "停止"
+  },
+  "permissions": {
+    "noAccessNeeded": "无需访问权限",
+    "moreCount": "另有 {{n}} 项",
+    "noAccessDetail": "无需访问权限——此扩展无法读取或更改你工作中的任何内容。",
+    "optional": "（可选）",
+    "heading": "此扩展可访问的内容",
+    "sandboxNote": "扩展在独立进程中运行，仅获得此处列出的访问权限——无法访问你机器上的其他内容。"
+  },
+  "panel": {
+    "stop": "停止",
+    "dismiss": "忽略",
+    "title": "{{name}} 面板"
+  }
+}

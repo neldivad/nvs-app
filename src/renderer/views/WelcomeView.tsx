@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type JSX, type ReactNode } from 'react';
 import { BookOpen, FolderOpen, Plus, Import, MoreVertical, GitFork, Search, Play, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,6 +28,7 @@ export function WelcomeView(): JSX.Element {
   const forkWork = useWorkspace((s) => s.forkWork)
   const deleteWork = useWorkspace((s) => s.deleteWork)
   const setDetailWork = useWorkspace((s) => s.setDetailWork)
+  const { t } = useTranslation('welcome')
 
   const [naming, setNaming] = useState(false) // opens the NewWorkDialog (birth choices)
   const [query, setQuery] = useState('')
@@ -67,16 +69,16 @@ export function WelcomeView(): JSX.Element {
         <h1 className="text-base font-medium">Novel Visual Studio</h1>
         <div className="relative ml-auto w-56">
           <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-faint" />
-          <Input value={query} placeholder="Search works…" onChange={(e) => setQuery(e.target.value)} className="h-8 pl-7 text-xs" />
+          <Input value={query} placeholder={t('search.placeholder')} onChange={(e) => setQuery(e.target.value)} className="h-8 pl-7 text-xs" />
         </div>
         <div className="flex gap-1.5">
           <Button size="sm" onClick={() => setNaming(true)}>
-            <Plus className="size-3.5" /> New
+            <Plus className="size-3.5" /> {t('button.new')}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => void openExternal()} title="Open a project folder from anywhere">
+          <Button variant="outline" size="sm" onClick={() => void openExternal()} title={t('button.openFolder')}>
             <FolderOpen className="size-3.5" />
           </Button>
-          <Button variant="outline" size="sm" onClick={() => void importProject()} title="Import a shared .nvsproj bundle">
+          <Button variant="outline" size="sm" onClick={() => void importProject()} title={t('button.import')}>
             <Import className="size-3.5" />
           </Button>
         </div>
@@ -87,14 +89,14 @@ export function WelcomeView(): JSX.Element {
 
       {works.length === 0 ? (
         <p className="rounded-lg border border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-          No works in your library yet — create one, or import a <span className="font-mono">.nvsproj</span>.
+          {t('empty.library.before')}<span className="font-mono">.nvsproj</span>{t('empty.library.after')}
         </p>
       ) : (
         <>
           {/* Continue writing — the oversized last-viewed + a carousel of recents (hidden while searching) */}
           {!q && hero && (
             <section className="mb-7">
-              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-faint">Continue writing</h2>
+              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('section.continue')}</h2>
               <div className="flex gap-3">
                 <HeroCard work={hero} onPreview={() => preview(hero)} onContinue={() => void openWork(hero.path)} onMenu={(e) => openMenu(e, hero)} />
                 {recents.length > 0 && (
@@ -111,7 +113,7 @@ export function WelcomeView(): JSX.Element {
           {/* Opened elsewhere — outside-library projects remembered by the pointer registry */}
           {!q && externalRecents.length > 0 && (
             <section className="mb-7">
-              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-faint">Opened elsewhere</h2>
+              <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('section.elsewhere')}</h2>
               <div className="flex flex-wrap gap-2">
                 {externalRecents.map((r) => (
                   <button
@@ -135,7 +137,7 @@ export function WelcomeView(): JSX.Element {
           <section>
             <div className="mb-2 flex items-center gap-3">
               <h2 className="text-[11px] font-semibold uppercase tracking-wide text-faint">
-                {q ? `Results · ${grid.length}` : `All works · ${works.length}`}
+                {q ? t('section.results', { n: grid.length }) : t('section.allWorks', { n: works.length })}
               </h2>
               <div className="ml-auto flex items-center gap-1">
                 {(['all', 'originals', 'forks'] as const).map((k) => (
@@ -144,21 +146,21 @@ export function WelcomeView(): JSX.Element {
                     onClick={() => setKind(k)}
                     className={cn('rounded-full px-2.5 py-0.5 text-[11px] capitalize transition-colors', kind === k ? 'bg-thread/15 text-thread' : 'text-muted-foreground hover:bg-panel-soft')}
                   >
-                    {k}
+                    {t(`kind.${k}`)}
                   </button>
                 ))}
               </div>
               <Select
                 value={sort}
                 onChange={(v) => setSort(v as Sort)}
-                options={[{ value: 'edited', label: 'Last edited' }, { value: 'name', label: 'Name' }]}
+                options={[{ value: 'edited', label: t('sort.edited') }, { value: 'name', label: t('sort.name') }]}
                 className="text-[11px]"
               />
             </div>
 
             {grid.length === 0 ? (
               <p className="rounded-lg border border-dashed border-border p-6 text-center text-xs text-muted-foreground">
-                No {kind === 'forks' ? 'forks' : kind === 'originals' ? 'originals' : 'works'}{q ? ' match your search' : ''}.
+                {t(q ? 'empty.noMatch' : 'empty.none', { noun: t(`empty.noun.${kind === 'forks' ? 'forks' : kind === 'originals' ? 'originals' : 'works'}`) })}
               </p>
             ) : (
               <>
@@ -170,7 +172,7 @@ export function WelcomeView(): JSX.Element {
                 {grid.length > limit && (
                   <div className="mt-4 flex justify-center">
                     <Button variant="outline" size="sm" onClick={() => setLimit((l) => l + PAGE)}>
-                      Show more ({grid.length - limit})
+                      {t('button.showMore', { n: grid.length - limit })}
                     </Button>
                   </div>
                 )}
@@ -182,28 +184,27 @@ export function WelcomeView(): JSX.Element {
 
       {menu && (
         <ContextMenuShell x={menu.x} y={menu.y} onClose={() => setMenu(null)}>
-          <MenuItem label="Open" onClick={() => { const p = menu.work.path; setMenu(null); void openWork(p) }} />
-          <MenuItem label="Details…" onClick={() => { const w = menu.work; setMenu(null); preview(w) }} />
-          <MenuItem label="Fork" onClick={() => { const p = menu.work.path; setMenu(null); void forkWork(p) }} />
+          <MenuItem label={t('menu.open')} onClick={() => { const p = menu.work.path; setMenu(null); void openWork(p) }} />
+          <MenuItem label={t('menu.details')} onClick={() => { const w = menu.work; setMenu(null); preview(w) }} />
+          <MenuItem label={t('menu.fork')} onClick={() => { const p = menu.work.path; setMenu(null); void forkWork(p) }} />
           {menu.work.title && menu.work.title !== menu.work.name && (
             <MenuItem
-              label={`Rename folder to “${menu.work.title}”`}
+              label={t('menu.renameFolder', { title: menu.work.title })}
               onClick={() => { const { path, title } = menu.work; setMenu(null); void renameWork(path, title!) }}
             />
           )}
           <MenuSeparator />
-          <MenuItem label="Delete…" danger onClick={() => { const w = menu.work; setMenu(null); setConfirmDelete(w) }} />
+          <MenuItem label={t('menu.delete')} danger onClick={() => { const w = menu.work; setMenu(null); setConfirmDelete(w) }} />
         </ContextMenuShell>
       )}
 
-      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Delete project?">
+      <Dialog open={!!confirmDelete} onClose={() => setConfirmDelete(null)} title={t('confirmDelete.title')}>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            <span className="text-foreground">{confirmDelete?.title || confirmDelete?.name}</span> will be moved to your
-            system Trash — prose and analysis together. You can restore it from there if you change your mind.
+            <span className="text-foreground">{confirmDelete?.title || confirmDelete?.name}</span> {t('confirmDelete.body')}
           </p>
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="sm" disabled={deleting} onClick={() => setConfirmDelete(null)}>Cancel</Button>
+            <Button variant="ghost" size="sm" disabled={deleting} onClick={() => setConfirmDelete(null)}>{t('confirmDelete.cancel')}</Button>
             <Button
               variant="destructive"
               size="sm"
@@ -216,7 +217,7 @@ export function WelcomeView(): JSX.Element {
                 if (ok) setConfirmDelete(null)
               }}
             >
-              Move to Trash
+              {t('confirmDelete.confirm')}
             </Button>
           </div>
         </div>
@@ -277,6 +278,7 @@ function Arrow({ dir, onClick }: { dir: 'left' | 'right'; onClick: () => void })
 
 /** cover image (or a placeholder) with a fork glyph badge in the corner when the work is a fork. */
 function Cover({ work, className }: { work: WorkCard; className: string }): JSX.Element {
+  const { t } = useTranslation('welcome')
   return (
     <div className={cn('relative shrink-0 overflow-hidden rounded border border-border bg-panel-soft', className)}>
       {work.cover ? (
@@ -285,7 +287,7 @@ function Cover({ work, className }: { work: WorkCard; className: string }): JSX.
         <div className="flex h-full w-full items-center justify-center"><BookOpen className="size-4 text-faint" /></div>
       )}
       {work.forkedFrom && (
-        <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-canvas/85 text-lore" title={`Forked from ${work.forkedFrom}`}>
+        <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-canvas/85 text-lore" title={t('card.forkedFrom', { name: work.forkedFrom })}>
           <GitFork className="size-2.5" />
         </span>
       )}
@@ -295,13 +297,14 @@ function Cover({ work, className }: { work: WorkCard; className: string }): JSX.
 
 /** The parent-lineage line (Kaggle-style) + genre/medium tag chips. */
 function Meta({ work, tags }: { work: WorkCard; tags: number }): JSX.Element {
+  const { t } = useTranslation('welcome')
   const chips = [work.medium && labelOf(MEDIUMS, work.medium), ...(work.genre ?? []).map((g) => labelOf(GENRES, g))].filter(Boolean) as string[]
   return (
     <>
       {work.forkedFrom && (
         <span className="flex items-center gap-1 text-[11px] text-lore">
           <GitFork className="size-3 shrink-0" />
-          <span className="truncate">from {work.forkedFrom}</span>
+          <span className="truncate">{t('card.from', { name: work.forkedFrom })}</span>
         </span>
       )}
       {chips.length > 0 && (
@@ -332,6 +335,7 @@ function FolderTag({ work, className = '' }: { work: WorkCard; className?: strin
 }
 
 function HeroCard({ work, onPreview, onContinue, onMenu }: { work: WorkCard; onPreview: () => void; onContinue: () => void; onMenu: (e: React.MouseEvent) => void }): JSX.Element {
+  const { t } = useTranslation('welcome')
   return (
     <div className="group relative w-88 shrink-0">
       <div onClick={onPreview} onContextMenu={onMenu} className="flex w-full cursor-pointer gap-3 rounded-xl border border-border bg-panel p-3 transition-colors hover:bg-panel-soft">
@@ -341,12 +345,12 @@ function HeroCard({ work, onPreview, onContinue, onMenu }: { work: WorkCard; onP
           <FolderTag work={work} />
           {work.author && <span className="truncate text-xs text-muted-foreground">{work.author}</span>}
           <Meta work={work} tags={3} />
-          <span className="mt-auto font-mono text-[11px] text-faint">{work.scenes} scenes · {work.worldPages} world</span>
+          <span className="mt-auto font-mono text-[11px] text-faint">{t('card.stats', { scenes: work.scenes, world: work.worldPages })}</span>
           <button
             onClick={(e) => { e.stopPropagation(); onContinue() }}
             className="mt-1 inline-flex w-fit items-center gap-1 rounded-md bg-thread/15 px-2 py-1 text-[11px] font-medium text-thread transition-colors hover:bg-thread/25"
           >
-            <Play className="size-3 fill-current" /> Continue
+            <Play className="size-3 fill-current" /> {t('button.continue')}
           </button>
         </div>
       </div>
@@ -383,10 +387,11 @@ function GridCard({ work, onPreview, onMenu }: { work: WorkCard; onPreview: () =
 
 /** The hover-revealed ⋯ handle that opens the shared context menu. */
 function KebabButton({ onMenu }: { onMenu: (e: React.MouseEvent) => void }): JSX.Element {
+  const { t } = useTranslation('welcome')
   return (
     <button
       onClick={onMenu}
-      title="Project actions"
+      title={t('card.actions')}
       className="absolute right-1.5 top-1.5 rounded bg-canvas/70 p-1 text-faint opacity-0 backdrop-blur-sm transition-opacity hover:bg-panel-soft hover:text-foreground group-hover:opacity-100"
     >
       <MoreVertical className="size-3.5" />

@@ -1,0 +1,99 @@
+{
+  "empty": {
+    "noProject": "Open a work to chat with the agent.",
+    "transcript": "Ask the agent about the open work — it can read scenes and write analysis. Try “analyze Act I,” or with a page open, “find threads from this page.”",
+    "noPages": "No pages",
+    "noChats": "No chats",
+    "noChatsYet": "No chats yet"
+  },
+  "context": {
+    "prefix": "context: ",
+    "page": "@ {{title}}",
+    "wholeProject": "whole project"
+  },
+  "button": {
+    "clear": "Clear",
+    "sendAnyway": "Send anyway",
+    "copy": "copy",
+    "copied": "copied",
+    "delete": "Delete",
+    "deleteN": "Delete {{count}}",
+    "all": "All",
+    "untitled": "Untitled"
+  },
+  "placeholder": {
+    "composer": "Ask the agent…  (Shift+Enter for a new line)",
+    "attach": "Attach a scene or page…",
+    "searchChats": "Search chats…"
+  },
+  "tooltip": {
+    "weakModel": "This model may struggle with multi-step tasks",
+    "newChat": "New chat",
+    "deleteChat": "Delete chat",
+    "remove": "Remove",
+    "stop": "Stop",
+    "sendTooBig": "Too large — trim it or use “Send anyway”",
+    "send": "Send",
+    "copyMarkdown": "Copy as Markdown",
+    "attachPage": "Attach a page as context",
+    "analysisPrompts": "Analysis prompts",
+    "openPage": "Open this page",
+    "select": "Select"
+  },
+  "tokens": {
+    "count": "≈{{tokens}} tokens",
+    "tooBig": "≈{{tokens}} tokens — too large to send; it would crowd the context window / burn usage. Trim it, or analyze one chapter/page at a time."
+  },
+  "weakModel": {
+    "struggle": "{{model}} may struggle here",
+    "explain": "Small/fast models tend to loop or misfire on multi-step tool use — finding scenes, queuing bulk edits. For complex agentic work:",
+    "driveFromClaude": "Drive NVS from Claude",
+    "pluginHint": " — the plugin (Store → Use with Claude).",
+    "orPick": "Or pick a stronger model in ",
+    "settingsAi": "Settings → AI",
+    "orPickEnd": "."
+  },
+  "working": {
+    "readingTheWork": "reading the work",
+    "thinkingItThrough": "thinking it through",
+    "pullingTheThreads": "pulling the threads",
+    "checkingTheCast": "checking the cast",
+    "weighingIt": "weighing it",
+    "almostThere": "almost there"
+  },
+  "tools": {
+    "used_one": "used {{count}} tool",
+    "used_other": "used {{count}} tools",
+    "usedWithNames_one": "used {{count}} tool · {{names}}",
+    "usedWithNames_other": "used {{count}} tools · {{names}}"
+  },
+  "analysis": {
+    "header": "Analysis — answered here in chat"
+  },
+  "confirm": {
+    "deleteTitle": "Delete chat?",
+    "deleteTitleN": "Delete {{count}} chats?",
+    "deleteSingle_this": "this chat",
+    "messageN": "This will permanently delete <strong>{{count}} chats</strong> and their transcripts. This can't be undone.",
+    "messageOne": "This will permanently delete <strong>{{title}}</strong> and its transcript. This can't be undone.",
+    "selected": "{{count}} selected"
+  },
+  "error": {
+    "requestFailed": "⚠ Request failed — {{message}}. Check the API key (dock → Agent), or open Help (?)."
+  },
+  "kind": {
+    "scene": "Scenes",
+    "character": "Characters",
+    "location": "Locations",
+    "item": "Items",
+    "lore": "Lore"
+  },
+  "time": {
+    "now": "now",
+    "minutes": "{{n}}m",
+    "hours": "{{n}}h",
+    "days": "{{n}}d",
+    "weeks": "{{n}}w",
+    "months": "{{n}}mo"
+  }
+}

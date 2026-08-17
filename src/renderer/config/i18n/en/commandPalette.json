@@ -1,0 +1,29 @@
+{
+  "placeholder": "Search titles — or a phrase to find it inside your prose…",
+  "empty": {
+    "noContent": "No content yet — run analysis or add scenes.",
+    "noMatches": "No matches."
+  },
+  "group": {
+    "scenes": "Scenes",
+    "world": "World",
+    "custody": "Custody",
+    "threads": "Threads",
+    "entities": "Entities",
+    "lore": "Lore",
+    "coherence": "Coherence",
+    "sequences": "Sequences",
+    "content": "Content"
+  },
+  "checkpoints_one": "{{count}} checkpoint",
+  "checkpoints_other": "{{count}} checkpoints",
+  "disclosures_one": "{{count}} disclosure",
+  "disclosures_other": "{{count}} disclosures",
+  "paradox": "paradox",
+  "chartAxis": "chart axis",
+  "sceneCount_one": "{{count}} scene",
+  "sceneCount_other": "{{count}} scenes",
+  "matches_one": "{{count}} match",
+  "matches_other": "{{count}} matches",
+  "lineNo": "line {{line}}"
+}

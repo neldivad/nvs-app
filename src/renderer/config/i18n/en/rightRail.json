@@ -1,0 +1,11 @@
+{
+  "agent": "Agent (chat + tasks)",
+  "taskRunning": "Task running",
+  "tasksReady_one": "{{count}} task ready",
+  "tasksReady_other": "{{count}} tasks ready",
+  "promptLibrary": "Prompt library",
+  "jobs": "Jobs — analysis runs & progress",
+  "analysisRunning": "Analysis running",
+  "store": "Store — community works & extensions",
+  "extensionTools": "Extension tools — run installed extensions"
+}

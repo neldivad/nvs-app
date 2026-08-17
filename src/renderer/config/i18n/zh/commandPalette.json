@@ -1,0 +1,29 @@
+{
+  "placeholder": "搜索标题 — 或搜索短语以在正文中查找…",
+  "empty": {
+    "noContent": "暂无内容 — 运行分析或添加场景。",
+    "noMatches": "没有匹配项。"
+  },
+  "group": {
+    "scenes": "场景",
+    "world": "世界观",
+    "custody": "保管",
+    "threads": "线索",
+    "entities": "实体",
+    "lore": "背景知识",
+    "coherence": "连贯性",
+    "sequences": "序列",
+    "content": "内容"
+  },
+  "checkpoints_one": "{{count}} 个检查点",
+  "checkpoints_other": "{{count}} 个检查点",
+  "disclosures_one": "{{count}} 项披露",
+  "disclosures_other": "{{count}} 项披露",
+  "paradox": "悖论",
+  "chartAxis": "图表轴",
+  "sceneCount_one": "{{count}} 个场景",
+  "sceneCount_other": "{{count}} 个场景",
+  "matches_one": "{{count}} 个匹配项",
+  "matches_other": "{{count}} 个匹配项",
+  "lineNo": "第 {{line}} 行"
+}

@@ -1,0 +1,12 @@
+{
+  "scene": "シーン",
+  "sceneReadout": "全{{full}}件中{{shown}}件",
+  "autoSuffix": " · 自動",
+  "backToDefault": "デフォルトのウィンドウに戻る",
+  "reset": "リセット",
+  "previousPage": "前のページ",
+  "pageReadout": "全{{total}}{{noun}}中{{from}}–{{to}}",
+  "nextNoun": "次の{{noun}}",
+  "resetWindow": "ウィンドウをリセット",
+  "all": "すべて"
+}

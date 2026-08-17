@@ -1,4 +1,5 @@
 import { useState, type JSX } from 'react';
+import { Trans, useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { Bot, Check, ChevronDown, ChevronUp, Eye, FolderOpen, Plug, Route, X, Zap } from 'lucide-react'
 import { AI_PROVIDERS } from '@shared/config/aiProviders'
@@ -29,6 +30,7 @@ export function StatusBar(): JSX.Element {
   const setFloatDockOpen = useWorkspace((s) => s.setFloatDockOpen)
   const [helpOpen, setHelpOpen] = useState(false)
   const [variantMenu, setVariantMenu] = useState(false)
+  const { t } = useTranslation('statusBar')
 
   const open = threads?.filter((t) => t.status === 'open').length ?? 0
   const flags = coherence?.filter((f) => f.kind !== 'confirmation').length ?? 0
@@ -57,10 +59,10 @@ export function StatusBar(): JSX.Element {
               <span className="max-w-32 truncate">{project.name}</span>
             </span>
           )}
-          <span className="shrink-0 text-faint">· {project.counts.scenes} scenes</span>
+          <span className="shrink-0 text-faint">· {t('label.scenes', { count: project.counts.scenes })}</span>
         </span>
       ) : (
-        <span>no project</span>
+        <span>{t('label.noProject')}</span>
       )}
       {/* Active tree variant — the branch/merge graph driving the analysis + charts. Click → quick-switch dropdown;
           double-click → open the timeline canvas (where you author variants). */}
@@ -69,7 +71,7 @@ export function StatusBar(): JSX.Element {
           <button
             onClick={() => setVariantMenu((o) => !o)}
             onDoubleClick={() => { setVariantMenu(false); setWorkspace('timeline'); void setTimelineTab('canvas') }}
-            title={`Active tree variant "${variant.name}" — click to switch, double-click to open the timeline`}
+            title={t('tooltip.variant', { name: variant.name })}
             className="flex items-center gap-1 rounded px-1.5 transition-colors hover:bg-panel-soft"
           >
             <Route className="size-3 shrink-0 text-thread" />
@@ -102,9 +104,9 @@ export function StatusBar(): JSX.Element {
           when the dock is open. Absolutely centered so it sits in the same spot regardless of the side clusters. */}
       <button
         onClick={() => setFloatDockOpen(!floatDockOpen)}
-        title={floatDockOpen ? 'Hide the dock' : 'Show the dock — Composition · Settings · Theme'}
+        title={floatDockOpen ? t('tooltip.dockHide') : t('tooltip.dockShow')}
         className="group absolute left-1/2 top-0 flex h-full -translate-x-1/2 items-center px-4"
-        aria-label="Toggle the floating dock"
+        aria-label={t('aria.toggleDock')}
         aria-pressed={floatDockOpen}
       >
         <span
@@ -119,17 +121,17 @@ export function StatusBar(): JSX.Element {
       {viewing && (
         <button
           onClick={() => void viewVersion(null)}
-          title="You're viewing a past analysis version (read-only). Click to return to current."
+          title={t('tooltip.viewingPast')}
           className="flex items-center gap-1 rounded bg-lore/15 px-1.5 text-lore hover:bg-lore/25"
         >
-          <Eye className="size-3" /> viewing past version · return
+          <Eye className="size-3" /> {t('label.viewingPast')}
         </button>
       )}
       {/* Active AI provider — the model-connection indicator; hidden when the AI layer is off (nothing to connect). */}
       {aiEnabled && (
         <button
           onClick={() => setHelpOpen(true)}
-          title={active ? `${meta?.label}${parallel ? ' — parallel analysis available' : ' — keyless, serial'}. Click for details.` : 'No AI connected — click to compare options'}
+          title={active ? (parallel ? t('tooltip.aiParallel', { label: meta?.label }) : t('tooltip.aiSerial', { label: meta?.label })) : t('tooltip.aiNone')}
           className="flex min-w-0 items-center gap-1 rounded px-1.5 transition-colors hover:bg-panel-soft"
         >
           {active ? (
@@ -142,7 +144,7 @@ export function StatusBar(): JSX.Element {
           ) : (
             <>
               <Plug className="size-3 text-faint" />
-              <span className="text-faint">No AI</span>
+              <span className="text-faint">{t('label.noAi')}</span>
             </>
           )}
         </button>
@@ -150,15 +152,15 @@ export function StatusBar(): JSX.Element {
       {project && aiEnabled && (
         <button
           onClick={() => setDockOpen(!dockOpen)}
-          title={dockOpen ? 'Hide the tracker console' : 'Show the tracker console — open threads & coherence flags'}
+          title={dockOpen ? t('tooltip.consoleHide') : t('tooltip.consoleShow')}
           className={cn(
             'flex items-center gap-1.5 rounded px-1.5 transition-colors hover:bg-panel-soft',
             dockOpen && 'bg-panel-soft text-foreground'
           )}
         >
           <span className={cn('size-1.5 rounded-full', open > 0 ? 'bg-thread' : 'bg-faint/50')} />
-          {open} open
-          <span className={cn(flags > 0 && 'text-flag')}>· {flags} flag{flags === 1 ? '' : 's'}</span>
+          {t('label.open', { count: open })}
+          <span className={cn(flags > 0 && 'text-flag')}>· {t('label.flags', { count: flags })}</span>
           {dockOpen ? <ChevronDown className="size-3" /> : <ChevronUp className="size-3" />}
         </button>
       )}
@@ -173,6 +175,7 @@ export function StatusBar(): JSX.Element {
 /** The "which AI should I use?" card — decision-first, plain language, so gating parallelism reads as a choice.
  *  TODO(handbook): wire "Detailed guide" to the provider page once the handbook exists (see internal/backlog.md). */
 function ProviderHelp({ onClose }: { onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('statusBar')
   const setDockOpen = useWorkspace((s) => s.setDockOpen)
   const setDockTab = useWorkspace((s) => s.setDockTab)
   const manage = (): void => {
@@ -187,7 +190,7 @@ function ProviderHelp({ onClose }: { onClose: () => void }): JSX.Element {
         <span className="text-[13px] font-semibold text-foreground">{title}</span>
         <span className="rounded bg-panel-soft px-1 text-[9px] uppercase tracking-wide text-faint">{tag}</span>
       </div>
-      <p className="mb-1 text-[11px] font-medium text-foreground/80">Best for {best}</p>
+      <p className="mb-1 text-[11px] font-medium text-foreground/80">{t('help.bestFor', { best })}</p>
       <p className="text-[11px] leading-relaxed text-muted-foreground">{body}</p>
     </div>
   )
@@ -195,26 +198,26 @@ function ProviderHelp({ onClose }: { onClose: () => void }): JSX.Element {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 font-sans" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="w-full max-w-lg rounded-lg border border-border bg-panel p-4 shadow-xl">
         <div className="mb-1 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Which AI should I use?</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground" title="Close"><X className="size-4" /></button>
+          <h2 className="text-sm font-semibold text-foreground">{t('help.title')}</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground" title={t('tooltip.close')}><X className="size-4" /></button>
         </div>
-        <p className="mb-3 text-[11px] text-muted-foreground">Both run the <b className="text-foreground/80">same analysis</b> — pick by what matters today. You can switch anytime; only speed and billing change.</p>
+        <p className="mb-3 text-[11px] text-muted-foreground"><Trans t={t} i18nKey="help.intro">Both run the <b className="text-foreground/80">same analysis</b> — pick by what matters today. You can switch anytime; only speed and billing change.</Trans></p>
         <div className="flex gap-2">
           {/* Order matches the table below (API | Claude Code) so the dialog doesn't flip sides mid-read. */}
           <Option
             icon={Zap}
-            title="API key"
-            tag="fast"
-            best="getting it done fast"
-            body="Reads many scenes in parallel, so a full re-analysis finishes in minutes. Billed per token; rate and credit limits apply."
+            title={t('help.option.api.title')}
+            tag={t('help.option.api.tag')}
+            best={t('help.option.api.best')}
+            body={t('help.option.api.body')}
             highlight
           />
           <Option
             icon={Bot}
-            title="Claude Code"
-            tag="keyless"
-            best="writing day-to-day"
-            body="Chat, agent tasks, and steady analysis on your existing Claude subscription — no per-token bill. Reads one scene at a time, so big batches take a while."
+            title={t('help.option.claude.title')}
+            tag={t('help.option.claude.tag')}
+            best={t('help.option.claude.best')}
+            body={t('help.option.claude.body')}
           />
         </div>
 
@@ -223,16 +226,16 @@ function ProviderHelp({ onClose }: { onClose: () => void }): JSX.Element {
           <thead>
             <tr className="text-[10px] uppercase tracking-wide text-faint">
               <th className="w-16 font-medium"></th>
-              <th className="font-medium text-thread">API key</th>
-              <th className="font-medium">Claude Code</th>
+              <th className="font-medium text-thread">{t('help.option.api.title')}</th>
+              <th className="font-medium">{t('help.option.claude.title')}</th>
             </tr>
           </thead>
           <tbody className="align-top">
             {[
-              ['Speed', 'Parallel — fast batch', 'One scene at a time'],
-              ['Cost', 'Per token', 'Your subscription'],
-              ['Model', 'You choose (e.g. Haiku for speed)', 'Session default'],
-              ['Limits', 'Rate + credit balance', 'Session / usage limits']
+              [t('help.table.speed.label'), t('help.table.speed.api'), t('help.table.speed.claude')],
+              [t('help.table.cost.label'), t('help.table.cost.api'), t('help.table.cost.claude')],
+              [t('help.table.model.label'), t('help.table.model.api'), t('help.table.model.claude')],
+              [t('help.table.limits.label'), t('help.table.limits.api'), t('help.table.limits.claude')]
             ].map(([k, a, c]) => (
               <tr key={k} className="border-t border-border/50">
                 <td className="py-1 pr-2 text-faint">{k}</td>
@@ -245,15 +248,17 @@ function ProviderHelp({ onClose }: { onClose: () => void }): JSX.Element {
 
         {/* For the paranoid: does the choice change the actual result? (No — only the model can.) */}
         <details className="mt-2 text-[11px]">
-          <summary className="cursor-pointer text-faint hover:text-muted-foreground">Does it matter?</summary>
+          <summary className="cursor-pointer text-faint hover:text-muted-foreground">{t('help.matter.summary')}</summary>
           <p className="mt-1 leading-relaxed text-muted-foreground">
-            Your pick changes <b className="text-foreground/80">speed and billing, not the result</b> — both run the identical pipeline and write the same data, so switching providers won't rewrite your threads or coherence. The one quality lever is <i>which model reads</i> (a faster model can be a little looser at linking threads), and you can re-analyze on a stronger one anytime.
+            <Trans t={t} i18nKey="help.matter.body">
+              Your pick changes <b className="text-foreground/80">speed and billing, not the result</b> — both run the identical pipeline and write the same data, so switching providers won't rewrite your threads or coherence. The one quality lever is <i>which model reads</i> (a faster model can be a little looser at linking threads), and you can re-analyze on a stronger one anytime.
+            </Trans>
           </p>
         </details>
 
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-[10px] text-faint" title="A fuller comparison is coming to the handbook">Detailed guide — coming soon</span>
-          <button onClick={manage} className="rounded-md border border-thread/50 bg-thread/10 px-2.5 py-1 text-[12px] text-foreground hover:bg-thread/20">Manage connections</button>
+          <span className="text-[10px] text-faint" title={t('tooltip.guide')}>{t('help.guide')}</span>
+          <button onClick={manage} className="rounded-md border border-thread/50 bg-thread/10 px-2.5 py-1 text-[12px] text-foreground hover:bg-thread/20">{t('help.manage')}</button>
         </div>
       </div>
     </div>

@@ -1,0 +1,19 @@
+{
+  "close": "Close",
+  "mainView": {
+    "resolves": "Resolves",
+    "appears": "Appears"
+  },
+  "allCategories": "All categories",
+  "sort": {
+    "latest": "Latest first — click for oldest first",
+    "oldest": "Oldest first — click for latest first"
+  },
+  "hideEmpty": {
+    "on": "Quiet chapters hidden — click to show them",
+    "off": "Showing quiet chapters — click to hide"
+  },
+  "events": "Events",
+  "noEvents": "No events.",
+  "selectPrompt": "Select an event on the left to read it here."
+}

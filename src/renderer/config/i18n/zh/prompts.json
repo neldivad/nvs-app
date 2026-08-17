@@ -1,0 +1,72 @@
+{
+  "title": "提示词",
+  "search": "搜索提示词…",
+  "filter": {
+    "all": "全部",
+    "maintenance": "维护",
+    "generation": "生成",
+    "analysis": "分析"
+  },
+  "new": "新建",
+  "newTooltip": "新建提示词",
+  "untitled": "无标题",
+  "builtIn": "内置",
+  "copySuffix": "复制",
+  "empty": {
+    "noneYet": "尚无提示词——点击“新建”添加。",
+    "noMatch": "没有匹配的提示词。",
+    "selectBefore": "选择一个提示词，查看告知 AI 的内容——或者使用 ",
+    "selectNew": "新建",
+    "selectAfter": " 中选择更强的模型。"
+  },
+  "category": {
+    "maintenance": "维护",
+    "generation": "生成",
+    "analysis": "分析"
+  },
+  "categoryHint": {
+    "maintenance": "修复/清理页面",
+    "generation": "创建新内容",
+    "analysis": "询问工作内容——在聊天中运行"
+  },
+  "kind": {
+    "analysis": "分析——在聊天中回答",
+    "replace": "替换——重写整个页面",
+    "append": "追加——添加到页面末尾"
+  },
+  "detail": {
+    "replaces": "替换页面",
+    "appends": "追加到页面",
+    "answersInChat": "在聊天中回答",
+    "whatToldLabel": "告知 AI 的内容",
+    "builtInNote": "内置——只读。复制后即可自定义。",
+    "delete": "删除",
+    "duplicate": "复制",
+    "edit": "编辑"
+  },
+  "editor": {
+    "nameLabel": "名称",
+    "namePlaceholder": "例如：让对话更简洁",
+    "promptLabel": "提示词——告知 AI 的内容",
+    "promptPlaceholder": "例如：重写这一场景的对话，使其更加简洁——删去填充词，保留每句台词的说话者风格。不要改变情节。",
+    "promptHelp": "像告诉 AI 要做什么一样来编写。运行时会自动添加页面文本和实时设定。",
+    "runs": "运行次数",
+    "output": "输出",
+    "replacePage": "替换页面",
+    "append": "追加",
+    "replaceTooltip": "重写整个页面",
+    "appendTooltip": "添加到页面末尾",
+    "answersInChat": "在聊天中回答。",
+    "cancel": "取消",
+    "save": "保存"
+  },
+  "preview": {
+    "toggle": "完整运行时模板",
+    "formatFor": "格式适用于：",
+    "scene": "场景",
+    "world": "世界",
+    "filledPerRun": "= 每次运行填充",
+    "system": "系统",
+    "user": "用户"
+  }
+}

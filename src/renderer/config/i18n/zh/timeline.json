@@ -1,0 +1,214 @@
+{
+  "node": {
+    "archivedTooltip": "已归档 — 仍连接时间线（谱系会贯穿其中），但不参与分析",
+    "missingSceneDeleted": "缺失 — 场景已删除？"
+  },
+  "folder": {
+    "expand": "展开",
+    "collapse": "收起",
+    "missing": "缺失",
+    "removeFromTimeline": "从时间线移除文件夹"
+  },
+  "reveal": {
+    "reveals": "★ 揭示",
+    "plants": "○ 埋下"
+  },
+  "layers": {
+    "title": "图层",
+    "phase": {
+      "label": "阶段",
+      "hint": "按内容阶段为节点着色"
+    },
+    "presence": {
+      "label": "出场人物",
+      "hint": "显示每个场景中出现的人物"
+    },
+    "threads": {
+      "label": "线索",
+      "hint": "显示每个场景中的线索事件"
+    },
+    "revelations": {
+      "label": "揭示",
+      "hint": "显示秘密被埋下（○）和公开（★）的位置"
+    },
+    "collapseTo": "折叠至",
+    "collapseToLevel": "折叠 {{level}} 及以下的所有内容",
+    "expandAll": "全部展开（显示所有场景）",
+    "scenes": "场景"
+  },
+  "confirm": {
+    "cancel": "取消"
+  },
+  "export": {
+    "title": "将图表导出为 PNG 图片",
+    "nothingTitle": "没有可导出的内容",
+    "nothingBody": "请先将场景放置到画布上。",
+    "failedTitle": "导出失败",
+    "failedBody": "无法渲染图表图片。"
+  },
+  "fab": {
+    "connect": "按阅读顺序连接所选场景  (C)",
+    "disconnect": "断开所选场景 — 切断与其相连的所有边  (X)",
+    "quickConnect": "按阅读顺序快速连接时间线上的场景  (⇧C)",
+    "reset": "重置此变体中的所有连接  (⇧X)",
+    "help": "时间线的工作方式"
+  },
+  "loose": {
+    "label_one": "个场景不在路径上",
+    "label_other": "个场景不在路径上",
+    "quickConnect": "快速连接",
+    "quickConnectTitle": "按阅读顺序连接每个场景（此变体）",
+    "howToConnect": "如何连接",
+    "howToConnectTitle": "如何连接时间线"
+  },
+  "inspector": {
+    "inFolderTitle": "此场景属于画布上的一个文件夹",
+    "inFolder": "位于文件夹中 — 移除该文件夹",
+    "remove": "移除"
+  },
+  "reset": {
+    "title": "重置所有连接？",
+    "message": "这会清除作品中每个场景的 leads_to — 所有时间线连接都会被移除。此操作无法撤销。",
+    "confirm": "重置连接"
+  },
+  "quick": {
+    "title": "按阅读顺序快速连接？",
+    "message": "这会按阅读顺序（.order）串联时间线上的场景，并覆盖它们的 leads_to — 这些场景上现有的分支/合并都会被替换。不在时间线上的场景不受影响。",
+    "confirm": "按顺序连接"
+  },
+  "tabs": {
+    "canvas": "画布",
+    "cells": "单元格",
+    "config": "图表配置"
+  },
+  "bench": {
+    "exit": "退出基准测试",
+    "enter": "性能基准测试",
+    "cullingOn": "剔除开启",
+    "cullingOff": "剔除关闭",
+    "edgesOn": "边显示",
+    "edgesOff": "边隐藏",
+    "fit": "适配",
+    "count": "{{nodes}} 个节点 · {{edges}} 条边",
+    "hint": "适配 = 屏幕显示所有节点（最坏情况；剔除也无济于事）。放大并平移，感受更真实的情况。留意 fps 音调。"
+  },
+  "variant": {
+    "pickerTitle": "树变体 — 当前激活的分支/合并图（驱动画布、分析和坐标轴）",
+    "rename": "重命名变体",
+    "delete": "删除变体",
+    "maxTitle": "最多 {{max}} 个变体 — 删除一个后才能添加新的",
+    "newTitle": "新建变体（复制此变体）",
+    "maxLabel": "最多 {{max}} 个变体",
+    "newWithHint": "新建变体 <hint>（复制此变体）</hint>",
+    "aiTitle": "使用 AI 构建全新时间线 — 打开带有路由提示词的聊天（代理会创建变体并将其连接起来）",
+    "aiNew": "使用 AI 新建时间线"
+  },
+  "cell": {
+    "folderCardTitle_one": "{{title}} — {{count}} 个场景（在 Canvas 标签页中展开以查看）",
+    "folderCardTitle_other": "{{title}} — {{count}} 个场景（在 Canvas 标签页中展开以查看）",
+    "sceneCardTitle": "点击阅读 · 右键单击为此路线着色",
+    "emptyTitle": "Cell 视图将已连接的场景绘制为视觉小说流程图 — 主路线居中，分支位于两侧，合并点带有颜色。",
+    "emptyHint": "在 Canvas 标签页中添加并连接场景，即可在此处查看流程。",
+    "flowName": "Cell 流程",
+    "exportCaption": "Cell 流程 — {{name}}",
+    "timelineFallback": "时间线",
+    "help": "Cell 流程帮助",
+    "colorRoute": "为此路线着色",
+    "clearRouteColor": "清除此路线的颜色",
+    "clear": "清除",
+    "mergePoint": "合并点 — 路线在此汇聚",
+    "branchPoint": "分支点 — 路线在此分叉"
+  },
+  "help": {
+    "navigate": {
+      "title": "导航",
+      "rows": {
+        "Scroll": "放大 / 缩小",
+        "Drag the background": "平移查看",
+        "+ / − / ⤢ (bottom-left)": "放大 · 缩小 · 适应整个流程",
+        "Minimap (bottom-right)": "概览 + 在大型流程中快速跳转"
+      }
+    },
+    "canvas": {
+      "title": "时间线 · 画布",
+      "build": {
+        "title": "构建画布",
+        "rows": {
+          "Drag a scene": "将其放置为独立卡片",
+          "Drag a folder": "将其放置为分组（默认折叠；点击标题展开）",
+          "Drag a folder card": "移动分组 — 其中的场景会跟随移动",
+          "Right dot → left dot": "绘制阅读顺序链接（写入 leads_to）"
+        }
+      },
+      "selectRoute": {
+        "title": "选择与路由",
+        "rows": {
+          "⇧ drag": "绘制选择框 — 选择框触及的场景都会被选中",
+          "C": "按阅读顺序连接选中的场景",
+          "X": "断开选中的场景（切断所有进出连接）",
+          "⇧C": "快速连接 — 按阅读顺序串联时间线上的场景",
+          "⇧X": "重置 — 清除此变体上的所有连接器"
+        }
+      },
+      "editDelete": {
+        "title": "编辑与删除",
+        "rows": {
+          "Click a scene": "打开阅读视图（封面 + 正文）",
+          "Backspace / Delete": "移除选中的节点或边",
+          "Scene inside a folder": "通过文件夹移除，不能单独移除"
+        }
+      },
+      "layers": {
+        "title": "图层",
+        "rows": {
+          "Phase": "按内容阶段为每张卡片添加色调",
+          "Presence": "每个场景的角色数量",
+          "Threads": "每个场景的线程事件数",
+          "Revelations": "★ 秘密在此公开 · ○ 首次在此埋下（来自持有状态）"
+        }
+      },
+      "noAutowire": {
+        "title": "为什么文件夹不会自动连线",
+        "body": "文件夹会显示其中的场景，但*不会*自动连接它们。Scene 导航器中的顺序可能排序错误，而自动连线会固化错误的顺序 — 因此连接必须有意识地创建：手动绘制，或在阅读顺序正确时使用 **快速连接**。"
+      }
+    },
+    "cells": {
+      "title": "时间线 · 单元格",
+      "cellFlow": {
+        "title": "单元格流程",
+        "body": "这是画布分支图的只读镜像，并对齐到 VN 流程图网格：主序列沿中心主干向下延伸，分支位于两侧。在 **画布** 标签页中编辑拓扑 — 此视图用于阅读结构。"
+      },
+      "readFlow": {
+        "title": "阅读流程",
+        "rows": {
+          "Click a scene": "打开阅读视图（封面 + 正文）",
+          "Branch / merge badge": "标记路线分叉（分支）或汇合（合并）的位置"
+        }
+      }
+    },
+    "config": {
+      "title": "时间线 · 图表配置",
+      "what": {
+        "title": "图表配置的作用",
+        "body": "创建一条 **图表轴** — 一条贯穿已连接场景的线性路线，作为甘特图的 X 轴。在侧边栏中创建、选择和重命名坐标轴；顶部预览就是当前点亮路线的实际甘特图。"
+      },
+      "buildPath": {
+        "title": "构建路径",
+        "rows": {
+          "Click a scene": "点亮场景 — 从当前末端自动规划路线（技能树式）",
+          "Double-click a scene": "追加直到下一个分叉点的整段直线路径",
+          "Click the tail": "后退一步",
+          "Click an earlier lit scene": "将路径截断回该场景"
+        }
+      },
+      "saveUndo": {
+        "title": "保存与撤销",
+        "rows": {
+          "Save (top-right)": "每张图表都会重新调整坐标轴至此序列",
+          "⌘/Ctrl+Z · ⌘/Ctrl+Y": "撤销 / 重做路径构建",
+          "⌘/Ctrl+S": "保存序列"
+        }
+      }
+    }
+  }
+}

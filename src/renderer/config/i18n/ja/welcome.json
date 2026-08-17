@@ -1,0 +1,59 @@
+{
+  "search": {
+    "placeholder": "作品を検索…"
+  },
+  "button": {
+    "new": "新規",
+    "openFolder": "どこからでもプロジェクトフォルダーを開く",
+    "import": "共有された .nvsproj バンドルをインポート",
+    "showMore": "さらに表示（{{n}}）",
+    "continue": "続ける"
+  },
+  "section": {
+    "continue": "執筆を続ける",
+    "elsewhere": "別の場所で開いたもの",
+    "results": "検索結果 · {{n}}",
+    "allWorks": "すべての作品 · {{n}}"
+  },
+  "kind": {
+    "all": "すべて",
+    "originals": "オリジナル作品",
+    "forks": "フォーク"
+  },
+  "sort": {
+    "edited": "最終編集日",
+    "name": "名前"
+  },
+  "empty": {
+    "library": {
+      "before": "ライブラリにはまだ作品がありません — 作成するか、インポートする ",
+      "after": "で選択してください。"
+    },
+    "noMatch": "検索に一致する{{noun}}はありません。",
+    "none": "{{noun}}はありません。",
+    "noun": {
+      "works": "作品",
+      "originals": "オリジナル作品",
+      "forks": "フォーク"
+    }
+  },
+  "menu": {
+    "open": "ページの詳細とフェーズの設定は",
+    "details": "詳細…",
+    "fork": "フォーク",
+    "renameFolder": "フォルダー名を「{{title}}」に変更",
+    "delete": "削除…"
+  },
+  "confirmDelete": {
+    "title": "プロジェクトを削除しますか？",
+    "body": "は、本文と分析をまとめてシステムのゴミ箱に移動します。気が変わった場合は、そこから復元できます。",
+    "cancel": "キャンセル",
+    "confirm": "ゴミ箱に移動"
+  },
+  "card": {
+    "forkedFrom": "{{name}}からフォーク",
+    "from": "{{name}}から",
+    "stats": "{{scenes}}シーン · {{world}}ワールド",
+    "actions": "プロジェクトの操作"
+  }
+}

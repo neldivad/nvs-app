@@ -5,6 +5,7 @@
  * highlights in the map + opens the relevant Sheet. Provenance (ⓘ inferred) shows from the first surface.
  */
 import { JSX, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { Info, Copy, GitMerge, Loader2, Sparkles } from 'lucide-react'
 import { AnalysisRunDialog } from '@/components/features/analysis/AnalysisRunDialog'
@@ -22,6 +23,7 @@ import type { Thread } from '@shared/ipc'
 import { SidebarEmpty } from '@/components/ui/EmptyRailState'
 
 export function ThreadSidebar(): JSX.Element {
+  const { t } = useTranslation('threads')
   const tab = useWorkspace((s) => s.threadsTab)
   const aiEnabled = useWorkspace((s) => s.aiEnabled) // off → hide the "Update analysis" run trigger (analysis is AI)
   const [runOpen, setRunOpen] = useState(false) // reuses the dock's pre-run gate — see AnalysisRunDialog
@@ -35,7 +37,7 @@ export function ThreadSidebar(): JSX.Element {
         action={
           aiEnabled ? (
             <button
-              title="Update analysis — read changed scenes into the ledgers (the same run as the console)"
+              title={t('roster.updateAnalysis')}
               onClick={() => setRunOpen(true)}
               className="rounded p-0.5 text-faint transition-colors hover:text-thread"
             >
@@ -53,6 +55,7 @@ export function ThreadSidebar(): JSX.Element {
 }
 
 function ThreadRoster(): JSX.Element {
+  const { t } = useTranslation('threads')
   const threads = useWorkspace((s) => s.threads)
   const selected = useWorkspace((s) => s.selectedThreadId)
   const select = useWorkspace((s) => s.setSelectedThread)
@@ -108,8 +111,8 @@ function ThreadRoster(): JSX.Element {
     )
   }
 
-  if (threads == null) return <p className="px-3 py-2 text-xs text-muted-foreground">Reading…</p>
-  if (threads.length === 0) return <SidebarEmpty>No threads yet — analysis populates these.</SidebarEmpty>
+  if (threads == null) return <p className="px-3 py-2 text-xs text-muted-foreground">{t('roster.reading')}</p>
+  if (threads.length === 0) return <SidebarEmpty>{t('roster.empty')}</SidebarEmpty>
   const section = (id: string, label: JSX.Element | string, items: Thread[]): JSX.Element | null => {
     if (items.length === 0) return null
     const isOpen = !collapsed.has(id)
@@ -124,9 +127,9 @@ function ThreadRoster(): JSX.Element {
   return (
     <>
       {dups.length > 0 && <DuplicateNudge groups={dups} selected={selected} onSelect={(id) => select(id === selected ? null : id)} />}
-      {section('open', 'Open', open)}
-      {section('resolved', 'Resolved', closed)}
-      {section('other', <span className="inline-flex items-center gap-1"><GitBranch className="size-3" /> Other branches</span>, offBranch)}
+      {section('open', t('roster.section.open'), open)}
+      {section('resolved', t('roster.section.resolved'), closed)}
+      {section('other', <span className="inline-flex items-center gap-1"><GitBranch className="size-3" /> {t('roster.section.other')}</span>, offBranch)}
     </>
   )
 }
@@ -147,6 +150,7 @@ function DuplicateNudge({
   selected: string | null
   onSelect: (id: string) => void
 }): JSX.Element {
+  const { t: tr } = useTranslation('threads') // aliased: `t` is shadowed by the Thread `t` inside g.threads.map
   const refresh = useWorkspace((s) => s.refreshAnalysisViews)
   const notify = useWorkspace((s) => s.pushNotification)
   const [confirming, setConfirming] = useState<string | null>(null) // slug awaiting confirm
@@ -158,7 +162,7 @@ function DuplicateNudge({
     try {
       const res = await window.nvs.mergeThreads(g.threads.map((t) => t.id))
       if (res.ok) await refresh()
-      else notify({ id: 'thread-merge', kind: 'warning', title: 'Merge failed', body: res.error ?? 'unknown error' })
+      else notify({ id: 'thread-merge', kind: 'warning', title: tr('dups.mergeFailedTitle'), body: res.error ?? tr('dups.mergeFailedBody') })
     } finally {
       setBusy(null)
     }
@@ -167,10 +171,10 @@ function DuplicateNudge({
   return (
     <div className="mx-2 my-2 rounded-md border border-warn/25 bg-warn/6 px-2.5 py-2 text-[11px]">
       <div className="mb-1.5 flex items-center gap-1.5 font-semibold uppercase tracking-wide text-warn/90">
-        <Copy className="size-3" /> {groups.length} possible duplicate{groups.length > 1 ? 's' : ''}
+        <Copy className="size-3" /> {tr('dups.heading', { count: groups.length })}
       </div>
       <p className="mb-2 text-[10px] leading-snug text-faint">
-        These threads share a handle — likely one promise re-opened. Open each to compare, then merge to fold them into the earliest.
+        {tr('dups.explain')}
       </p>
       <div className="space-y-2">
         {groups.map((g) => {
@@ -180,18 +184,18 @@ function DuplicateNudge({
             <div key={g.slug} className="rounded border border-border/50 bg-panel/40 p-1.5">
               {/* header: the shared handle (truncates) + the action; button is shrink-0 so it never clips */}
               <div className="flex items-center gap-1.5">
-                <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-faint" title={`shared handle: ${g.slug}`}>{g.slug}</span>
+                <span className="min-w-0 flex-1 truncate font-mono text-[10px] text-faint" title={tr('dups.sharedHandle', { slug: g.slug })}>{g.slug}</span>
                 {g.superseded ? (
-                  <span className="shrink-0 text-[9px] text-faint" title="A member supersedes another (succeeds) — an intentional recast, not a duplicate. Not mergeable.">recast</span>
+                  <span className="shrink-0 text-[9px] text-faint" title={tr('dups.recastTitle')}>{tr('dups.recast')}</span>
                 ) : busy === g.slug ? (
-                  <span className="flex shrink-0 items-center gap-1 text-[9px] text-faint"><Loader2 className="size-2.5 animate-spin" /> merging…</span>
+                  <span className="flex shrink-0 items-center gap-1 text-[9px] text-faint"><Loader2 className="size-2.5 animate-spin" /> {tr('dups.merging')}</span>
                 ) : (
                   <button
                     onClick={() => setConfirming((s) => (s === g.slug ? null : g.slug))}
                     className="flex shrink-0 items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground hover:bg-panel-soft hover:text-foreground"
-                    title="Fold these into one thread (the earliest opener)"
+                    title={tr('dups.mergeTitle')}
                   >
-                    <GitMerge className="size-2.5" /> Merge
+                    <GitMerge className="size-2.5" /> {tr('dups.merge')}
                   </button>
                 )}
               </div>
@@ -201,13 +205,13 @@ function DuplicateNudge({
                   <button
                     key={t.id}
                     onClick={() => onSelect(t.id)}
-                    title={`${t.title || t.slug}${t.description ? ` — ${t.description}` : ''}${t.openedAt ? ` · opened ${t.openedAt}` : ''} · ${t.beats} event${t.beats === 1 ? '' : 's'}`}
+                    title={`${t.title || t.slug}${t.description ? ` — ${t.description}` : ''}${t.openedAt ? ` · ${tr('dups.opened', { at: t.openedAt })}` : ''} · ${tr('dups.events', { count: t.beats })}`}
                     className={cn(
                       'flex w-full items-center gap-1.5 rounded px-1 py-0.5 text-left text-[11px] transition-colors',
                       selected === t.id ? 'bg-thread/15 text-thread' : 'text-foreground/85 hover:bg-panel-soft'
                     )}
                   >
-                    <span className="w-2.5 shrink-0 text-center text-[9px] text-faint" title={i === 0 ? 'kept (earliest)' : 'folds in'}>{i === 0 ? '★' : '↳'}</span>
+                    <span className="w-2.5 shrink-0 text-center text-[9px] text-faint" title={i === 0 ? tr('dups.kept') : tr('dups.foldsIn')}>{i === 0 ? '★' : '↳'}</span>
                     <span className="min-w-0 flex-1 truncate">{t.title || t.slug}</span>
                     <span className="shrink-0 font-mono text-[9px] text-faint">{t.openedAt ?? ''} ·{t.beats}</span>
                   </button>
@@ -215,10 +219,10 @@ function DuplicateNudge({
               </div>
               {confirming === g.slug && (
                 <div className="mt-1.5 rounded border border-border/70 bg-panel-soft/50 px-1.5 py-1 text-[10px]">
-                  <p className="mb-1 text-faint">Keep <span className="text-foreground/85">★ {canonLabel}</span> and fold in the other {g.threads.length - 1}?</p>
+                  <p className="mb-1 text-faint">{tr('dups.confirmPre')} <span className="text-foreground/85">★ {canonLabel}</span> {tr('dups.confirmPost', { count: g.threads.length - 1 })}</p>
                   <div className="flex items-center gap-1.5">
-                    <button onClick={() => void doMerge(g)} className="rounded bg-thread px-2 py-0.5 font-semibold text-thread-foreground hover:opacity-90">Merge</button>
-                    <button onClick={() => setConfirming(null)} className="rounded px-1.5 py-0.5 text-faint hover:text-foreground">Cancel</button>
+                    <button onClick={() => void doMerge(g)} className="rounded bg-thread px-2 py-0.5 font-semibold text-thread-foreground hover:opacity-90">{tr('dups.merge')}</button>
+                    <button onClick={() => setConfirming(null)} className="rounded px-1.5 py-0.5 text-faint hover:text-foreground">{tr('dups.cancel')}</button>
                   </div>
                 </div>
               )}
@@ -231,6 +235,7 @@ function DuplicateNudge({
 }
 
 function CharacterRoster(): JSX.Element {
+  const { t } = useTranslation('threads')
   const arcs = useWorkspace((s) => s.characterArc)
   const selected = useWorkspace((s) => s.selectedArcId)
   const select = useWorkspace((s) => s.setSelectedArc)
@@ -243,8 +248,8 @@ function CharacterRoster(): JSX.Element {
     [arcs]
   )
 
-  if (arcs == null) return <p className="px-3 py-2 text-xs text-muted-foreground">Reading…</p>
-  if (rows.length === 0) return <SidebarEmpty>No character arc recorded yet.</SidebarEmpty>
+  if (arcs == null) return <p className="px-3 py-2 text-xs text-muted-foreground">{t('roster.reading')}</p>
+  if (rows.length === 0) return <SidebarEmpty>{t('character.empty')}</SidebarEmpty>
   return (
     <>
       {rows.map(({ a, total }) => {
@@ -255,7 +260,7 @@ function CharacterRoster(): JSX.Element {
             selected={on}
             onClick={() => select(on ? null : a.entityId)}
             label={a.name}
-            meta={`${a.windows.length}w · ${total}`}
+            meta={t('character.meta', { w: a.windows.length, total })}
           />
         )
       })}
@@ -265,6 +270,7 @@ function CharacterRoster(): JSX.Element {
 
 /** Tracked non-character entities (items · factions · … — open vocabulary), grouped by type. */
 function EntityRoster(): JSX.Element {
+  const { t: tr } = useTranslation('threads') // aliased: `t` is shadowed by the track `t` inside list.map
   const tracks = useWorkspace((s) => s.entityTracks)
   const selected = useWorkspace((s) => s.selectedEntityId)
   const select = useWorkspace((s) => s.setSelectedEntity)
@@ -283,16 +289,16 @@ function EntityRoster(): JSX.Element {
     return { groups: [...byType.entries()].sort((a, b) => b[1].length - a[1].length), unseen }
   }, [tracks, hideUnseen])
 
-  if (tracks == null) return <p className="px-3 py-2 text-xs text-muted-foreground">Reading…</p>
+  if (tracks == null) return <p className="px-3 py-2 text-xs text-muted-foreground">{tr('roster.reading')}</p>
   if ((tracks?.length ?? 0) === 0)
-    return <SidebarEmpty>Nothing tracked yet — run analysis to discover the items and factions your scenes feature.</SidebarEmpty>
+    return <SidebarEmpty>{tr('entity.empty')}</SidebarEmpty>
   return (
     <>
       {/* 0-scene filter: authored items/factions that don't appear in any scene yet — hide the clutter. */}
       {unseen > 0 && (
         <div className="flex justify-end px-2 pt-1">
           <button onClick={() => setHideUnseen((v) => !v)} className="text-[10px] text-faint underline-offset-2 hover:text-foreground hover:underline">
-            {hideUnseen ? `show ${unseen} unseen` : `hide ${unseen} unseen`}
+            {hideUnseen ? tr('entity.showUnseen', { n: unseen }) : tr('entity.hideUnseen', { n: unseen })}
           </button>
         </div>
       )}
@@ -302,7 +308,7 @@ function EntityRoster(): JSX.Element {
           <RosterSection key={type} count={list.length} label={<span className="inline-flex items-center gap-1.5"><Icon className={cn('size-3', text)} /> {type}s</span>}>
             {list.map((t) => {
               const on = selected === t.id
-              return <SidebarRow key={t.id} selected={on} onClick={() => select(on ? null : t.id)} label={t.name} meta={`${t.scenes.length}sc`} />
+              return <SidebarRow key={t.id} selected={on} onClick={() => select(on ? null : t.id)} label={t.name} meta={tr('entity.sceneCount', { n: t.scenes.length })} />
             })}
           </RosterSection>
         )

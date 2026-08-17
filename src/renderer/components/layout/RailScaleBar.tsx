@@ -10,6 +10,7 @@
  * the Layers float never covers a control.
  */
 import type { JSX, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { RangeSlider } from '@/components/ui/RangeSlider'
 
@@ -46,6 +47,7 @@ export interface MetricPart {
 const VALUE = 'shrink-0 tabular-nums opacity-0 transition-opacity'
 
 export function RailScaleBar({ left, scene, page, metric }: { left?: ReactNode; scene?: ScenePart; page?: PagePart; metric?: MetricPart }): JSX.Element | null {
+  const { t } = useTranslation('railScaleBar')
   const showScene = scene != null && scene.full > 1
   const showPage = page != null && page.pageCount > 1
   const showMetric = metric != null && metric.max > metric.min
@@ -55,15 +57,15 @@ export function RailScaleBar({ left, scene, page, metric }: { left?: ReactNode; 
       {left != null && <span className="flex shrink-0 items-center gap-2">{left}</span>}
       {showScene ? (
         <span className="group/scene flex items-center gap-2" title={scene!.title}>
-          <span className="shrink-0">Scene</span>
+          <span className="shrink-0">{t('scene')}</span>
           <RangeSlider min={0} max={Math.max(0, scene!.full - 1)} value={[scene!.lo, scene!.hi]} onChange={scene!.onChange} className="w-40 shrink-0" />
           <span className={`${VALUE} group-hover/scene:opacity-100`}>
-            {scene!.hi - scene!.lo + 1} of {scene!.full}
-            {scene!.auto ? ' · auto' : ''}
+            {t('sceneReadout', { shown: scene!.hi - scene!.lo + 1, full: scene!.full })}
+            {scene!.auto ? t('autoSuffix') : ''}
           </span>
           {scene!.onReset && (
-            <button onClick={scene!.onReset} className={`shrink-0 opacity-0 transition-opacity hover:text-foreground group-hover/scene:opacity-100`} title="Back to the default window">
-              reset
+            <button onClick={scene!.onReset} className={`shrink-0 opacity-0 transition-opacity hover:text-foreground group-hover/scene:opacity-100`} title={t('backToDefault')}>
+              {t('reset')}
             </button>
           )}
         </span>
@@ -74,13 +76,13 @@ export function RailScaleBar({ left, scene, page, metric }: { left?: ReactNode; 
       <span className="flex flex-1 justify-center">
         {showPage && (
           <span className="flex items-center gap-1.5 tabular-nums">
-            <button disabled={page!.page === 0} onClick={() => page!.onPage(page!.page - 1)} title="Previous page" className="rounded p-0.5 hover:text-foreground disabled:opacity-30 disabled:hover:text-faint">
+            <button disabled={page!.page === 0} onClick={() => page!.onPage(page!.page - 1)} title={t('previousPage')} className="rounded p-0.5 hover:text-foreground disabled:opacity-30 disabled:hover:text-faint">
               <ChevronLeft className="size-3.5" />
             </button>
             <span>
-              {page!.from}–{page!.to} of {page!.total} {page!.noun}
+              {t('pageReadout', { from: page!.from, to: page!.to, total: page!.total, noun: page!.noun })}
             </span>
-            <button disabled={page!.page >= page!.pageCount - 1} onClick={() => page!.onPage(page!.page + 1)} title={`Next ${page!.noun}`} className="rounded p-0.5 hover:text-foreground disabled:opacity-30 disabled:hover:text-faint">
+            <button disabled={page!.page >= page!.pageCount - 1} onClick={() => page!.onPage(page!.page + 1)} title={t('nextNoun', { noun: page!.noun })} className="rounded p-0.5 hover:text-foreground disabled:opacity-30 disabled:hover:text-faint">
               <ChevronRight className="size-3.5" />
             </button>
           </span>
@@ -93,8 +95,8 @@ export function RailScaleBar({ left, scene, page, metric }: { left?: ReactNode; 
           <RangeSlider min={metric!.min} max={metric!.max} value={metric!.value} onChange={metric!.onChange} className="w-32 shrink-0" />
           <span className={`${VALUE} group-hover/metric:opacity-100`}>{metric!.readout}</span>
           {metric!.onReset && (
-            <button onClick={metric!.onReset} className="shrink-0 opacity-0 transition-opacity hover:text-foreground group-hover/metric:opacity-100" title="Reset the window">
-              all
+            <button onClick={metric!.onReset} className="shrink-0 opacity-0 transition-opacity hover:text-foreground group-hover/metric:opacity-100" title={t('resetWindow')}>
+              {t('all')}
             </button>
           )}
         </span>

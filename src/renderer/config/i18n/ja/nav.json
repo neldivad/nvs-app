@@ -1,0 +1,19 @@
+{
+  "editor": "エディター",
+  "world": "世界",
+  "custody": "保管",
+  "corkboard": "コルクボード",
+  "timeline": "タイムライン",
+  "cast": "登場人物",
+  "relationships": "関係",
+  "threads": "スレッド",
+  "coherence": "整合性",
+  "library": "ライブラリ",
+  "disabledNoProject": "{{label}}（先にプロジェクトを開いてください）",
+  "disabledSoon": "{{label}}（近日公開）",
+  "action": {
+    "structure": "プロジェクト構成（{{shortcut}}）",
+    "info": "プロジェクト情報",
+    "share": "プロジェクトを共有"
+  }
+}

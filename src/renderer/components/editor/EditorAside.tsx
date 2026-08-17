@@ -8,6 +8,7 @@
  * so summaries/labels can be highlighted and copied (nav-style asides stay unselectable).
  */
 import { useCallback, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { regionAttrs, type RegionId } from '@/config/regions'
 
@@ -33,6 +34,7 @@ export function EditorAside({
   region?: RegionId
   children: React.ReactNode
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const [width, setWidth] = useState(() => {
     const v = Number(localStorage.getItem(widthKey))
     return v >= MIN && v <= MAX ? v : defaultWidth
@@ -73,7 +75,7 @@ export function EditorAside({
       {/* resize grip: a thin hot-zone straddling the left border */}
       <div
         onMouseDown={startResize}
-        title="Drag to resize"
+        title={t('aside.resize')}
         className="absolute inset-y-0 -left-1 z-10 w-2 cursor-col-resize hover:bg-thread/30"
       />
       {(title || action) && (

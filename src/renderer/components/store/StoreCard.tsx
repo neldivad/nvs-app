@@ -6,6 +6,7 @@
  */
 import { ArrowLeft, type LucideIcon } from 'lucide-react'
 import type { JSX, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 /** BasicView — one item as a card in the browse grid. */
@@ -64,10 +65,11 @@ export function StoreDetail({
   actions?: ReactNode
   children?: ReactNode
 }): JSX.Element {
+  const { t } = useTranslation('store')
   return (
     <div className="mx-auto max-w-3xl">
       <button onClick={onBack} className="type-caption mb-4 flex items-center gap-1 rounded-md px-1.5 py-1 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground">
-        <ArrowLeft className="size-4" /> Back
+        <ArrowLeft className="size-4" /> {t('nav.back')}
       </button>
       <div className="flex items-start gap-3">
         <Icon className={cn('mt-1 size-6 shrink-0', iconClass)} />

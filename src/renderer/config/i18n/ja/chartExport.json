@@ -1,0 +1,24 @@
+{
+  "title": "チャートをエクスポート",
+  "cancel": "キャンセル",
+  "saving": "保存中…",
+  "savePng": "PNGを保存",
+  "renderingPreview": "プレビューをレンダリング中…",
+  "previewAlt": "エクスポートプレビュー",
+  "proNote": "Proではフレームとバッジが使えます — ヘッダーチップをご覧ください",
+  "byline": {
+    "label": "著者名",
+    "by": "{{author}} 著",
+    "hintSet": "プロジェクト構成（⌘,）でタイトルと著者を設定"
+  },
+  "frame": {
+    "label": "Proフレーム",
+    "hintPro": "プレミアムマット＋フレーム",
+    "hintFree": "NVS Pro — より美しいエクスポートテーマ"
+  },
+  "badge": {
+    "label": "NVS Proバッジ",
+    "hintPro": "フッターにProマークを表示",
+    "hintFree": "NVS Pro"
+  }
+}

@@ -6,6 +6,7 @@
  * (never_says, …) marked as defined terms. Shared by the coherence + character-arc rails.
  */
 import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { chapterNum } from '@/config/coherenceVisual'
 import { entityNameVariants, normName } from '@shared/entityNames'
 
@@ -57,14 +58,15 @@ export function tokenize(text: string, names: NameRef[], threadSlugToId: Map<str
 /** Render free text with character names (clickable → onName), chapter tokens, and inline thread citations
  *  (clickable → onThread). Threads/onThread are optional — rails without threads (e.g. arcs) omit them. */
 export function Annotated({ text, names, onName, threads, onThread }: { text: string; names: NameRef[]; onName: (id: string) => void; threads?: ThreadRef[]; onThread?: (id: string) => void }): JSX.Element {
-  const slugToId = useMemo(() => new Map((threads ?? []).map((t) => [t.slug, t.id])), [threads])
+  const { t } = useTranslation('annotated')
+  const slugToId = useMemo(() => new Map((threads ?? []).map((th) => [th.slug, th.id])), [threads])
   const toks = useMemo(() => tokenize(text, names, slugToId), [text, names, slugToId])
   return (
     <>
       {toks.map((tk, i) => {
         if (tk.kind === 'name')
           return (
-            <button key={i} onClick={() => tk.id && onName(tk.id)} disabled={!tk.id} className="font-medium text-character underline decoration-character/30 underline-offset-2 hover:decoration-character" title={`${tk.t} — open character`}>
+            <button key={i} onClick={() => tk.id && onName(tk.id)} disabled={!tk.id} className="font-medium text-character underline decoration-character/30 underline-offset-2 hover:decoration-character" title={t('openCharacter', { name: tk.t })}>
               {tk.t}
             </button>
           )
@@ -75,7 +77,7 @@ export function Annotated({ text, names, onName, threads, onThread }: { text: st
               onClick={() => tk.id && onThread?.(tk.id)}
               disabled={!tk.id || !onThread}
               className="font-medium text-thread underline decoration-thread/30 underline-offset-2 hover:decoration-thread disabled:no-underline disabled:opacity-80"
-              title={tk.id ? `${tk.t.replace(/_/g, ' ')} — inspect thread` : `thread: ${tk.t.replace(/_/g, ' ')}`}
+              title={tk.id ? t('inspectThread', { name: tk.t.replace(/_/g, ' ') }) : t('threadLabel', { name: tk.t.replace(/_/g, ' ') })}
             >
               {tk.t.replace(/_/g, ' ')}
             </button>
@@ -83,12 +85,12 @@ export function Annotated({ text, names, onName, threads, onThread }: { text: st
         if (tk.kind === 'chapter')
           return (
             <span key={i} className="font-medium text-thread/80" title={tk.t}>
-              {tk.num ? `Chapter ${tk.num}` : tk.t}
+              {tk.num ? t('chapter', { num: tk.num }) : tk.t}
             </span>
           )
         if (tk.kind === 'enum')
           return (
-            <span key={i} className="font-mono text-muted-foreground" title="defined term">
+            <span key={i} className="font-mono text-muted-foreground" title={t('definedTerm')}>
               {tk.t}
             </span>
           )

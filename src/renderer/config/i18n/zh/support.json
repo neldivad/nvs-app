@@ -1,0 +1,34 @@
+{
+  "title": "支持与社区",
+  "apps": "我们的应用",
+  "community": "社区",
+  "usingThis": "你正在使用此应用",
+  "comingSoon": "即将推出",
+  "soon": "即将推出",
+  "inDevelopment": "开发中 — 关注社交媒体，获取上线消息。",
+  "appBy": "应用开发者：",
+  "status": {
+    "live": "已上线",
+    "beta": "测试版",
+    "soon": "即将推出"
+  },
+  "social": {
+    "discord": "Discord",
+    "twitter": "X / Twitter",
+    "github": "GitHub",
+    "youtube": "YouTube"
+  },
+  "cta": {
+    "productPage": "产品页面",
+    "followForLaunch": "关注上线动态",
+    "open": "打开"
+  },
+  "heading": {
+    "status": "状态",
+    "highlights": "亮点"
+  },
+  "legal": {
+    "privacy": "隐私",
+    "terms": "条款"
+  }
+}

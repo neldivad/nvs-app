@@ -1,0 +1,70 @@
+{
+  "title": "更新分析",
+  "timeline": {
+    "label": "时间线",
+    "tooltip": "分析遵循当前时间线。在画布上切换时间线即可分析其他时间线。",
+    "count": "{{index}} / {{total}}"
+  },
+  "summary": {
+    "upToDate": "在此深度下一切都是最新的——无需运行。",
+    "targets": "{{n}} 个目标",
+    "planning": "规划中…"
+  },
+  "kind": {
+    "scene_one": "场景",
+    "scene_other": "场景",
+    "window_one": "故事线",
+    "window_other": "故事线",
+    "profile_one": "角色档案",
+    "profile_other": "角色档案",
+    "digest_one": "摘要",
+    "digest_other": "摘要"
+  },
+  "previewByChapter": "按章节预览",
+  "mode": {
+    "label": "模式",
+    "fast": {
+      "label": "快速",
+      "hint": "摘要 + 线索 + 出场 — 故事进展和时间线保持最新；故事线等待专家分析"
+    },
+    "expert": {
+      "label": "专家",
+      "hint": "完整清单：目标、冲突、物品、背景知识、故事线、角色档案"
+    }
+  },
+  "connection": {
+    "runsOn": "运行于",
+    "runsOnTooltip": "估算值仅供参考。请在控制台的连接列表中设置分析连接。",
+    "colConnection": "连接",
+    "colTime": "时间",
+    "colCost": "费用",
+    "current": "当前",
+    "empty": "还没有 AI 连接 — 请前往设置 → AI 添加连接。"
+  },
+  "cost": {
+    "planUsage": "套餐用量",
+    "checkPricing": "查看价格"
+  },
+  "warning": {
+    "plan": {
+      "body": "此分析将使用你的 Claude 订阅（无需 API 密钥），每个场景的速度约慢 15 倍，且无法并行运行——大约需要 ",
+      "hours_one": "{{count}} 小时",
+      "hours_other": "{{count}} 小时",
+      "hoursSeveral": "数小时",
+      "tail": "才能完成此次运行，通常会在完成前达到用量限制。",
+      "switchPre": "请在控制台中将分析连接切换为 ",
+      "switchPost": "（API 密钥连接）——几分钟即可完成。",
+      "addKey": "请在设置 → AI 中添加 API 密钥连接（Anthropic / OpenRouter），并使用它进行完整分析；几分钟即可完成。"
+    }
+  },
+  "button": {
+    "cancel": "取消",
+    "start": "开始 {{mode}} 运行",
+    "modeFast": "快速",
+    "modeExpert": "专家"
+  },
+  "readiness": {
+    "link": "检查就绪状态",
+    "tooltip": "在聊天中运行只读预检——在消耗一次运行前检查正典文本、结构和连接。"
+  }
+}

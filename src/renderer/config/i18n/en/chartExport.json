@@ -1,0 +1,24 @@
+{
+  "title": "Export chart",
+  "cancel": "Cancel",
+  "saving": "Saving…",
+  "savePng": "Save PNG",
+  "renderingPreview": "Rendering preview…",
+  "previewAlt": "export preview",
+  "proNote": "Pro unlocks the frame & badge — see the header chip",
+  "byline": {
+    "label": "Author byline",
+    "by": "by {{author}}",
+    "hintSet": "Set the title/author in Project Structure (⌘,)"
+  },
+  "frame": {
+    "label": "Pro frame",
+    "hintPro": "The premium matte + frame",
+    "hintFree": "NVS Pro — the prettier export theme"
+  },
+  "badge": {
+    "label": "NVS Pro badge",
+    "hintPro": "Show the Pro mark in the footer",
+    "hintFree": "NVS Pro"
+  }
+}

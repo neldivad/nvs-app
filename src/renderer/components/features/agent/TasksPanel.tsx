@@ -7,6 +7,7 @@
  * open editor as ONE transaction (the editor owns undo) with an apply-time staleness guard.
  */
 import { useEffect, useState, type JSX } from 'react';
+import { Trans, useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { CheckCircle2, ChevronRight, Circle, Loader2, X, XCircle, Inbox } from 'lucide-react'
 import type { AgentTask, TaskStatus } from '@shared/ipc'
@@ -16,6 +17,7 @@ import { ConfirmDialog } from '@/components/ui/confirm'
 import { cn } from '@/lib/utils'
 
 export function TasksPanel(): JSX.Element {
+  const { t } = useTranslation('tasks')
   const project = useWorkspace((s) => s.project)
   const tasks = useWorkspace((s) => s.tasks)
   const applyTask = useWorkspace((s) => s.applyTask)
@@ -24,27 +26,29 @@ export function TasksPanel(): JSX.Element {
   return (
     <div {...regionAttrs('tasksPanel')} className="flex h-full min-w-0 flex-col bg-canvas" style={{ userSelect: 'text' }}>
       <div className="flex items-center gap-2 border-b border-border px-3 py-1 text-[10px] text-faint">
-        <span>background edits — apply lands as one undo step</span>
+        <span>{t('header.caption')}</span>
         {hasDone && (
           <button onClick={() => window.nvs.clearDoneTasks()} className="ml-auto rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">
-            Clear done
+            {t('header.clearDone')}
           </button>
         )}
         {tasks.length > 0 && (
           <button onClick={() => tasks.forEach((t) => window.nvs.dismissTask(t.id))} className={cn('rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft hover:text-flag', !hasDone && 'ml-auto')}>
-            Clear all
+            {t('header.clearAll')}
           </button>
         )}
       </div>
 
       {!project ? (
-        <Empty>Open a work to run background edits.</Empty>
+        <Empty>{t('empty.noProject')}</Empty>
       ) : tasks.length === 0 ? (
         <Empty>
           <div>
             <Inbox className="mx-auto mb-2 size-5 text-faint" />
             <p>
-              No tasks yet. Type <span className="font-mono text-muted-foreground">/ag</span> in a page, or ask the chat to edit across pages.
+              <Trans t={t} i18nKey="empty.noTasks">
+                No tasks yet. Type <span className="font-mono text-muted-foreground">/ag</span> in a page, or ask the chat to edit across pages.
+              </Trans>
             </p>
           </div>
         </Empty>
@@ -79,6 +83,7 @@ function groupTasks(tasks: AgentTask[]): TaskRow[] {
 /** A fan-out group — one collapsible entry ("N edits · X done") over its member tasks. Keeps the inbox
  *  from flooding when chat queues an edit across many pages. Apply is still per-page (inside). */
 function TaskGroup({ tasks, onApply }: { tasks: AgentTask[]; onApply: (id: string) => void }): JSX.Element {
+  const { t } = useTranslation('tasks')
   const applyGroup = useWorkspace((s) => s.applyGroup)
   const [open, setOpen] = useState(false)
   const [confirm, setConfirm] = useState(false)
@@ -89,14 +94,14 @@ function TaskGroup({ tasks, onApply }: { tasks: AgentTask[]; onApply: (id: strin
       <div className="flex items-center gap-2 px-2.5 py-1.5">
         <button onClick={() => setOpen((o) => !o)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left">
           <ChevronRight className={cn('size-3 shrink-0 transition-transform', open && 'rotate-90')} />
-          <span className="shrink-0 font-medium text-foreground/90">{tasks.length} edits</span>
+          <span className="shrink-0 font-medium text-foreground/90">{t('group.edits', { count: tasks.length })}</span>
           <span className="min-w-0 flex-1 truncate text-[10px] text-muted-foreground">{tasks[0].instruction}</span>
-          <span className="shrink-0 text-[9px] tabular-nums text-faint">{doneIds.length}/{tasks.length}{running ? ' · running' : ''}</span>
+          <span className="shrink-0 text-[9px] tabular-nums text-faint">{doneIds.length}/{tasks.length}{running ? ` · ${t('status.running')}` : ''}</span>
         </button>
         {doneIds.length > 0 && (
-          <button onClick={() => setConfirm(true)} title="Apply all done edits" className="shrink-0 rounded border border-thread/50 bg-thread/10 px-1.5 py-0.5 text-[10px] text-foreground hover:bg-thread/20">Apply all</button>
+          <button onClick={() => setConfirm(true)} title={t('group.applyAllTitle')} className="shrink-0 rounded border border-thread/50 bg-thread/10 px-1.5 py-0.5 text-[10px] text-foreground hover:bg-thread/20">{t('group.applyAll')}</button>
         )}
-        <button onClick={() => tasks.forEach((t) => window.nvs.dismissTask(t.id))} title="Dismiss all" className="shrink-0 rounded p-0.5 text-faint hover:bg-panel hover:text-flag"><X className="size-3" /></button>
+        <button onClick={() => tasks.forEach((t) => window.nvs.dismissTask(t.id))} title={t('group.dismissAllTitle')} className="shrink-0 rounded p-0.5 text-faint hover:bg-panel hover:text-flag"><X className="size-3" /></button>
       </div>
       {open && (
         <div className="flex flex-col gap-1 border-t border-border p-1.5">
@@ -105,9 +110,9 @@ function TaskGroup({ tasks, onApply }: { tasks: AgentTask[]; onApply: (id: strin
       )}
       <ConfirmDialog
         open={confirm}
-        title={`Apply ${doneIds.length} edit${doneIds.length > 1 ? 's' : ''}?`}
-        message={<>This applies the finished edits across {doneIds.length} page{doneIds.length > 1 ? 's' : ''} — each replaces that page (one Ctrl/Cmd+Z per page undoes it). The editor will step through them.</>}
-        confirmLabel={`Apply ${doneIds.length}`}
+        title={t('confirm.title', { count: doneIds.length })}
+        message={t('confirm.message', { count: doneIds.length })}
+        confirmLabel={t('confirm.label', { count: doneIds.length })}
         danger
         onConfirm={() => { void applyGroup(doneIds); setConfirm(false) }}
         onCancel={() => setConfirm(false)}
@@ -117,6 +122,7 @@ function TaskGroup({ tasks, onApply }: { tasks: AgentTask[]; onApply: (id: strin
 }
 
 function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): JSX.Element {
+  const { t } = useTranslation('tasks')
   const active = task.status === 'queued' || task.status === 'running'
   // Direct-write pages (custody): the task row owns its rollback, DELEGATED to the page's write
   // history — Undo is offered only while this task's apply is the newest write (later edits would be
@@ -138,9 +144,9 @@ function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): 
           <div className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate font-medium text-foreground/90">{task.pageTitle}</span>
             {active ? (
-              <span className="shrink-0 text-[9px] tabular-nums text-faint">{task.status === 'running' ? 'running' : 'queued'} {live}</span>
+              <span className="shrink-0 text-[9px] tabular-nums text-faint">{task.status === 'running' ? t('status.running') : t('status.queued')} {live}</span>
             ) : (
-              took && <span className="shrink-0 text-[9px] tabular-nums text-faint">{took}</span>
+              took && <span className="shrink-0 text-[9px] tabular-nums text-faint">{t('card.took', { time: took })}</span>
             )}
             <span className={cn('shrink-0 rounded border px-1 text-[9px] uppercase tracking-wide', modeTone(task.mode))}>{task.mode}</span>
           </div>
@@ -149,7 +155,7 @@ function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): 
         </div>
         <button
           onClick={() => (active ? window.nvs.cancelTask(task.id) : window.nvs.dismissTask(task.id))}
-          title={active ? 'Cancel' : 'Dismiss'}
+          title={active ? t('card.cancel') : t('card.dismiss')}
           className="shrink-0 rounded p-0.5 text-faint hover:bg-panel hover:text-foreground"
         >
           <X className="size-3" />
@@ -162,7 +168,7 @@ function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): 
               onClick={() => void undoPageWrite(task.pagePath)}
               className="rounded-md border border-border px-2 py-0.5 text-[10px] text-muted-foreground hover:bg-panel"
             >
-              Undo
+              {t('card.undo')}
             </button>
           )}
           {redoable && (
@@ -170,7 +176,7 @@ function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): 
               onClick={() => void redoPageWrite(task.pagePath)}
               className="rounded-md border border-border px-2 py-0.5 text-[10px] text-muted-foreground hover:bg-panel"
             >
-              Redo
+              {t('card.redo')}
             </button>
           )}
           {/* while Redo is offered it IS the re-apply — two routes to one outcome would be confusing */}
@@ -179,10 +185,10 @@ function TaskCard({ task, onApply }: { task: AgentTask; onApply: () => void }): 
               onClick={onApply}
               className="rounded-md border border-thread/50 bg-thread/10 px-2 py-0.5 text-[10px] text-foreground hover:bg-thread/20"
             >
-              Review & apply
+              {t('card.reviewApply')}
             </button>
           )}
-          {applied && <span className="text-[9px] text-ok">applied ✓</span>}
+          {applied && <span className="text-[9px] text-ok">{t('card.applied')}</span>}
         </div>
       )}
     </div>
@@ -214,11 +220,11 @@ function useElapsed(since: string | null): string {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
-/** How long a finished task took (started→finished), e.g. "took 0:12". Empty if it never ran. */
+/** How long a finished task took (started→finished), e.g. "0:12" (shown as "took 0:12"). Empty if it never ran. */
 function runDuration(task: AgentTask): string {
   if (!task.startedAt || !task.finishedAt) return ''
   const s = Math.max(0, Math.round((Date.parse(task.finishedAt) - Date.parse(task.startedAt)) / 1000))
-  return `took ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
 /** The count of finished, not-yet-applied tasks — drives the Tasks tab badge. */

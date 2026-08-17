@@ -1,0 +1,38 @@
+{
+  "header": {
+    "caption": "后台编辑 — 应用后将作为一个撤销步骤",
+    "clearDone": "清除已完成",
+    "clearAll": "全部清除"
+  },
+  "empty": {
+    "noProject": "打开一个工作区以运行后台编辑。",
+    "noTasks": "还没有任务。在页面中输入 <1>/ag</1>，或让聊天跨页面进行编辑。"
+  },
+  "group": {
+    "edits_one": "{{count}} 项编辑",
+    "edits_other": "{{count}} 项编辑",
+    "applyAll": "全部应用",
+    "applyAllTitle": "应用所有已完成的编辑",
+    "dismissAllTitle": "全部忽略"
+  },
+  "confirm": {
+    "title_one": "应用 {{count}} 项编辑？",
+    "title_other": "应用 {{count}} 项编辑？",
+    "message_one": "这会应用 {{count}} 个页面中的已完成编辑 — 每次都会替换相应页面（每个页面按一次 Ctrl/Cmd+Z 即可撤销）。编辑器将逐一处理。",
+    "message_other": "这会应用 {{count}} 个页面中的已完成编辑 — 每次都会替换相应页面（每个页面按一次 Ctrl/Cmd+Z 即可撤销）。编辑器将逐一处理。",
+    "label": "应用 {{count}} 项"
+  },
+  "status": {
+    "running": "运行中",
+    "queued": "排队中"
+  },
+  "card": {
+    "cancel": "取消",
+    "dismiss": "忽略",
+    "took": "耗时 {{time}}",
+    "undo": "撤销",
+    "redo": "重做",
+    "reviewApply": "查看并应用",
+    "applied": "已应用 ✓"
+  }
+}

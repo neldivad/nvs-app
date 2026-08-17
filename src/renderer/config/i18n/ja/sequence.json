@@ -1,0 +1,15 @@
+{
+  "auto": "自動",
+  "autoReadingOrder": "自動 — 読み順",
+  "noLoadouts": "ロードアウトなし — タイムライン ▸ チャート設定で作成してください。",
+  "loadoutBlurb": "＜term＞ロードアウト＜/term＞とは、分岐するストーリーの読み方の1つです — 各チャートに表示されるシーン、行、分析の範囲を切り替えます。",
+  "inlineTitle": "ロードアウト — すべてのチャートに反映するストーリーの読み方を選択",
+  "cornerTitle": "チャート軸 — シーケンスを選択",
+  "axesTitle": "チャート軸",
+  "maxAxesTitle": "最大 {{max}} 軸 — 追加するには1つ削除してください",
+  "newAxis": "新しい軸",
+  "newAxisName": "軸 {{n}}",
+  "autoVariantOrder": "自動 — バリアントの読み順",
+  "renameAxis": "軸の名前を変更",
+  "deleteAxis": "軸を削除"
+}

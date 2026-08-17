@@ -1,0 +1,32 @@
+{
+  "title": "分析履歴",
+  "empty": "過去の実行はまだありません — ドックの「更新」から実行してください。",
+  "option_one": "{{when}} · {{count}} 件のターゲット · {{dur}}",
+  "option_other": "{{when}} · {{count}} 件のターゲット · {{dur}}",
+  "tab": {
+    "graph": "分析済みグラフ",
+    "stats": "カバレッジと統計"
+  },
+  "graphEmpty": "この実行ではシーンに触れませんでした。",
+  "noCoverage": "この実行ではカバレッジが記録されませんでした。",
+  "kind": {
+    "scene": "シーン",
+    "window": "アーク",
+    "profile": "プロファイル",
+    "digest": "ダイジェスト",
+    "coherence": "整合性"
+  },
+  "stat": {
+    "targets": "ターゲット",
+    "rowsWritten": "書き込み済み行数",
+    "done": "完了",
+    "failedSkipped": "失敗 / スキップ",
+    "duration": "所要時間",
+    "finished": "完了日時"
+  },
+  "liveOnlyNote": "実行で保持されるのはカバーした内容であり、手順ごとのログではありません（そのストリームはライブのみです）。",
+  "restore": "このバージョンを復元",
+  "restoreTitle": "分析 DB をこのバージョンのスナップショットに戻す",
+  "snapshotPruned": "スナップショットは削除済み — 復元できません",
+  "close": "閉じる"
+}

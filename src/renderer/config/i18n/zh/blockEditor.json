@@ -1,0 +1,40 @@
+{
+  "placeholder": {
+    "speech": "对话…",
+    "thinking": "内心想法…",
+    "narration": "旁白…",
+    "action": "舞台指示…",
+    "transition": "转场…"
+  },
+  "agent": {
+    "label": "让 AI 撰写",
+    "description": "为此场景排队执行后台编辑（从任务中查看并应用）。"
+  },
+  "speaker": {
+    "openPageBefore": "打开",
+    "openPageAfter": "页面",
+    "placeholder": "角色名称…",
+    "add": "添加“{{name}}”",
+    "invalidBefore": "无法使用“{{name}}”——提示词由字母/数字/空格组成，且",
+    "invalidOnly": "只能是（或",
+    "invalidAfter": "）",
+    "noSpeaker": "无说话人"
+  },
+  "mood": {
+    "placeholder": "情绪，例如生气…",
+    "neutral": "中性（无指示）",
+    "title": "表达方式 / 情绪——说话人后的（括号说明）",
+    "add": "+ 情绪"
+  },
+  "timing": {
+    "title": "时间——节拍的起始 → 结束时间码",
+    "label": "时间",
+    "start": "开始",
+    "end": "结束",
+    "clear": "清除",
+    "set": "设置",
+    "add": "+ 时间"
+  },
+  "blockType": "更改块类型",
+  "find": "在场景中查找"
+}

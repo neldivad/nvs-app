@@ -5,18 +5,19 @@
  * suggestion, links to the entity page / the thread). Rendered inline (not a floating pane) so it never
  * collides with the Thread floating when you "Inspect thread". Scene-preview dialog lives at the panel root.
  */
-import { useMemo, useState, type JSX } from 'react';
+import { useMemo, useState, type JSX, type ReactNode } from 'react';
 import { regionAttrs } from '@/config/regions'
-import { Check, ChevronRight, Lightbulb, Link2, Pencil, X } from 'lucide-react'
+import { Check, Lightbulb, Link2, Pencil, Rows3 } from 'lucide-react'
 import { EmptyRailState } from '@/components/ui/EmptyRailState'
 import { useWorkspace } from '@/stores/workspace'
-import { severityVisual, severityWash, kindLabel, kindGloss, severityLabel, chapterNum } from '@/config/coherenceVisual'
+import { severityVisual, kindGloss, displayKind, declaredSilent } from '@/config/coherenceVisual'
 import { threadVisual } from '@/config/threadVisual'
 import { cn } from '@/lib/utils'
 import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
 import { Annotated, type NameRef } from '@/components/ui/Annotated'
 import { RailHeader } from '@/components/ui/RailHeader'
-import { DetailLabel, DETAIL_PROSE, DetailSortToggle } from '@/components/ui/detail'
+import { DetailLabel, DETAIL_PROSE } from '@/components/ui/detail'
+import { DetailSplitView, type FeedEvent, type FeedChapter, type FeedTone } from '@/components/layout/DetailSplitView'
 import { LifecycleGantt, deriveWrapLevels, sceneVolumes, GANTT_ROW_TITLE, type GanttRow } from '@/components/features/custody/LifecycleGantt'
 import { buildChapterIndex } from '@/lib/analysis/chapterIndex'
 import { entityVisual } from '@/config/entityVisual'
@@ -27,11 +28,56 @@ import { RailChrome } from '@/components/layout/RailChrome'
 import { StructuralChecks } from '@/components/features/coherence/StructuralChecks'
 import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
+import { CONTINUITY_KINDS, CRITIQUE_KINDS } from '@shared/config/extraction'
 import type { CoherenceFinding, SceneFile } from '@shared/ipc'
+
+const CONTINUITY = new Set<string>(CONTINUITY_KINDS) // plot holes — declared is an EARLIER FACT, not a page
+const CRITIQUE = new Set<string>(CRITIQUE_KINDS) // tough questions — declared is what the beat SETS UP
 
 type ScenePreview = { path: string; title: string }
 
+/** Finding prose with `[title · id]` anchors (the linters cite scene/thread anchors verbatim) rendered as LINKS —
+ *  a scene anchor opens the scene peek, a thread anchor opens the thread float; plain segments keep the
+ *  name/thread annotation. Without this the citations render as intimidating plaintext brackets. */
+function AnchoredProse({
+  text,
+  names,
+  onName,
+  threads,
+  onThread,
+  sceneById,
+  onScene
+}: {
+  text: string
+  names: NameRef[]
+  onName: (id: string) => void
+  threads: { id: string; slug: string }[]
+  onThread: (id: string) => void
+  sceneById: Map<string, SceneFile>
+  onScene: (s: ScenePreview) => void
+}): JSX.Element {
+  const parts: ReactNode[] = []
+  const re = /\[([^\][]*?) · ([\w:-]+)\]/g
+  let last = 0
+  let k = 0
+  let m: RegExpExecArray | null
+  const plain = (seg: string): ReactNode => <Annotated key={k++} text={seg} names={names} onName={onName} threads={threads} onThread={onThread} />
+  while ((m = re.exec(text))) {
+    if (m.index > last) parts.push(plain(text.slice(last, m.index)))
+    const [raw, title, id] = m
+    const sc = sceneById.get(id)
+    if (sc) parts.push(<button key={k++} onClick={() => onScene({ path: sc.path, title: sc.title })} className="text-thread hover:underline" title={sc.title}>{title || sc.title}</button>)
+    else if (threads.some((th) => th.id === id)) parts.push(<button key={k++} onClick={() => onThread(id)} className="font-mono text-thread hover:underline">{title || id.split(':').pop()}</button>)
+    else parts.push(<span key={k++}>{raw}</span>)
+    last = m.index + raw.length
+  }
+  if (last < text.length) parts.push(plain(text.slice(last)))
+  return <>{parts}</>
+}
+
 export function CoherencePanel(): JSX.Element {
+  const { t } = useTranslation('coherence')
   const findings = useWorkspace((s) => s.coherence)
   const select = useWorkspace((s) => s.setSelectedFinding)
 
@@ -42,7 +88,7 @@ export function CoherencePanel(): JSX.Element {
       {/* Deterministic structural pass — instant, no-LLM, runs regardless of coherence-analysis state. */}
       <StructuralChecks />
       {findings == null ? (
-        <div className="flex min-h-0 flex-1 items-center justify-center p-8"><p className="text-sm text-muted-foreground">Loading…</p></div>
+        <div className="flex min-h-0 flex-1 items-center justify-center p-8"><p className="text-sm text-muted-foreground">{t('loading')}</p></div>
       ) : findings.length === 0 ? (
         <EmptyRailState rail="coherence" />
       ) : (
@@ -51,9 +97,9 @@ export function CoherencePanel(): JSX.Element {
 
       <RailChrome
         region="coherencePanel"
-        name="Coherence"
+        name={t('rail.name')}
         layers={['chapters']}
-        export={{ file: 'coherence-rail', caption: () => 'Coherence — findings' }}
+        export={{ file: 'coherence-rail', caption: () => t('rail.caption') }}
         help={CoherenceHelp}
       />
     </div>
@@ -66,6 +112,7 @@ type MapProps = { findings: CoherenceFinding[]; onSelect: (id: string) => void }
 /** The one Coherence view: a cast × scene LifecycleGantt (the shared skeleton) with chaptered severity bands.
  *  "By type" / "by character" aren't separate views — they're shading filters over this single map. */
 function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
+  const { t } = useTranslation('coherence')
   const scenes = useWorkspace((s) => s.scenes)
   const graph = useWorkspace((s) => s.timelineGraph)
   const storyTree = useWorkspace((s) => s.storyTree)
@@ -75,13 +122,13 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
   const kindFilter = useWorkspace((s) => s.coherenceKind)
   const setKindFilter = useWorkspace((s) => s.setCoherenceKind)
   const [preview, setPreview] = useState<{ path: string; title: string; kind: string } | null>(null)
-  // The Highlight chips are DERIVED from the kinds actually present (Fidelity drift/gap/contradiction AND the
-  // continuity plot-hole kinds), so the filter always lists every category the findings contain — not a fixed set.
-  // Confirmations (positive "on track" verdicts) aren't a triage category, so they're excluded.
+  // The Highlight chips are DERIVED from the DISPLAY kinds actually present (Fidelity drift/gap/contradiction AND
+  // the continuity plot-hole kinds; `gap` forks into its two sides — story-critique.md Slice 0), so the filter
+  // always lists every category the findings contain — not a fixed set. Confirmations aren't a triage category.
   const kindsPresent = useMemo(() => {
-    const order = ['contradiction', 'drift', 'gap', 'continuity-error', 'logic-gap', 'rule-break'] // Fidelity then plot-holes
+    const order = ['contradiction', 'drift', 'gap:page-silent', 'gap:never-shown', 'continuity-error', 'logic-gap', 'rule-break', 'inert', 'weak-close'] // Fidelity · plot-holes · critique
     const seen = new Set<string>()
-    for (const f of findings) if (!f.intentional && f.kind !== 'confirmation') seen.add(f.kind)
+    for (const f of findings) if (!f.intentional && f.kind !== 'confirmation') seen.add(displayKind(f.kind, f.declared))
     return [...seen].sort((a, b) => {
       const ia = order.indexOf(a), ib = order.indexOf(b)
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib)
@@ -155,7 +202,7 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
       scoped.shown.map(([eid, chMap]) => {
         // With a Highlight active, a row whose character has NO finding of that kind is DISABLED — dimmed and
         // non-clickable (gutter + bands), so you can't open a drift card while filtering for contradictions.
-        const disabled = kindFilter != null && ![...chMap.values()].flat().some((f) => f.kind === kindFilter)
+        const disabled = kindFilter != null && ![...chMap.values()].flat().some((f) => displayKind(f.kind, f.declared) === kindFilter)
         const pg = pageById.get(eid) // the NAME cell → the entity's PAGE (declared profile)
         const { Icon: KindIcon, text: kindColor } = entityVisual(pg?.kind ?? 'character') // tag the row's type: character · item · …
         return {
@@ -165,7 +212,7 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
               disabled={disabled}
               onClick={() => { if (pg) setPreview({ path: pg.path, title: pg.name, kind: pg.kind }) }}
               className={cn('flex h-full w-full items-center gap-2 border-l-2 border-transparent pr-2 pl-1.5 text-left', disabled && 'opacity-30')}
-              title={disabled ? `${nameOf.get(eid) ?? eid} — no ${kindLabel(kindFilter!)}` : `${nameOf.get(eid) ?? eid} — ${pg?.kind ?? 'character'} · open page`}
+              title={disabled ? t('row.noKind', { name: nameOf.get(eid) ?? eid, kind: kindGloss(kindFilter!).label }) : t('row.openPage', { name: nameOf.get(eid) ?? eid, kind: pg?.kind ?? 'character' })}
             >
               <KindIcon className={cn('size-3 shrink-0', kindColor)} />
               <span className={GANTT_ROW_TITLE}>{nameOf.get(eid) ?? eid}</span>
@@ -185,13 +232,13 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
                 <button
                   key={ch}
                   disabled={disabled}
-                  onClick={() => onSelect((kindFilter ? fs.find((f) => f.kind === kindFilter) : null)?.id ?? fs[0].id)}
+                  onClick={() => onSelect((kindFilter ? fs.find((f) => displayKind(f.kind, f.declared) === kindFilter) : null)?.id ?? fs[0].id)}
                   title={`${nameOf.get(eid) ?? eid} · ${range.title}: ${fs.map((f) => f.trait).join('; ')}`}
                   className={cn('absolute top-1/2 flex h-4 -translate-y-1/2 items-center gap-0.5 overflow-hidden rounded-sm border border-border bg-panel-soft px-1', disabled && 'opacity-30')}
                   style={{ left: min * colW + 1, width }}
                 >
                   {shown.map((f, k) => (
-                    <span key={k} className={cn('size-1.5 shrink-0 rounded-full', severityVisual(f.severity).dot, kindFilter && f.kind !== kindFilter && 'opacity-20')} />
+                    <span key={k} className={cn('size-1.5 shrink-0 rounded-full', severityVisual(f.severity).dot, kindFilter && displayKind(f.kind, f.declared) !== kindFilter && 'opacity-20')} />
                   ))}
                   {fs.length > shown.length && <span className="shrink-0 text-[8px] leading-none text-faint">+{fs.length - shown.length}</span>}
                 </button>
@@ -205,18 +252,19 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
       <RailHeader data-export-hide="1">
-        <span className="text-faint">Highlight</span>
+        <span className="text-faint">{t('filter.highlight')}</span>
         {kindsPresent.map((k) => (
           <button
             key={k}
             onClick={() => setKindFilter(kindFilter === k ? null : k)}
+            title={kindGloss(k).question || kindGloss(k).blurb}
             className={cn('rounded-full border px-2 py-0.5', kindFilter === k ? 'border-foreground/40 text-foreground' : 'border-border text-muted-foreground hover:text-foreground')}
           >
             {kindGloss(k).label}
           </button>
         ))}
         {kindFilter && (
-          <button onClick={() => setKindFilter(null)} className="text-faint hover:text-foreground">clear</button>
+          <button onClick={() => setKindFilter(null)} className="text-faint hover:text-foreground">{t('filter.clear')}</button>
         )}
       </RailHeader>
       <LifecycleGantt
@@ -237,16 +285,16 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
           onReset: win.range ? () => win.setRange(null) : undefined,
           title: `${sceneCols[win.lo]?.title ?? '?'} → ${sceneCols[win.hi]?.title ?? '?'}`
         }}
-        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: 'characters', page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
+        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: t('scale.characters'), page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
         metric={{
-          label: 'Range',
+          label: t('scale.rangeLabel'),
           min: 1,
           max: maxFind,
           value: [loFind, hiFind],
           onChange: setFindWin,
-          readout: findAll ? 'all' : `${loFind}${loFind !== hiFind ? `–${hiFind}` : ''}`,
+          readout: findAll ? t('scale.all') : `${loFind}${loFind !== hiFind ? `–${hiFind}` : ''}`,
           onReset: findAll ? undefined : () => setFindWin(null),
-          title: 'Trim rows by finding count — drag the low thumb up to hide lightly-flagged characters and focus the most-flagged.'
+          title: t('scale.rangeTitle')
         }}
       />
       {preview && <PageReadDialog path={preview.path} kind={preview.kind} title={preview.title} onClose={() => setPreview(null)} />}
@@ -255,80 +303,64 @@ function CoherenceMap({ findings, onSelect }: MapProps): JSX.Element {
 }
 
 
+// The display kinds the help explains, in chip order (fidelity then plot-holes) — questions come from the
+// gloss config, so the F8 sheet and the chip hovers can never drift apart.
+const HELP_KINDS = ['contradiction', 'drift', 'gap:page-silent', 'gap:never-shown', 'continuity-error', 'logic-gap', 'rule-break', 'inert', 'weak-close']
+
 function CoherenceHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('coherence')
   return (
-    <Dialog open={open} onClose={onClose} title="Coherence — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="What it flags">
-          <HelpList
-            items={[
-              <>Each finding compares what a <b className="text-foreground/80">page says</b> (a character or thread's declared profile) against what your <b className="text-foreground/80">scenes show</b> — read at chapter checkpoints.</>,
-              <>It's the analysis agent's reading, not authored truth — a queue of places to check, never a verdict you have to obey.</>
-            ]}
-          />
+        <HelpSection title={t('help.flags.title')}>
+          <HelpList items={t('help.flags.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Reading a finding">
-          <HelpTable
-            rows={[
-              ['category', 'the kind chip — Contradiction · Drift · Gap · Plot hole · Open hook · Confirmation'],
-              ['severity', 'the triage color — high · medium · low (what to weigh first)'],
-              ['Subject', 'who/what it concerns — a character, a thread, or the whole story'],
-              ['Where', 'the chapter the issue actually occurs in (drawn from its evidence)'],
-              ['Analyzed through', 'how far the run read — the same for every finding, so not where the issue is'],
-              ['page says / scenes show', 'the declared profile vs the prose — the heart of the flag']
-            ]}
-          />
+        <HelpSection title={t('help.questions.title')}>
+          <HelpTable rows={HELP_KINDS.map((k): [string, string] => [kindGloss(k).label, kindGloss(k).question])} />
         </HelpSection>
-        <HelpSection title="Acting on it">
-          <HelpList
-            items={[
-              <><b className="text-foreground/80">Open …'s page</b> — edit the profile that's out of sync (the fix the finding points at).</>,
-              <><b className="text-foreground/80">Verify in scenes</b> — open the scenes it draws on and read the prose for yourself before changing anything.</>,
-              <><b className="text-foreground/80">Inspect thread</b> — jump to the thread a finding is about.</>,
-              <>The amber <b className="text-foreground/80">Suggestion</b> is the assistant's read — fenced off from the facts on purpose. It's advice, your call.</>
-            ]}
-          />
+        <HelpSection title={t('help.reading.title')}>
+          <HelpTable rows={Object.entries(t('help.reading.rows', { returnObjects: true }) as Record<string, string>)} />
         </HelpSection>
-        <HelpSection title="Confirmation">
-          <HelpList items={[<><b className="text-foreground/80">Confirmation</b> findings are consistency <i>confirmed</i> — nothing to fix; they sink to the bottom of the roster.</>]} />
+        <HelpSection title={t('help.acting.title')}>
+          <HelpList items={t('help.acting.items', { returnObjects: true }) as string[]} />
+        </HelpSection>
+        <HelpSection title={t('help.confirmation.title')}>
+          <HelpList items={t('help.confirmation.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>
   )
 }
 
-/** The selected finding, reviewed in the main area — declared vs observed + evidence + links out. */
+/** The ONE coherence card — chip → question headline → trait subtitle → subject → page/scenes → suggestion →
+ *  act → related. Owns its full header + padding so it reads IDENTICALLY in every host (the per-character feed's
+ *  right pane via `detailOwnsHeader`, the single-finding float's tab body); hosts scroll, the card doesn't. */
 export function CoherenceReview({
   finding,
   onScene,
-  onInspectThread,
-  embedded
+  onInspectThread
 }: {
   finding: CoherenceFinding
   onScene: (s: ScenePreview) => void
   onInspectThread: (threadId: string) => void
-  embedded?: boolean // stacked inside a FindingBlock card (which owns the kind/severity header); sizes to content
 }): JSX.Element {
+  const { t } = useTranslation('coherence')
   const scenes = useWorkspace((s) => s.scenes)
   const characters = useWorkspace((s) => s.characters)
   const worldPages = useWorkspace((s) => s.worldPages) // entity findings (item/faction) resolve pages here
   const threads = useWorkspace((s) => s.threads)
   const storyTree = useWorkspace((s) => s.storyTree)
   const selectArc = useWorkspace((s) => s.setSelectedArc) // open the character's arc float (like the thread rail), not the page
-  const openPage = useWorkspace((s) => s.openPage)
   const setRuling = useWorkspace((s) => s.setCoherenceRuling)
-  const setWorkspace = useWorkspace((s) => s.setWorkspace)
+  const [pageDialog, setPageDialog] = useState<{ path: string; title: string; kind: string } | null>(null)
 
-  const v = severityVisual(finding.severity)
   const sceneById = useMemo(() => new Map(scenes.map((s) => [s.sceneId, s])), [scenes])
   const entityPage = finding.entityId ? worldPages.find((c) => c.id === finding.entityId) ?? null : null
-  const linkedThread = finding.threadId ? threads?.find((t) => t.id === finding.threadId) ?? null : null
+  const linkedThread = finding.threadId ? threads?.find((th) => th.id === finding.threadId) ?? null : null
   // slug = thread's human handle, or the last segment of the id if the thread list isn't loaded.
   const threadSlug = linkedThread?.slug ?? (finding.threadId ? finding.threadId.split(':').pop() : null)
 
-  // The reader-facing classifiers (de-jargoned): Category + plain blurb, Subject, As-of chapter.
-  const gloss = kindGloss(finding.kind)
-  const subjectKind = finding.entityId ? 'Character' : finding.threadId ? 'Thread' : 'Story'
+  // Subject name — feeds the "…'s page" label; the subject itself lives in the float TITLE (redundancy sweep).
   const subjectName = entityPage?.name ?? finding.entityId ?? threadSlug ?? null
 
   const names = useMemo<NameRef[]>(() => characters.map((c) => ({ id: c.id, name: c.name })), [characters])
@@ -350,77 +382,85 @@ export function CoherenceReview({
   const whereLabels = whereKeys.map((k) => index.chapters.get(k)?.title ?? k)
 
   // Naming "the page" + plain-language emptiness, and the one-click fix (open the out-of-sync world page).
-  const pageOwner = subjectKind === 'Character' ? subjectName : null
-  const declaredEmpty = !finding.declared || /^\(?\s*(unstated|not stated|unmentioned|none|n\/?a|silent|[—-])\s*\)?$/i.test(finding.declared.trim())
+  const pageOwner = entityPage ? subjectName : null // any PAGED subject owns its page label (faction/item too)
+  const declaredEmpty = declaredSilent(finding.declared) // shared with displayKind's gap fork — one silence test
+  // Related → the owner's page opens the read-preview DIALOG (same as the map's row gutter), not a NavJump into
+  // the World workspace — so reviewing a finding never loses your place in the coherence float.
   const openEntityPage = (): void => {
     if (!entityPage) return
-    void openPage({ path: entityPage.path, title: entityPage.name, kind: entityPage.kind })
-    setWorkspace('world')
+    setPageDialog({ path: entityPage.path, title: entityPage.name, kind: entityPage.kind })
   }
   // Clicking a name in a finding opens that character's arc SCOPED to this finding's chapter (its Where),
   // so you land on the relevant window instead of their whole arc.
   const openArcScoped = (id: string): void => selectArc(id, whereKeys[0])
 
   return (
-    <div className={cn('flex flex-col', embedded ? '' : 'min-h-0 flex-1')}>
-      <div className={cn('px-6', embedded ? 'py-4' : 'min-h-0 flex-1 overflow-auto py-5')}>
+    <div className="flex flex-col">
+      <div className="px-6 py-4">
         <div className="mx-auto max-w-3xl space-y-4 text-[13px]">
-          {/* Header — one kind·severity pill (dropped when stacked in a FindingBlock, whose card header already
-              carries it), the plain trait, and a LIGHT subject·where line (no dl grid, no "analyzed-through"
-              noise, no gloss paragraph — the two sides below make the finding self-explanatory). */}
-          {!embedded && (
-            <span className={cn('inline-flex items-center gap-1.5 rounded-full border border-current/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide', v.text)}>
-              <span className={cn('size-1.5 rounded-full', v.dot)} /> {gloss.label} · {severityLabel(finding.severity)}
-            </span>
-          )}
-          <div>
-            <div className="text-[15px] font-medium text-foreground">{finding.trait}</div>
-            <p className="mt-1 text-[11px] text-faint">
-              {subjectKind === 'Story' ? 'The whole story' : `${subjectKind}${subjectName ? ` · ${subjectName}` : ''}`}
-              {whereLabels.length > 0 && <> · {whereLabels.join(', ')}</>}
-            </p>
+          {/* One header for every host — the TRAIT title + the Where. NO kind/severity chip and NO subject name:
+              the selected feed row beside this card already carries the kind chip (severity-toned), and the float's
+              title IS the subject — repeating them here was the redundancy sweep's finding (2026-08-14). */}
+          <div className="space-y-1">
+            <div className="text-[13.5px] font-medium leading-snug text-foreground text-balance">{finding.trait}</div>
+            {whereLabels.length > 0 && <p className="text-[11px] text-faint">{whereLabels.join(', ')}</p>}
           </div>
 
-          {/* The mismatch — page vs scenes. This IS the finding. */}
+          {/* The mismatch — page vs scenes (fidelity), earlier fact vs later break (plot holes), or setup vs
+              payoff (critique). THIS is the finding; the labels track the family so each card speaks its truth. */}
           <div className="space-y-3">
             <div>
-              <DetailLabel>{pageOwner ? `${pageOwner}’s page` : 'The page'}</DetailLabel>
+              <DetailLabel>{CRITIQUE.has(finding.kind) ? t('review.setsUp') : CONTINUITY.has(finding.kind) ? t('review.earlier') : pageOwner ? t('review.ownersPage', { owner: pageOwner }) : t('review.pageSays')}</DetailLabel>
               <p className={DETAIL_PROSE}>
                 {declaredEmpty ? (
-                  <span className="italic text-faint">doesn’t mention this</span>
+                  <span className="italic text-faint">{t('review.noMention')}</span>
                 ) : (
-                  <Annotated text={finding.declared} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} />
+                  <AnchoredProse text={finding.declared} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} sceneById={sceneById} onScene={onScene} />
                 )}
               </p>
             </div>
             <div>
-              <DetailLabel>The scenes show</DetailLabel>
-              <p className={DETAIL_PROSE}><Annotated text={finding.observed || '—'} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} /></p>
+              <DetailLabel>{CRITIQUE.has(finding.kind) ? t('review.comesOf') : CONTINUITY.has(finding.kind) ? t('review.later') : t('review.scenesShow')}</DetailLabel>
+              <p className={DETAIL_PROSE}><AnchoredProse text={finding.observed || '—'} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} sceneById={sceneById} onScene={onScene} /></p>
             </div>
           </div>
 
-          {/* Act — fix the out-of-sync page, or rule the divergence intentional (persists across re-runs). */}
-          <div className="flex flex-wrap items-center gap-2">
-            {entityPage && (
-              <button onClick={openEntityPage} className="inline-flex items-center gap-1.5 rounded-md border border-character/40 bg-character/5 px-3 py-1.5 text-[12px] font-medium text-character hover:bg-character/10">
-                <Pencil className="size-3.5" /> Open {entityPage.name}’s page
-              </button>
-            )}
-            {finding.entityId && (
+          {/* The NOTE — the assistant's advice, fenced off (amber left-bar) so it never reads as system truth. */}
+          {(finding.why || finding.suggestion) && (
+            <div className="rounded-md border border-warn/25 border-l-2 border-l-warn/70 bg-warn/6 px-4 py-3">
+              <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-warn/90">
+                <Lightbulb className="size-3" /> {t('review.suggestion')}
+              </div>
+              <div className="space-y-2 text-[13px] italic leading-relaxed text-muted-foreground">
+                {finding.why && <p><AnchoredProse text={finding.why} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} sceneById={sceneById} onScene={onScene} /></p>}
+                {finding.suggestion && <p className="not-italic text-foreground/80"><AnchoredProse text={finding.suggestion} names={names} onName={openArcScoped} threads={threads ?? []} onThread={onInspectThread} sceneById={sceneById} onScene={onScene} /></p>}
+              </div>
+            </div>
+          )}
+
+          {/* Act — rule the divergence intentional (persists across re-runs). Opening the page is a Related link
+              below now, not a competing primary button. */}
+          {finding.entityId && (
+            <div>
               <button
                 onClick={() => void setRuling(finding.entityId as string, finding.trait, !finding.intentional)}
                 className={cn('inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-[12px] font-medium', finding.intentional ? 'border-ok/40 bg-ok/5 text-ok hover:bg-ok/10' : 'border-border text-muted-foreground hover:bg-panel-soft hover:text-foreground')}
-                title={finding.intentional ? 'Ruled intentional — click to resume flagging' : 'By design (a deception/twist)? Rule it intentional so re-runs stay quiet'}
+                title={finding.intentional ? t('review.intentionalTitleOn') : t('review.intentionalTitleOff')}
               >
-                <Check className="size-3.5" /> {finding.intentional ? 'Intentional' : 'Mark intentional'}
+                <Check className="size-3.5" /> {finding.intentional ? t('review.intentional') : t('review.markIntentional')}
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Verify — the scenes that show it (exact scenes link directly; chapter-grain evidence expands below). */}
+          {/* Related — the page to fix, the scenes that show it, the thread it's on. All as uniform link chips. */}
           <div className="space-y-1.5">
+            <DetailLabel>{t('review.related')}</DetailLabel>
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="mr-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">Verify in scenes</span>
+              {entityPage && (
+                <button onClick={openEntityPage} className="inline-flex items-center gap-1 rounded-full border border-character/40 px-2 py-0.5 text-[11px] text-character hover:bg-panel-soft" title={t('review.openOwnersPage', { name: entityPage.name })}>
+                  <Pencil className="size-3" /> {t('review.ownersPage', { owner: entityPage.name })}
+                </button>
+              )}
               {evScenes.map((sc) => (
                 <button key={sc.path} onClick={() => onScene(sc)} className="rounded-full border border-border px-2 py-0.5 text-[11px] text-thread hover:bg-panel-soft">
                   {sc.title}
@@ -430,7 +470,7 @@ export function CoherenceReview({
                 <button
                   onClick={() => onInspectThread(finding.threadId as string)}
                   className="flex items-center gap-1.5 rounded-full border border-border px-2 py-0.5 text-[11px] hover:bg-panel-soft"
-                  title="Inspect the thread"
+                  title={t('review.inspectThread')}
                 >
                   <Link2 className="size-3 text-thread" />
                   {linkedThread && <span className={cn('size-2 shrink-0 rounded-full', threadVisual(linkedThread.type).bg)} />}
@@ -439,8 +479,7 @@ export function CoherenceReview({
               )}
             </div>
 
-            {/* Chapter-grain evidence: the chapter label on its own row, its scenes as chips beneath (the
-                analysis read at chapter level, so we surface the whole chapter — pick the scene that matches). */}
+            {/* Chapter-grain evidence: the chapter label + its scenes as chips (analysis read at chapter level). */}
             {evChapterKeys.map((key) => {
               const ch = index.chapters.get(key)
               if (!ch) return null
@@ -450,19 +489,19 @@ export function CoherenceReview({
                 .map((s) => ({ path: s.path, title: s.title }))
               return (
                 <div key={key} className="space-y-1">
-                  <span className="block text-[10px] uppercase tracking-wide text-faint" title="Read at chapter level — pick the scene that matches">
+                  <span className="block text-[10px] uppercase tracking-wide text-faint" title={t('review.chapterEvidenceTitle')}>
                     {ch.title}
                   </span>
                   <div className="flex flex-wrap items-end gap-1.5">
                     {chScenes.length === 0 ? (
-                      <span className="text-[11px] text-faint">no scenes found</span>
+                      <span className="text-[11px] text-faint">{t('review.noScenes')}</span>
                     ) : (
                       chScenes.map((sc) => (
                         <button
                           key={sc.path}
                           onClick={() => onScene(sc)}
                           className="rounded-full border border-border px-2 py-0.5 text-[11px] text-thread hover:bg-panel-soft"
-                          title={`Open “${sc.title}”`}
+                          title={t('review.openScene', { title: sc.title })}
                         >
                           {sc.title}
                         </button>
@@ -473,163 +512,96 @@ export function CoherenceReview({
               )
             })}
           </div>
-
-          {/* The NOTE — the assistant's free advice, visually fenced off from the facts above so it
-              never reads as system truth. Amber left-bar + lightbulb + "your call" framing. */}
-          {(finding.why || finding.suggestion) && (
-            <div className="rounded-md border border-warn/25 border-l-2 border-l-warn/70 bg-warn/6 px-4 py-3">
-              <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-warn/90">
-                <Lightbulb className="size-3" /> Suggestion — the assistant’s read, your call
-              </div>
-              <div className="space-y-2 text-[12.5px] italic leading-relaxed text-muted-foreground">
-                {finding.why && <p><Annotated text={finding.why} names={names} onName={openArcScoped} /></p>}
-                {finding.suggestion && <p className="not-italic text-foreground/80"><Annotated text={finding.suggestion} names={names} onName={openArcScoped} /></p>}
-              </div>
-            </div>
-          )}
         </div>
       </div>
+      {pageDialog && <PageReadDialog path={pageDialog.path} kind={pageDialog.kind} title={pageDialog.title} onClose={() => setPageDialog(null)} />}
     </div>
   )
 }
 
-/** ALL of one character's coherence findings, stacked (like the arc float lists a character's windows). A cell
- *  with two findings opens this and shows both — no more "fs[0] only". Falls back to a single card for a
- *  thread-verdict finding (no entity). */
+/** severity → the shared feed's tone (row chip colour), so coherence rows read like the other detail floats. */
+const SEV_TONE: Record<string, FeedTone> = { high: 'flag', medium: 'warn', low: 'muted' }
+
+/** ALL of one SUBJECT's coherence findings on the shared DetailSplitView chrome (same as thread / arc / entity):
+ *  a reading-ordered feed of findings on the left, the selected finding's full review on the right. The subject is
+ *  a character (entityId) OR — entityId null — the WHOLE STORY: every work-level finding (plot holes, thread
+ *  verdicts), so plot holes get the same split-view treatment instead of a bare one-off card. Kind filtering
+ *  + oldest/latest sort come from the scaffold's built-in MultiFilter (Category = the finding's kind). */
 export function CoherenceDetail({
   entityId,
+  focusId,
   onScene,
   onInspectThread,
   onClose
 }: {
   entityId: string | null
+  focusId?: string | null // the finding that was clicked — pre-select it in the feed
   onScene: (s: ScenePreview) => void
   onInspectThread: (threadId: string) => void
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('coherence')
   const all = useWorkspace((s) => s.coherence)
   const worldPages = useWorkspace((s) => s.worldPages) // name resolution across all kinds (items/factions too)
-  const kindFilter = useWorkspace((s) => s.coherenceKind)
-  const setKindFilter = useWorkspace((s) => s.setCoherenceKind)
-  const [oldestFirst, setOldestFirst] = useState(false) // order by checkpoint chapter; default latest first
-  const mine = useMemo(() => {
-    const chOf = (f: CoherenceFinding): number => { const n = chapterNum(f.asOf ?? ''); return n ? parseInt(n, 10) : 0 }
-    return (all ?? [])
-      .filter((f) => f.entityId === entityId && f.kind !== 'confirmation')
-      .sort((a, b) => (oldestFirst ? chOf(a) - chOf(b) : chOf(b) - chOf(a)) || SEV.indexOf(a.severity) - SEV.indexOf(b.severity))
-  }, [all, entityId, oldestFirst])
-  // Honor the map's Highlight filter — show only that category here too. If the filter would empty the
-  // float (the cell had no matching finding), fall back to all so it never reads as blank.
-  const matched = kindFilter ? mine.filter((f) => f.kind === kindFilter) : mine
-  const list = matched.length > 0 ? matched : mine
-  const name = worldPages.find((c) => c.id === entityId)?.name ?? entityId ?? 'Coherence'
-  // Kinds to offer as toggle chips — those present; shown only when there's a real choice (≥2) or one is active.
-  const kindChips = (() => {
-    const kinds = [...new Set(mine.map((f) => f.kind))]
-    return kinds.length >= 2 || kindFilter ? kinds : []
-  })()
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="shrink-0 border-b border-border px-4 py-2">
-        {/* Title row — always single-line (name truncates). */}
-        <div className="flex items-center gap-2">
-          <span className="truncate text-[13px] font-medium text-foreground">{name}</span>
-          <span className="shrink-0 text-[11px] text-faint">{list.length} finding{list.length === 1 ? '' : 's'}</span>
-          <div className="flex-1" />
-          <DetailSortToggle oldestFirst={oldestFirst} onToggle={() => setOldestFirst((v) => !v)} />
-          <button onClick={onClose} className="shrink-0 text-muted-foreground hover:text-foreground" title="Close">
-            <X className="size-4" />
-          </button>
-        </div>
-        {/* Kind filter — its OWN wrapping row (re-appliable toggles, never overflows the title). Shown when
-            this character has more than one kind, or a filter is currently active. */}
-        {kindChips.length > 0 && (
-          <div className="mt-1.5 flex flex-wrap items-center gap-1">
-            {kindChips.map((k) => {
-              const on = kindFilter === k
-              return (
-                <button
-                  key={k}
-                  onClick={() => setKindFilter(on ? null : k)}
-                  className={cn('rounded-full border px-2 py-0.5 text-[10px] capitalize', on ? 'border-foreground/40 text-foreground' : 'border-border text-muted-foreground hover:text-foreground')}
-                  title={on ? 'Showing only this — click to show all' : `Filter to ${kindLabel(k)}`}
-                >
-                  {kindLabel(k)}{on ? ' ✕' : ''}
-                </button>
-              )
-            })}
-          </div>
-        )}
-      </div>
-      {/* Stacked findings as a SPINE of collapsible cards (same grammar as the thread/arc sheets): a severity
-          badge on the rail, a severity-tinted header, collapsed = trait + a clamp, expand = the full review. */}
-      <div className="min-h-0 flex-1 overflow-auto px-3 py-3">
-        {list.map((f, i) => (
-          <FindingBlock key={f.id} f={f} last={i === list.length - 1} onScene={onScene} onInspectThread={onInspectThread} />
-        ))}
-      </div>
-    </div>
+  const storyTree = useWorkspace((s) => s.storyTree)
+  const index = useMemo(() => buildChapterIndex(storyTree), [storyTree])
+  const orderedKeys = useMemo(() => [...index.chapters.keys()], [index])
+  const posOf = useMemo(() => new Map(orderedKeys.map((k, i) => [k, i])), [orderedKeys])
+
+  // The subject's real findings (confirmations have nothing to fix), highest-severity first within a chapter.
+  // entityId null = the work-level scope: every finding with no entity (plot holes, thread verdicts).
+  const list = useMemo(
+    () =>
+      (all ?? [])
+        .filter((f) => (entityId ? f.entityId === entityId : !f.entityId) && f.kind !== 'confirmation')
+        .sort((a, b) => SEV.indexOf(a.severity) - SEV.indexOf(b.severity)),
+    [all, entityId]
   )
-}
+  const name = entityId ? worldPages.find((c) => c.id === entityId)?.name ?? entityId : t('review.wholeStory')
 
-/**
- * One finding as a card on the coherence spine (CoherenceDetail's per-character list). Collapsed: a severity-
- * tinted header (category + severity) + the trait headline and a 2-line clamp of what the scenes show — the
- * roster reads at a glance. Expanding reveals the full CoherenceReview (its own top strip suppressed, since the
- * header owns category/severity) and a bottom Collapse. Same grammar as the thread/arc sheets — but coherence is
- * a triage LIST, so there's no "terminal" treatment; the rail is just visual kinship.
- */
-function FindingBlock({
-  f,
-  last,
-  onScene,
-  onInspectThread
-}: {
-  f: CoherenceFinding
-  last: boolean
-  onScene: (s: ScenePreview) => void
-  onInspectThread: (threadId: string) => void
-}): JSX.Element {
-  const [open, setOpen] = useState(false)
-  const v = severityVisual(f.severity)
-  const gloss = kindGloss(f.kind)
+  // Place each finding at its EVIDENCE chapter (where it actually occurs — same rule as the map's byEntity),
+  // falling back to the asOf checkpoint only when no evidence resolves. asOf-first banded EVERYTHING under the
+  // final volume (the checkpoint is uniform across findings — it's when the run read, not where the issue is).
+  const chapterKeyOf = (f: CoherenceFinding): string => {
+    for (const ref of f.evidence ?? []) {
+      const k = index.resolveKey(ref)
+      if (k) return k
+    }
+    return (f.asOf ? index.resolveKey(f.asOf) : null) ?? ''
+  }
+  const events: FeedEvent[] = list.map((f) => {
+    const chapterKey = chapterKeyOf(f)
+    const gloss = kindGloss(displayKind(f.kind, f.declared)) // gap forks → feed chips + Category filter split too
+    return {
+      id: f.id,
+      chapterKey,
+      pos: posOf.get(chapterKey) ?? 1e9,
+      title: f.trait,
+      summary: f.observed || f.declared || gloss.blurb,
+      detail: <CoherenceReview finding={f} onScene={onScene} onInspectThread={onInspectThread} />,
+      detailOwnsHeader: true, // the card renders its own chip/question/trait — one layout in every host
+      kind: gloss.label,
+      tone: SEV_TONE[f.severity] ?? 'muted',
+      category: gloss.label // drives the scaffold's built-in Category filter (by kind)
+    }
+  })
+  const chapters: FeedChapter[] = orderedKeys.map((k, i) => ({ key: k, title: index.chapters.get(k)?.title ?? k, pos: i }))
+  // A tail band so any finding that couldn't be placed in a chapter still shows (never silently dropped).
+  if (events.some((e) => e.chapterKey === '')) chapters.push({ key: '', title: t('detail.unplaced'), pos: orderedKeys.length })
+
   return (
-    <div className="flex gap-1.5">
-      {/* rail — a severity badge (matching the roster), then the connector to the next finding */}
-      <div className="flex w-4 flex-col items-center">
-        <span className={cn('z-10 mt-1.5 flex size-4 shrink-0 items-center justify-center rounded-full border border-current/40 bg-panel', v.text)} title={f.severity}>
-          <span className={cn('size-1.5 rounded-full', v.dot)} />
-        </span>
-        {!last && <span className="w-px flex-1 bg-border/70" />}
-      </div>
-
-      <div className="relative min-w-0 flex-1 pb-3">
-        <span className="absolute -left-1.5 top-3 h-px w-1.5 bg-border/70" />
-        <div className="overflow-hidden rounded-lg border border-border">
-          {/* severity-tinted header — category + severity (click toggles) */}
-          <div onClick={() => setOpen((o) => !o)} className={cn('flex cursor-pointer items-center gap-2 px-2.5 py-1.5', severityWash(f.severity))}>
-            <span className={cn('shrink-0 text-[10px] font-semibold uppercase tracking-wide', v.text)}>{gloss.label}</span>
-            <div className="flex-1" />
-            <span className="shrink-0 text-[9px] uppercase tracking-wide text-faint">{severityLabel(f.severity)}</span>
-            {!open && <ChevronRight className="size-3.5 shrink-0 text-faint" />}
-          </div>
-
-          {!open ? (
-            <div onClick={() => setOpen(true)} className="cursor-pointer space-y-1 px-3 py-2">
-              <p className="text-[12.5px] font-medium text-foreground">{f.trait}</p>
-              <p className="line-clamp-2 text-[12px] text-faint">{f.observed || f.declared || gloss.blurb}</p>
-            </div>
-          ) : (
-            <div>
-              <CoherenceReview embedded finding={f} onScene={onScene} onInspectThread={onInspectThread} />
-              <button onClick={() => setOpen(false)} className="flex w-full items-center justify-center gap-1 border-t border-border/50 px-3 pb-3 pt-2 text-[10px] font-semibold uppercase tracking-wide text-faint hover:text-foreground">
-                <ChevronRight className="size-3 -rotate-90" /> Collapse
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <DetailSplitView
+      onClose={onClose}
+      icon={<span className="size-2 shrink-0 rounded-full bg-flag" />}
+      title={name}
+      tabs={[{ id: 'findings', label: t('detail.tabFindings'), icon: <Rows3 className="size-3.5" />, count: list.length }]}
+      tab="findings"
+      onTab={() => {}}
+      chapters={chapters}
+      events={events}
+      isFeed
+      focusId={focusId ?? list[0]?.id ?? null}
+    />
   )
 }
 

@@ -1,0 +1,92 @@
+{
+  "help": {
+    "title": "Lore — how it works",
+    "whatItShows": {
+      "title": "What it shows",
+      "items": [
+        "Each **row** is a world-fact the story keeps talking about (a rule, a piece of backstory, an object's history) — found by the analysis, not authored.",
+        "Read a row **left-to-right**: it's that fact's **revelation pacing** — when it enters the story and how it's fed to the reader over the scenes."
+      ]
+    },
+    "markers": {
+      "title": "Reading the markers",
+      "rows": {
+        "Debut — soft shade": "the fact’s FIRST reveal — where it enters the story",
+        "Support — solid dot": "a later reveal that adds to / repeats the fact",
+        "Paradox — red ◆": "a reveal that contradicts earlier canon",
+        "a line across a row": "the fact’s span, first→last reveal: long = WOVEN, short = DUMPED",
+        "debut far right": "the fact is introduced LATE — check it’s set up before it matters",
+        "columns": "scenes in reading order; the bands group them by act/chapter"
+      }
+    },
+    "filters": {
+      "title": "The filters",
+      "rows": {
+        "Paradox": "facts that contradict themselves — fix these first",
+        "No page": "the fact recurs but you never wrote a lore page for it — \"canon by accident\"",
+        "Has page": "facts you’ve written an authored lore page for"
+      }
+    },
+    "decisions": {
+      "title": "Decisions it guides",
+      "items": [
+        "**Fix contradictions** — a Paradox marker means two reveals disagree; open the topic to see them (the deeper cross-scene check lives in Coherence).",
+        "**Seed earlier** — if a fact debuts late but is leaned on early, plant it sooner.",
+        "**Write it down** — a recurring \"No page\" fact is canon by accident; open it and formalize it into a lore page."
+      ]
+    }
+  },
+  "filters": {
+    "all": "All",
+    "paradox": "Paradox",
+    "noPage": "No page",
+    "hasPage": "Has page",
+    "noPageTitle": "Facts with no written lore page yet — canon by accident",
+    "hasPageTitle": "Facts you’ve written a lore page for"
+  },
+  "rail": {
+    "name": "Lore",
+    "caption": "Lore — revelation pacing",
+    "noTopicsInFilter": "No topics in this filter.",
+    "topicsNoun": "topics",
+    "rangeLabel": "Range",
+    "rangeAll": "all",
+    "rangeTitle": "Trim facts by disclosure count — drag the low thumb up to hide one-off mentions and focus the woven facts."
+  },
+  "row": {
+    "hasPageTitle": "{{label}} — has a lore page",
+    "byAccidentTitle": "{{label}} — canon by accident (no page)",
+    "unauthored": "unauthored"
+  },
+  "detail": {
+    "openLorePage": "Open lore page",
+    "openPage": "{{name}} — open page",
+    "paradox": "paradox",
+    "reveals_one": "{{count}} reveal",
+    "reveals_other": "{{count}} reveals",
+    "learnMore": "Learn more",
+    "suggestPage": "Suggest page",
+    "revealsTab": "Reveals",
+    "firstRevealed": "First revealed",
+    "lastRevealed": "Last revealed",
+    "revealsEndpoint": "Reveals",
+    "revealsEndpointValue": "{{count}}",
+    "revealsEndpointValueParadox": "{{count}} · has a paradox",
+    "sceneSummary": "Scene summary",
+    "cast": "Cast",
+    "heatLabel_one": "{{title}} — {{count}} reveal",
+    "heatLabel_other": "{{title}} — {{count}} reveals",
+    "createTitle": "Create lore page?",
+    "createMessage": "Create a **lore** page for “{{label}}”, then queue an AI draft (from the reveals) for you to review & apply in the Tasks inbox. Nothing is written to the page until you apply it.",
+    "createConfirm": "Create + draft",
+    "createFailTitle": "Could not create page",
+    "createFailBody": "A page id \"{{id}}\" may already exist."
+  },
+  "roster": {
+    "paradox": "Paradox",
+    "noPage": "No page",
+    "hasPage": "Has page",
+    "reading": "Reading…",
+    "empty": "No disclosures yet — run analysis."
+  }
+}

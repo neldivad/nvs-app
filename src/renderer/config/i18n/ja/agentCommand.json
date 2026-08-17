@@ -1,0 +1,15 @@
+{
+  "title": "AIにこのページを書いてもらう",
+  "placeholder": "書く内容や変更内容を説明…（⌘/Ctrl+Enterでキューに追加）",
+  "cat": {
+    "all": "すべて",
+    "maintenance": "メンテナンス",
+    "generation": "生成"
+  },
+  "searchPlaceholder": "プロンプトを検索…",
+  "noMatch": "一致するプロンプトがありません。",
+  "library": "ライブラリ",
+  "managePrompts": "プロンプトを管理",
+  "background": "バックグラウンドで実行 → タスク",
+  "queueEdit": "編集をキューに追加"
+}

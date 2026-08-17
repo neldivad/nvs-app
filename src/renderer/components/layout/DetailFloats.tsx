@@ -11,7 +11,7 @@ import { FloatWindow, type Box } from './FloatWindow'
 import { ThreadDetail } from '@/components/features/threads/ThreadsPanel'
 import { ArcDetail } from '@/components/features/arc/CharacterArcPanel'
 import { EntityDetail } from '@/components/features/entity/EntityPanel'
-import { CoherenceReview, CoherenceDetail } from '@/components/features/coherence/CoherencePanel'
+import { CoherenceDetail } from '@/components/features/coherence/CoherencePanel'
 import { LoreDetailFloat as LoreDetailCard } from '@/components/features/lore/LorePanel'
 import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
 
@@ -61,13 +61,10 @@ export function CoherenceDetailFloat(): JSX.Element | null {
   return (
     <>
       <FloatWindow {...cap()} region="coherenceDetailFloat" persistKey="coherence-detail" accent="var(--flag)" onEscape={() => select(null)} initial={() => box(72)}>
-        {selected.entityId ? (
-          // A character finding → show ALL of that character's findings (a cell with 2 shows both).
-          (<CoherenceDetail entityId={selected.entityId} onScene={setPreview} onInspectThread={(id) => selectThread(id)} onClose={() => select(null)} />)
-        ) : (
-          // A thread-verdict finding (no entity) → the single card.
-          (<CoherenceReview finding={selected} onScene={setPreview} onInspectThread={(id) => selectThread(id)} />)
-        )}
+        {/* One split-view for every subject: a character finding scopes to that character's findings; a
+            work-level finding (plot holes, thread verdicts — no entity) scopes to "The whole story". The
+            clicked finding is pre-selected in the feed. */}
+        <CoherenceDetail entityId={selected.entityId || null} focusId={selected.id} onScene={setPreview} onInspectThread={(id) => selectThread(id)} onClose={() => select(null)} />
       </FloatWindow>
       {preview && <PageReadDialog path={preview.path} kind="scene" title={preview.title} onClose={() => setPreview(null)} />}
     </>

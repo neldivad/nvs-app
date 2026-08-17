@@ -7,6 +7,7 @@
  * the rest of the editor stays fully interactive underneath.
  */
 import type { JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Maximize2, Settings, Sun, Moon } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dock, DockItem, DockIcon, DockLabel } from '@/components/ui/dock'
@@ -16,6 +17,7 @@ import { Dock, DockItem, DockIcon, DockLabel } from '@/components/ui/dock'
 const ITEM = 'aspect-square rounded-full text-muted-foreground transition-colors hover:bg-foreground/10 hover:text-foreground'
 
 export function FloatDock(): JSX.Element | null {
+  const { t } = useTranslation('floatDock')
   const open = useWorkspace((s) => s.floatDockOpen)
   const project = useWorkspace((s) => s.project)
   const setComposing = useWorkspace((s) => s.setComposing)
@@ -30,15 +32,15 @@ export function FloatDock(): JSX.Element | null {
       <div className="pointer-events-auto">
         <Dock>
           {project && (
-            <DockItem title="Composition mode" onClick={() => setComposing(true)} className={ITEM}>
-              <DockLabel>Composition</DockLabel>
+            <DockItem title={t('composition.title')} onClick={() => setComposing(true)} className={ITEM}>
+              <DockLabel>{t('composition.label')}</DockLabel>
               <DockIcon>
                 <Maximize2 className="size-full" />
               </DockIcon>
             </DockItem>
           )}
-          <DockItem title="Settings" onClick={() => setSettingsOpen(true)} className={ITEM}>
-            <DockLabel>Settings</DockLabel>
+          <DockItem title={t('settings.title')} onClick={() => setSettingsOpen(true)} className={ITEM}>
+            <DockLabel>{t('settings.label')}</DockLabel>
             <DockIcon>
               <Settings className="size-full" />
             </DockIcon>
@@ -47,8 +49,8 @@ export function FloatDock(): JSX.Element | null {
           {/* group split: Main | Theme */}
           <div className="mx-1 h-6 w-px shrink-0 self-center bg-border" />
 
-          <DockItem title="Toggle theme" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className={ITEM}>
-            <DockLabel>{theme === 'dark' ? 'Light theme' : 'Dark theme'}</DockLabel>
+          <DockItem title={t('theme.toggle')} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className={ITEM}>
+            <DockLabel>{theme === 'dark' ? t('theme.light') : t('theme.dark')}</DockLabel>
             <DockIcon>{theme === 'dark' ? <Sun className="size-full" /> : <Moon className="size-full" />}</DockIcon>
           </DockItem>
         </Dock>

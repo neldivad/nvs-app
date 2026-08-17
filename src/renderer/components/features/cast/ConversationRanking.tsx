@@ -11,6 +11,7 @@
  * per-scene intensity heatmap (same order) without a shared color.
  */
 import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
 
@@ -23,6 +24,7 @@ interface Row {
 }
 
 export function ConversationRanking({ className }: { className?: string }): JSX.Element {
+  const { t } = useTranslation('cast')
   const graph = useWorkspace((s) => s.timelineGraph)
   const characters = useWorkspace((s) => s.characters)
 
@@ -38,13 +40,13 @@ export function ConversationRanking({ className }: { className?: string }): JSX.
     // Fold the tail so a crowd never overflows the list or forces a palette to cycle.
     const rows: Row[] =
       all.length > TOP_N
-        ? [...all.slice(0, TOP_N), { id: '__others__', name: `+${all.length - TOP_N} others`, volume: all.slice(TOP_N).reduce((s, r) => s + r.volume, 0) }]
+        ? [...all.slice(0, TOP_N), { id: '__others__', name: t('ranking.others', { n: all.length - TOP_N }), volume: all.slice(TOP_N).reduce((s, r) => s + r.volume, 0) }]
         : all
     return { rows, total }
-  }, [graph, characters])
+  }, [graph, characters, t])
 
   if (rows.length === 0)
-    return <div className={cn('p-4 text-[12px] text-faint', className)}>No speaking volume yet — this reads from scene dialogue.</div>
+    return <div className={cn('p-4 text-[12px] text-faint', className)}>{t('ranking.empty')}</div>
 
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
@@ -52,7 +54,7 @@ export function ConversationRanking({ className }: { className?: string }): JSX.
         const pct = Math.round((r.volume / total) * 100)
         const others = r.id === '__others__'
         return (
-          <div key={r.id} className="grid grid-cols-[8.5rem_1fr_2.5rem] items-center gap-2" title={`${r.name} — ${r.volume.toLocaleString()} chars`}>
+          <div key={r.id} className="grid grid-cols-[8.5rem_1fr_2.5rem] items-center gap-2" title={t('ranking.rowTitle', { name: r.name, chars: r.volume.toLocaleString() })}>
             <span className={cn('truncate text-[12px]', others ? 'italic text-faint' : 'text-foreground/85')}>{r.name}</span>
             {/* Track + fill: one hue, length = share of total. 4px rounded data-end anchored to the baseline (dataviz marks). */}
             <div className="h-3 overflow-hidden rounded-[4px] bg-panel-soft">

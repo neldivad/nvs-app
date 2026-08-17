@@ -1,0 +1,70 @@
+{
+  "title": "分析を更新",
+  "timeline": {
+    "label": "タイムライン",
+    "tooltip": "分析はアクティブなタイムラインに従います。別のタイムラインを分析するには、キャンバス上で切り替えてください。",
+    "count": "{{index}} / {{total}}"
+  },
+  "summary": {
+    "upToDate": "この深さではすべて最新です — 実行するものはありません。",
+    "targets": "{{n}} 個のターゲット",
+    "planning": "計画中…"
+  },
+  "kind": {
+    "scene_one": "シーン",
+    "scene_other": "シーン",
+    "window_one": "アーク",
+    "window_other": "アーク",
+    "profile_one": "プロフィール",
+    "profile_other": "プロフィール",
+    "digest_one": "ダイジェスト",
+    "digest_other": "ダイジェスト"
+  },
+  "previewByChapter": "章ごとにプレビュー",
+  "mode": {
+    "label": "モード",
+    "fast": {
+      "label": "高速",
+      "hint": "要約 + スレッド + 登場状況 — これまでの物語とタイムラインは常に最新に保たれます。アークはエキスパート処理まで保留されます"
+    },
+    "expert": {
+      "label": "エキスパート",
+      "hint": "完全な台帳：目標、対立、アイテム、ロア、アーク、プロフィール"
+    }
+  },
+  "connection": {
+    "runsOn": "実行環境",
+    "runsOnTooltip": "見積もりは概算です。コンソールの「接続」リストで分析接続を設定してください。",
+    "colConnection": "接続",
+    "colTime": "時間",
+    "colCost": "料金",
+    "current": "現在",
+    "empty": "AI接続はまだありません — 「設定」→「AI」で追加してください。"
+  },
+  "cost": {
+    "planUsage": "プラン使用量",
+    "checkPricing": "料金を確認"
+  },
+  "warning": {
+    "plan": {
+      "body": "これはClaudeのサブスクリプション（APIキー不要）で実行されます。シーンごとの処理速度は約15倍遅く、並列実行もできません — 所要時間は約 ",
+      "hours_one": "{{count}} 時間",
+      "hours_other": "{{count}} 時間",
+      "hoursSeveral": "数時間",
+      "tail": " かかるため、通常は完了前に使用上限に達します。",
+      "switchPre": "コンソールで分析接続を ",
+      "switchPost": "（APIキー）に切り替えると、数分で完了します。",
+      "addKey": "「設定」→「AI」でAPIキー接続（Anthropic / OpenRouter）を追加し、完全分析に使用してください。数分で完了します。"
+    }
+  },
+  "button": {
+    "cancel": "キャンセル",
+    "start": "{{mode}}処理を開始",
+    "modeFast": "高速",
+    "modeExpert": "エキスパート"
+  },
+  "readiness": {
+    "link": "準備状況を確認",
+    "tooltip": "チャットで読み取り専用の事前チェックを実行します — 実行を開始する前に、正史の文章、構成、接続を確認します。"
+  }
+}

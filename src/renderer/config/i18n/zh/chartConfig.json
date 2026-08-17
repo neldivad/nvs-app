@@ -1,0 +1,37 @@
+{
+  "example": "示例",
+  "preview": {
+    "title": "轴预览",
+    "columns": " · {{n}} 列",
+    "defaultReadonly": " — 默认轴（只读）",
+    "lightUpHint": "点亮下方场景以构建轴 — 这些场景会成为甘特图列。",
+    "noScenes": "还没有场景。"
+  },
+  "default": {
+    "before": "这是你的",
+    "defaultAxis": "默认轴",
+    "middle": " — 文件夹 / 连接顺序，只读。选择已保存的序列，或在侧边栏中选择",
+    "newSequence": "+ 新建序列",
+    "after": "来编写自定义路径。"
+  },
+  "builder": {
+    "hint": "轴构建器 · 点击点亮 · 双击追加运行 · ⌘/Ctrl+Z / +Y 撤销/重做",
+    "freeOrderTitle": "自由顺序 — 以任意顺序追加场景（忽略连接）",
+    "followLinksTitle": "跟随链接 — 仅沿 leads_to 连接延伸",
+    "freeOrder": "自由顺序",
+    "followLinks": "跟随链接",
+    "path": "路径 · {{n}}",
+    "help": "图表配置帮助",
+    "saved": "已保存",
+    "save": "保存",
+    "saveAsNew": "另存为新序列"
+  },
+  "noConnections": {
+    "before": "还没有连接。在画布上绘制",
+    "leadsTo": "leads_to",
+    "after": "链接（或使用快速连接）— 已连接的场景会以分支轨道的形式显示在这里，供你追踪。"
+  },
+  "cardTitle": "点击点亮 · 双击将运行追加到下一个分叉点",
+  "sequenceName": "序列 {{n}}",
+  "sequenceFallback": "序列"
+}

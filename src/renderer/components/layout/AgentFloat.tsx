@@ -5,6 +5,7 @@
  * the active tab's panel. Keeping both rails in one float (decision: a single right-side agent surface)
  * means a chat "format every scene" fan-out and its resulting page-edit tasks live side by side.
  */
+import { useTranslation } from 'react-i18next'
 import { MessageSquare, ListTodo, X } from 'lucide-react'
 import { FloatWindow } from './FloatWindow'
 import { ChatPanel } from '@/components/features/agent/ChatPanel'
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils'
 import type { JSX } from "react";
 
 export function AgentFloat(): JSX.Element {
+  const { t } = useTranslation('agentFloat')
   const tab = useWorkspace((s) => s.agentTab)
   const setTab = useWorkspace((s) => s.setAgentTab)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
@@ -37,16 +39,16 @@ export function AgentFloat(): JSX.Element {
       <div className="flex h-full min-w-0 flex-col bg-canvas">
         {/* Tab strip — Chat | Tasks (+ live/ready badges) + close */}
         <div className="flex items-center gap-1 border-b border-border px-1.5 py-1">
-          <Tab active={tab === 'chat'} onClick={() => setTab('chat')} icon={<MessageSquare className="size-3.5" />} label="Chat" />
+          <Tab active={tab === 'chat'} onClick={() => setTab('chat')} icon={<MessageSquare className="size-3.5" />} label={t('chat')} />
           <Tab
             active={tab === 'tasks'}
             onClick={() => setTab('tasks')}
             icon={<ListTodo className="size-3.5" />}
-            label="Tasks"
+            label={t('tasks')}
             badge={runningTasks > 0 ? `${runningTasks}…` : doneTasks > 0 ? `${doneTasks}` : undefined}
             badgeTone={runningTasks > 0 ? 'busy' : 'ready'}
           />
-          <button onClick={() => setChatOpen(false)} title="Close" className="ml-auto rounded p-1 text-muted-foreground hover:bg-panel-soft">
+          <button onClick={() => setChatOpen(false)} title={t('close')} className="ml-auto rounded p-1 text-muted-foreground hover:bg-panel-soft">
             <X className="size-3.5" />
           </button>
         </div>

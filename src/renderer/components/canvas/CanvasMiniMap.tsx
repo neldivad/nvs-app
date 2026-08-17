@@ -7,12 +7,14 @@
  * shared defaults — e.g. a board can pass a per-node `nodeColor` function.
  */
 import { useState, type ComponentProps, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { MiniMap, Panel } from '@xyflow/react'
 import { Minus, Map as MapIcon } from 'lucide-react'
 
 type Props = ComponentProps<typeof MiniMap> & { defaultOpen?: boolean }
 
 export function CanvasMiniMap({ defaultOpen = true, ...miniMap }: Props): JSX.Element {
+  const { t } = useTranslation('canvasMiniMap')
   const [open, setOpen] = useState(defaultOpen)
   return (
     <Panel position="bottom-right">
@@ -20,7 +22,7 @@ export function CanvasMiniMap({ defaultOpen = true, ...miniMap }: Props): JSX.El
         <div className="relative">
           <button
             onClick={() => setOpen(false)}
-            title="Hide minimap"
+            title={t('hide')}
             className="absolute -left-2 -top-2 z-10 flex size-5 items-center justify-center rounded-full border border-border bg-panel text-muted-foreground shadow hover:text-foreground"
           >
             <Minus className="size-3" />
@@ -39,7 +41,7 @@ export function CanvasMiniMap({ defaultOpen = true, ...miniMap }: Props): JSX.El
       ) : (
         <button
           onClick={() => setOpen(true)}
-          title="Show minimap"
+          title={t('show')}
           className="flex size-7 items-center justify-center rounded-md border border-border bg-panel/95 text-muted-foreground shadow-md hover:text-foreground"
         >
           <MapIcon className="size-3.5" />

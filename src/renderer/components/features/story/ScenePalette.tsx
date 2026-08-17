@@ -1,4 +1,5 @@
 import { useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { SearchPopover, type SearchResult } from '@/components/ui/SearchPopover'
 import { FileText, Folder, FolderOpen, Check, ChevronRight, ChevronDown, ListTree, FoldVertical } from 'lucide-react'
@@ -15,6 +16,7 @@ import type { StoryNode } from '@shared/ipc'
  * active variant. Searching flattens to the matching folders + scenes.
  */
 export function ScenePalette(): JSX.Element {
+  const { t } = useTranslation('scenePalette')
   const storyTree = useWorkspace((s) => s.storyTree)
   const trees = useWorkspace((s) => s.trees)
   const placed = useMemo(() => activeVariant(trees)?.nodes ?? [], [trees]) // active variant's canvas (per-variant)
@@ -85,14 +87,14 @@ export function ScenePalette(): JSX.Element {
     <div {...regionAttrs('scenePalette')} className="flex h-full flex-col bg-panel">
       <div className="flex items-center gap-1 px-2 pt-2 pb-1.5">
         <span className="flex-1" />
-        <button onClick={() => setExpanded(new Set(allFolderRels))} title="Expand all folders" className="shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground"><ListTree className="size-3.5" /></button>
-        <button onClick={() => setExpanded(new Set())} title="Collapse all folders" className="shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground"><FoldVertical className="size-3.5" /></button>
-        <SearchPopover results={searchResults} onSelect={onSearchSelect} placeholder="Search folders & scenes…" className="rounded p-1 hover:bg-panel-soft" />
+        <button onClick={() => setExpanded(new Set(allFolderRels))} title={t('expandAll')} className="shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground"><ListTree className="size-3.5" /></button>
+        <button onClick={() => setExpanded(new Set())} title={t('collapseAll')} className="shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground"><FoldVertical className="size-3.5" /></button>
+        <SearchPopover results={searchResults} onSelect={onSearchSelect} placeholder={t('searchPlaceholder')} className="rounded p-1 hover:bg-panel-soft" />
       </div>
 
       <SidebarScroll className="pb-3">
         {storyTree.length === 0 ? (
-          <Empty>No folders or scenes yet.</Empty>
+          <Empty>{t('empty')}</Empty>
         ) : (
           <Tree nodes={storyTree} depth={0} expanded={expanded} toggle={toggle} isCovered={isCovered} placedScenes={placedScenes} sceneCount={sceneCount} />
         )}
@@ -106,6 +108,7 @@ function Tree({ nodes, depth, expanded, toggle, isCovered, placedScenes, sceneCo
   nodes: StoryNode[]; depth: number; expanded: Set<string>; toggle: (rel: string) => void
   isCovered: (rel: string) => boolean; placedScenes: Set<string>; sceneCount: (n: StoryNode) => number
 }): JSX.Element {
+  const { t } = useTranslation('scenePalette')
   return (
     <>
       {nodes.map((n) => {
@@ -121,7 +124,7 @@ function Tree({ nodes, depth, expanded, toggle, isCovered, placedScenes, sceneCo
             <Row kind="folder" dragValue={n.relPath} depth={depth} covered={isCovered(n.relPath)}
               open={hasChildren ? open : undefined} onToggle={() => toggle(n.relPath)}
               icon={open ? <FolderOpen className="size-3.5 shrink-0 text-lore" /> : <Folder className="size-3.5 shrink-0 text-lore" />}
-              title={n.name} sub={`${sceneCount(n)} scene${sceneCount(n) === 1 ? '' : 's'}`} />
+              title={n.name} sub={t('sceneCount', { count: sceneCount(n) })} />
             {open && hasChildren && (
               <Tree nodes={n.children ?? []} depth={depth + 1} expanded={expanded} toggle={toggle} isCovered={isCovered} placedScenes={placedScenes} sceneCount={sceneCount} />
             )}
@@ -137,12 +140,13 @@ function Row({ kind, dragValue, depth, covered, icon, title, sub, open, onToggle
   kind: 'folder' | 'scene'; dragValue: string; depth: number; covered: boolean
   icon: React.ReactNode; title: string; sub?: string; open?: boolean; onToggle?: () => void
 }): JSX.Element {
+  const { t } = useTranslation('scenePalette')
   const dragType = kind === 'folder' ? 'application/nvs-folder' : 'application/nvs-scene'
   return (
     <div
       draggable
       onDragStart={(e) => { e.dataTransfer.setData(dragType, dragValue); e.dataTransfer.effectAllowed = 'copy' }}
-      title={covered ? 'Already placed' : kind === 'folder' ? 'Drag onto a view (places the whole folder)' : 'Drag onto a view'}
+      title={covered ? t('dragTip.placed') : kind === 'folder' ? t('dragTip.folder') : t('dragTip.scene')}
       style={{ paddingLeft: 8 + depth * 12 }}
       className={cn('group flex cursor-grab items-center gap-1 py-1 pr-2 text-[12px] transition-colors hover:bg-panel-soft active:cursor-grabbing', covered && 'opacity-55')}
     >

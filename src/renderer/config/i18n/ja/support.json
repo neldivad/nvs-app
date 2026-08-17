@@ -1,0 +1,34 @@
+{
+  "title": "サポートとコミュニティ",
+  "apps": "私たちのアプリ",
+  "community": "コミュニティ",
+  "usingThis": "ご利用中のアプリ",
+  "comingSoon": "近日公開",
+  "soon": "近日公開",
+  "inDevelopment": "開発中 — リリース情報はソーシャルでお知らせします。",
+  "appBy": "提供元：",
+  "status": {
+    "live": "公開中",
+    "beta": "ベータ版",
+    "soon": "近日公開"
+  },
+  "social": {
+    "discord": "Discord",
+    "twitter": "X / Twitter",
+    "github": "GitHub",
+    "youtube": "YouTube"
+  },
+  "cta": {
+    "productPage": "製品ページ",
+    "followForLaunch": "リリース情報をフォロー",
+    "open": "ページの詳細とフェーズの設定は"
+  },
+  "heading": {
+    "status": "ステータス",
+    "highlights": "主な特徴"
+  },
+  "legal": {
+    "privacy": "プライバシー",
+    "terms": "利用規約"
+  }
+}

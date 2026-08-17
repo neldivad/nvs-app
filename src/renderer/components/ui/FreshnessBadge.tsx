@@ -7,6 +7,7 @@
  * bumps (a scene save, an Update run).
  */
 import { useEffect, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { AlertTriangle } from 'lucide-react'
 import type { TierStatusRow } from '@shared/ipc'
 import { freshnessCounts, needsAttention, outdatedCount } from '@shared/config/ingest'
@@ -28,6 +29,7 @@ export function useFreshness(): TierStatusRow[] {
 
 /** Header pill: hidden when everything's up to date; otherwise the clickable "Update" doorway. */
 export function FreshnessBadge(): JSX.Element | null {
+  const { t } = useTranslation('freshnessBadge')
   const rows = useFreshness()
   const openDockTab = useWorkspace((s) => s.openDockTab)
   const counts = freshnessCounts(rows)
@@ -38,11 +40,11 @@ export function FreshnessBadge(): JSX.Element | null {
   return (
     <button
       onClick={() => openDockTab('ingest')}
-      title="Some scenes changed since they were last read into the analysis — open Analysis to update."
+      title={t('title')}
       className="flex shrink-0 items-center gap-1 rounded-full border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] text-warn hover:bg-warn/20"
     >
       <AlertTriangle className="size-2.5" />
-      {n} outdated
+      {t('outdated', { count: n })}
     </button>
   )
 }

@@ -1,0 +1,15 @@
+{
+  "title": "让 AI 编写此页面",
+  "placeholder": "描述要编写或更改的内容…（⌘/Ctrl+Enter 加入队列）",
+  "cat": {
+    "all": "全部",
+    "maintenance": "维护",
+    "generation": "生成"
+  },
+  "searchPlaceholder": "搜索提示词…",
+  "noMatch": "没有匹配的提示词。",
+  "library": "库",
+  "managePrompts": "管理提示词",
+  "background": "在后台运行 → 任务",
+  "queueEdit": "将编辑加入队列"
+}

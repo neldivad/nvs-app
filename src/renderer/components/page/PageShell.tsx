@@ -9,6 +9,7 @@ import type { JSX, ReactNode } from 'react'
 import { regionAttrs, type RegionId } from '@/config/regions'
 import { RailTabs } from '@/components/ui/RailHeader'
 import { useTabTarget } from '@/lib/editor/saveTarget'
+import { useTranslation } from 'react-i18next'
 
 export function PageShell<T extends string>({
   title,
@@ -35,13 +36,14 @@ export function PageShell<T extends string>({
 }): JSX.Element {
   // F1–F9 → the Nth tab (write/preview/source · custody chart/records/…). Registered while this page chrome is
   // mounted; AppShell dispatches the key (see lib/saveTarget useTabTarget). Only one PageShell mounts at a time.
+  const { t } = useTranslation('editor')
   useTabTarget(true, tabs.length, (i) => onTab(tabs[i]))
   return (
     <div {...(region ? regionAttrs(region) : {})} className="relative flex min-h-0 flex-1 flex-col">
       {/* the STANDARD page header: tabs LEFT · title in a FIXED 35%–65% center band (flex-centering
           drifted with the asymmetric tab/action widths — the band keeps it put) · actions RIGHT */}
       <div className="relative flex h-9 shrink-0 items-center gap-3 border-b border-border px-3 text-[11px] text-muted-foreground">
-        <RailTabs tabs={tabs} value={tab} onChange={onTab} />
+        <RailTabs tabs={tabs} value={tab} onChange={onTab} renderLabel={(id) => t('view.' + id)} />
         <div className="pointer-events-none absolute inset-y-0 left-[35%] right-[35%] flex items-center justify-center gap-2">
           <span className="pointer-events-auto min-w-0 truncate font-medium text-foreground" title={title}>
             {title}

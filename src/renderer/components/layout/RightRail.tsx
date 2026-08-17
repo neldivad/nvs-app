@@ -3,6 +3,7 @@
  * right-side panels. Mirrors the left Rail; currently toggles the agent chat, and is where
  * extension-contributed right-panel icons will live.
  */
+import { useTranslation } from 'react-i18next'
 import { MessageSquare, Library, Store, Activity, Blocks } from 'lucide-react'
 import { regionAttrs } from '@/config/regions'
 import { useWorkspace } from '@/stores/workspace'
@@ -11,6 +12,7 @@ import { cn } from '@/lib/utils'
 import type { JSX } from "react";
 
 export function RightRail(): JSX.Element {
+  const { t } = useTranslation('rightRail')
   const aiEnabled = useWorkspace((s) => s.aiEnabled) // off → hide the AI buttons (Chat, Prompts) + analysis Jobs
   const chatOpen = useWorkspace((s) => s.chatOpen)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
@@ -33,7 +35,7 @@ export function RightRail(): JSX.Element {
       <button
         onClick={() => setChatOpen(!chatOpen)}
         disabled={!project}
-        title="Agent (chat + tasks)"
+        title={t('agent')}
         className={cn(
           'relative flex size-7 items-center justify-center rounded-md transition-colors disabled:opacity-30',
           chatOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
@@ -41,10 +43,10 @@ export function RightRail(): JSX.Element {
       >
         <MessageSquare className="size-4" />
         {running ? (
-          <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-thread" title="Task running" />
+          <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-thread" title={t('taskRunning')} />
         ) : (
           done > 0 && (
-            <span className="absolute -right-1 -top-1 flex min-w-3.5 items-center justify-center rounded-full bg-ok px-0.5 text-[8px] font-medium text-white" title={`${done} task${done > 1 ? 's' : ''} ready`}>
+            <span className="absolute -right-1 -top-1 flex min-w-3.5 items-center justify-center rounded-full bg-ok px-0.5 text-[8px] font-medium text-white" title={t('tasksReady', { count: done })}>
               {done}
             </span>
           )
@@ -53,7 +55,7 @@ export function RightRail(): JSX.Element {
       <button
         onClick={() => setPromptsOpen(!promptsOpen)}
         disabled={!project}
-        title="Prompt library"
+        title={t('promptLibrary')}
         className={cn(
           'flex size-7 items-center justify-center rounded-md transition-colors disabled:opacity-30',
           promptsOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
@@ -69,19 +71,19 @@ export function RightRail(): JSX.Element {
       {aiEnabled && (
       <button
         onClick={() => setJobsOpen(!jobsOpen)}
-        title="Jobs — analysis runs & progress"
+        title={t('jobs')}
         className={cn(
           'relative flex size-7 items-center justify-center rounded-md transition-colors',
           jobsOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
         )}
       >
         <Activity className="size-4" />
-        {jobRunning && <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-thread" title="Analysis running" />}
+        {jobRunning && <span className="absolute -right-0.5 -top-0.5 size-2 animate-pulse rounded-full bg-thread" title={t('analysisRunning')} />}
       </button>
       )}
       <button
         onClick={() => setDiscoverOpen(discoverOpen ? null : 'community')}
-        title="Store — community works & extensions"
+        title={t('store')}
         className={cn(
           'flex size-7 items-center justify-center rounded-md transition-colors',
           discoverOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
@@ -94,7 +96,7 @@ export function RightRail(): JSX.Element {
       <span className="my-0.5 h-px w-4 rounded-full bg-border" aria-hidden />
       <button
         onClick={() => setExtensionRunOpen(!extensionRunOpen)}
-        title="Extension tools — run installed extensions"
+        title={t('extensionTools')}
         className={cn(
           'flex size-7 items-center justify-center rounded-md transition-colors',
           extensionRunOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'

@@ -1,0 +1,55 @@
+{
+  "field": {
+    "kind": "Kind",
+    "type": "Type",
+    "status": "Status",
+    "author": "Author",
+    "language": "Language",
+    "genre": "Genre",
+    "subject": "Subject",
+    "themes": "Themes",
+    "warnings": "Warnings",
+    "keywords": "Keywords"
+  },
+  "relation": {
+    "series": "Series",
+    "basedOn": "Based on",
+    "forkedFrom": "Forked from",
+    "coverOf": "Cover of",
+    "prompt": "Prompt"
+  },
+  "heading": {
+    "synopsis": "Synopsis",
+    "credits": "Credits",
+    "relations": "Relations"
+  },
+  "button": {
+    "edit": "Edit",
+    "showLess": "Show less",
+    "showAll": "Show all {{count}}"
+  },
+  "empty": {
+    "noSynopsis": "No synopsis yet.",
+    "contributor": "contributor"
+  },
+  "nav": {
+    "back": "Back",
+    "projects": "Projects",
+    "backToWork": "Back to your work",
+    "backToProjects": "Back to your projects"
+  },
+  "shell": {
+    "heading": "Store"
+  },
+  "tab": {
+    "works": "Works",
+    "worksHint": "Stories shared by other writers",
+    "extensions": "Extensions",
+    "extensionsHint": "Tools that run inside NVS",
+    "claudeHint": "Use your novel from Claude"
+  },
+  "search": {
+    "works": "Search works…",
+    "extensions": "Search extensions…"
+  }
+}

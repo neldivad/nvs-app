@@ -466,6 +466,38 @@ export function openThreadsAsOf(workRoot: string, unitId: string): { id: string;
 }
 
 /**
+ * The ordered open/advance/reopen BEATS of the given threads BEFORE a scene — the per-thread history the scene
+ * reader surfaces so a `close`/`advance` can't re-narrate the outcome inconsistently (see
+ * internal/thread-resolve-contradiction.md: a `resolve` that negates its own earlier `advance`). Keyed by
+ * thread_id; each beat is `{ action, pos, description }` in reading order. Variant-scoped like openThreadsAsOf.
+ */
+export function threadBeatsBefore(workRoot: string, threadIds: string[], beforeUnitId: string): Record<string, { action: string; pos: number; description: string }[]> {
+  const out: Record<string, { action: string; pos: number; description: string }[]> = {}
+  if (threadIds.length === 0) return out
+  const dbPath = dbPathFor(workRoot)
+  if (!existsSync(dbPath)) return out
+  const db = openReadonly(dbPath)
+  scopeThreads(db, workRoot)
+  try {
+    const ph = threadIds.map(() => '?').join(',')
+    const rows = db
+      .prepare(
+        `SELECT e.thread_id AS threadId, e.action AS action, o.linear_pos AS pos, e.description AS description
+           FROM thread_events e JOIN unit_order o ON o.unit_id = e.scene_id
+          WHERE e.thread_id IN (${ph})
+            AND e.action IN ('open','advance','reopen')
+            AND o.linear_pos < (SELECT linear_pos FROM unit_order WHERE unit_id = ?)
+          ORDER BY o.linear_pos, e.rowid`
+      )
+      .all(...threadIds, beforeUnitId) as { threadId: string; action: string; pos: number; description: string | null }[]
+    for (const r of rows) (out[r.threadId] ??= []).push({ action: r.action, pos: r.pos, description: r.description ?? '' })
+    return out
+  } finally {
+    db.close()
+  }
+}
+
+/**
  * A signature of a scene's thread *lifecycle* — only the beats that change the open-thread set a later
  * scene inherits (open / resolve / reopen / supersede). It deliberately EXCLUDES `advance`: advancing a
  * thread doesn't change what's open downstream, and the LLM varies advances/phrasing run-to-run — so

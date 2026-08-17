@@ -1,0 +1,12 @@
+{
+  "scene": "场景",
+  "sceneReadout": "{{shown}} / {{full}}",
+  "autoSuffix": " · 自动",
+  "backToDefault": "返回默认窗口",
+  "reset": "重置",
+  "previousPage": "上一页",
+  "pageReadout": "{{from}}–{{to}} / {{total}} {{noun}}",
+  "nextNoun": "下一个 {{noun}}",
+  "resetWindow": "重置窗口",
+  "all": "全部"
+}

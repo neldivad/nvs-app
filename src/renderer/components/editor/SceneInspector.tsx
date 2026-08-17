@@ -9,6 +9,7 @@
  * lists. Purpose (goals + conflicts) awaits a per-scene `sceneAnalysis` engine query and is not shown yet.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BookText, BookMarked, TrendingUp, Boxes, Package, Spline, TriangleAlert, KeyRound, Users, Target, LogIn, Flag, Eye, EyeOff, type LucideIcon } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { useSceneContext } from '@/lib/editor/sceneContext'
@@ -32,6 +33,7 @@ function Tag({ label, tone }: { label: string; tone: string }): JSX.Element {
 }
 
 export function SceneInspector(): JSX.Element | null {
+  const { t } = useTranslation('sceneInspector')
   const ctx = useSceneContext()
   const selectThread = useWorkspace((s) => s.setSelectedThread)
   const selectFinding = useWorkspace((s) => s.setSelectedFinding)
@@ -74,7 +76,7 @@ export function SceneInspector(): JSX.Element | null {
   const secretsHere = useMemo(() => secretEvents.filter((e) => e.sceneId === ctx.sceneId), [secretEvents, ctx.sceneId])
   const custodyHere = useMemo(() => custodyEvents.filter((e) => e.sceneId === ctx.sceneId), [custodyEvents, ctx.sceneId])
   // Per-scene ledgers: world-facts REVEALED (lore), CHARACTER state changes (arc), and non-character ENTITIES present.
-  const loreHere = useMemo(() => (loreView?.topics ?? []).filter((t) => t.disclosures.some((d) => d.sceneId === ctx.sceneId)), [loreView, ctx.sceneId])
+  const loreHere = useMemo(() => (loreView?.topics ?? []).filter((topic) => topic.disclosures.some((d) => d.sceneId === ctx.sceneId)), [loreView, ctx.sceneId])
   const arcHere = useMemo(() => arcEvents.filter((e) => e.sceneId === ctx.sceneId && charIds.has(e.entityId)), [arcEvents, ctx.sceneId, charIds])
   const entityHere = useMemo(() => (entityTracks ?? []).filter((e) => e.scenes.some((s) => s.sceneId === ctx.sceneId)), [entityTracks, ctx.sceneId])
 
@@ -82,7 +84,7 @@ export function SceneInspector(): JSX.Element | null {
 
   return (
     <EditorAside
-      title="Inspector"
+      title={t('title')}
       widthKey="nvs.inspectorW"
       defaultWidth={256}
       selectable
@@ -90,7 +92,7 @@ export function SceneInspector(): JSX.Element | null {
       action={
         <button
           onClick={toggleHideEmpty}
-          title={hideEmpty ? 'Showing filled categories — click to show all' : 'Showing all categories — click to hide empty'}
+          title={hideEmpty ? t('toggle.showAll') : t('toggle.hideEmpty')}
           className={cn('transition-colors hover:text-foreground', hideEmpty ? 'text-muted-foreground' : 'text-faint')}
         >
           {hideEmpty ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
@@ -100,28 +102,28 @@ export function SceneInspector(): JSX.Element | null {
       <HideEmptyCtx.Provider value={hideEmpty}>
       {/* Premise — why the scene starts (the setup/hook). A checkpoint component (analysis-components.md);
           empty on legacy rows extracted before the premise/conclusion split — the Summary still carries it. */}
-      <Section icon={LogIn} label="Premise" empty={!purpose?.premise} ghost="Why this scene opens appears here once it's read.">
+      <Section icon={LogIn} label={t('section.premise')} empty={!purpose?.premise} ghost={t('ghost.premise')}>
         <p className="px-3 pb-2 text-[12px] leading-relaxed text-prose">{purpose?.premise}</p>
       </Section>
 
       {/* Summary */}
-      <Section icon={BookText} label="Summary" empty={!ctx.summary} ghost="A one-line summary appears once this scene is read.">
+      <Section icon={BookText} label={t('section.summary')} empty={!ctx.summary} ghost={t('ghost.summary')}>
         <p className="px-3 pb-1 text-[12px] leading-relaxed text-prose">{ctx.summary}</p>
-        {ctx.pov && <div className="px-3 pb-2"><span className="rounded bg-panel-soft px-1.5 py-0.5 text-[10px] text-muted-foreground">POV · {ctx.pov}</span></div>}
+        {ctx.pov && <div className="px-3 pb-2"><span className="rounded bg-panel-soft px-1.5 py-0.5 text-[10px] text-muted-foreground">{t('label.pov', { pov: ctx.pov })}</span></div>}
       </Section>
 
       {/* Conclusion — how it ends / the cliffhanger it leaves on. */}
-      <Section icon={Flag} label="Conclusion" empty={!purpose?.conclusion} ghost="How this scene ends (its outcome or cliffhanger) appears here once it's read.">
+      <Section icon={Flag} label={t('section.conclusion')} empty={!purpose?.conclusion} ghost={t('ghost.conclusion')}>
         <p className="px-3 pb-2 text-[12px] leading-relaxed text-prose">{purpose?.conclusion}</p>
       </Section>
 
       {/* Purpose — goals + conflicts (the scene's dramatic function / value shift) */}
-      <Section icon={Target} label="Purpose" empty={!hasPurpose} ghost="The goals and conflicts driving this scene appear here once it's read.">
+      <Section icon={Target} label={t('section.purpose')} empty={!hasPurpose} ghost={t('ghost.purpose')}>
         {/* One table (like the arc Changes grid): WHO wants / clashes over WHAT, with a colorized status/kind badge. */}
         <div className="mx-3 mb-2 grid grid-cols-[auto_1fr_auto] items-start gap-x-3 gap-y-1.5 rounded-md border border-border/60 px-3 py-2 text-[12px] leading-snug">
-          <div className="text-[9px] uppercase tracking-wide text-faint">Who</div>
-          <div className="text-[9px] uppercase tracking-wide text-faint">Wants / Conflicts</div>
-          <div className="text-[9px] uppercase tracking-wide text-faint">Outcome</div>
+          <div className="text-[9px] uppercase tracking-wide text-faint">{t('grid.who')}</div>
+          <div className="text-[9px] uppercase tracking-wide text-faint">{t('grid.wants')}</div>
+          <div className="text-[9px] uppercase tracking-wide text-faint">{t('grid.outcome')}</div>
           {purpose?.goals.map((g, i) => (
             <div key={`g${i}`} className="contents">
               <span className="self-start truncate text-thread">{nameOf(g.actor)}</span>
@@ -133,7 +135,7 @@ export function SceneInspector(): JSX.Element | null {
             <div key={`c${i}`} className="contents">
               <span className="self-start min-w-0">
                 {c.between.map((b, j) => (
-                  <span key={j}>{j > 0 && <span className="text-flag/80"> vs </span>}<span className="text-foreground/85">{nameOf(b)}</span></span>
+                  <span key={j}>{j > 0 && <span className="text-flag/80"> {t('grid.vs')} </span>}<span className="text-foreground/85">{nameOf(b)}</span></span>
                 ))}
               </span>
               <span className="text-foreground/85">{c.over}</span>
@@ -144,12 +146,12 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Cast present */}
-      <Section icon={Users} label="Cast" count={ctx.cast.length} empty={ctx.cast.length === 0} ghost="Characters present in this scene are listed here.">
+      <Section icon={Users} label={t('section.cast')} count={ctx.cast.length} empty={ctx.cast.length === 0} ghost={t('ghost.cast')}>
         <div className="flex flex-wrap gap-1 px-3 pb-2">
           {ctx.cast.map((m) => (
             <span
               key={m.entityId}
-              title={`${m.volume ? 'speaking' : 'silently present'}${m.role ? ` · ${m.role}` : ''}`}
+              title={`${m.volume ? t('cast.speaking') : t('cast.silent')}${m.role ? ` · ${m.role}` : ''}`}
               className={cn('rounded px-1.5 py-0.5 text-[11px]', m.volume ? 'bg-character/15 text-foreground/85' : 'bg-panel-soft text-muted-foreground')}
             >
               {m.name}
@@ -159,7 +161,7 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Threads */}
-      <Section icon={Spline} label="Threads" count={ctx.threads.length} empty={ctx.threads.length === 0} ghost="Threads opened, advanced, or resolved in this scene appear here.">
+      <Section icon={Spline} label={t('section.threads')} count={ctx.threads.length} empty={ctx.threads.length === 0} ghost={t('ghost.threads')}>
         {ctx.threads.map(({ action, thread }) => (
           <Row key={thread.id} onClick={() => selectThread(thread.id, ctx.sceneId)} title={thread.slug}>
             <span className={cn('mt-1 size-2 shrink-0 rounded-full', threadVisual(thread.type).bg)} title={threadVisual(thread.type).label} />
@@ -172,9 +174,9 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Arc — character state changes (alignment/knowledge/power/…) that land in this scene (entity_arc_events, sans secret/custody). */}
-      <Section icon={TrendingUp} label="Arc" count={arcHere.length} empty={arcHere.length === 0} ghost="Character state changes (alignment, knowledge, power…) in this scene appear here once it's read.">
+      <Section icon={TrendingUp} label={t('section.arc')} count={arcHere.length} empty={arcHere.length === 0} ghost={t('ghost.arc')}>
         {arcHere.map((e, i) => (
-          <Row key={`a${i}`} onClick={() => selectArc(e.entityId, ctx.sceneId ? `${ctx.sceneId}\u0001${e.value}` : null)} title={`Open ${nameOf(e.entityId)}'s arc`}>
+          <Row key={`a${i}`} onClick={() => selectArc(e.entityId, ctx.sceneId ? `${ctx.sceneId}\u0001${e.value}` : null)} title={t('tooltip.openArc', { name: nameOf(e.entityId) })}>
             <span className="mt-1 size-2 shrink-0 rounded-full bg-character" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-foreground/85"><span className="text-thread">{nameOf(e.entityId)}</span> — {e.value || e.description}</span>
@@ -185,9 +187,9 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Entities — non-character trackeds (items, factions…) present in this scene, from the entity presence trail. */}
-      <Section icon={Boxes} label="Entities" count={entityHere.length} empty={entityHere.length === 0} ghost="Items, factions, and other tracked entities present in this scene appear here.">
+      <Section icon={Boxes} label={t('section.entities')} count={entityHere.length} empty={entityHere.length === 0} ghost={t('ghost.entities')}>
         {entityHere.map((e) => (
-          <Row key={e.id} onClick={() => selectEntity(e.id, ctx.sceneId)} title={`Open ${e.name}'s journey`}>
+          <Row key={e.id} onClick={() => selectEntity(e.id, ctx.sceneId)} title={t('tooltip.openJourney', { name: e.name })}>
             <span className="mt-1 size-2 shrink-0 rounded-full bg-lore/70" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-foreground/85">{e.name}</span>
@@ -198,14 +200,14 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Lore — world-facts REVEALED in this scene (a disclosure lands here), shaped like the Lore rail's staircase. */}
-      <Section icon={BookMarked} label="Lore" count={loreHere.length} empty={loreHere.length === 0} ghost="World-facts revealed in this scene appear here once it's read.">
-        {loreHere.map((t) => {
-          const d = t.disclosures.find((x) => x.sceneId === ctx.sceneId)
+      <Section icon={BookMarked} label={t('section.lore')} count={loreHere.length} empty={loreHere.length === 0} ghost={t('ghost.lore')}>
+        {loreHere.map((topic) => {
+          const d = topic.disclosures.find((x) => x.sceneId === ctx.sceneId)
           return (
-            <Row key={t.loreId} onClick={() => selectLore(t.loreId)} title={`Open “${t.label}” reveal timeline`}>
-              <span className={cn('mt-1 size-2 shrink-0 rounded-full', t.hasRetcon ? 'bg-flag' : 'bg-lore')} />
+            <Row key={topic.loreId} onClick={() => selectLore(topic.loreId)} title={t('tooltip.openReveal', { label: topic.label })}>
+              <span className={cn('mt-1 size-2 shrink-0 rounded-full', topic.hasRetcon ? 'bg-flag' : 'bg-lore')} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate capitalize text-foreground/85">{t.label}</span>
+                <span className="block truncate capitalize text-foreground/85">{topic.label}</span>
                 <span className="block truncate text-[10px] text-faint">{d?.summary || (d?.magnitude ?? 'revealed')}</span>
               </span>
             </Row>
@@ -214,7 +216,7 @@ export function SceneInspector(): JSX.Element | null {
       </Section>
 
       {/* Coherence flags */}
-      <Section icon={TriangleAlert} label="Flags" count={ctx.flags.length} empty={ctx.flags.length === 0} ghost="Coherence flags that cite this scene appear here.">
+      <Section icon={TriangleAlert} label={t('section.flags')} count={ctx.flags.length} empty={ctx.flags.length === 0} ghost={t('ghost.flags')}>
         {ctx.flags.map((f) => (
           <Row key={f.id} onClick={() => selectFinding(f.id)}>
             <span className={cn('mt-1 size-2 shrink-0 rounded-full', f.severity === 'high' ? 'bg-flag' : 'bg-warn')} />
@@ -228,26 +230,26 @@ export function SceneInspector(): JSX.Element | null {
 
       {/* Secrets — who KNOWS. Subject = the LEARNER (a character); `expose` also names who it reached. Click → the
           learner's arc. Distinct from Custody (items) — the two lanes of the Custody pillar. */}
-      <Section icon={KeyRound} label="Secrets" count={secretsHere.length} empty={secretsHere.length === 0} ghost="Secrets learned or exposed in this scene appear here.">
+      <Section icon={KeyRound} label={t('section.secrets')} count={secretsHere.length} empty={secretsHere.length === 0} ghost={t('ghost.secrets')}>
         {secretsHere.map((e, i) => (
-          <Row key={`s${i}`} onClick={() => selectArc(e.entityId, ctx.sceneId ? `${ctx.sceneId}\u0001${e.value}` : null)} title={`Open ${nameOf(e.entityId)}'s arc`}>
+          <Row key={`s${i}`} onClick={() => selectArc(e.entityId, ctx.sceneId ? `${ctx.sceneId}\u0001${e.value}` : null)} title={t('tooltip.openArc', { name: nameOf(e.entityId) })}>
             <span className="mt-1 size-2 shrink-0 rounded-full bg-lore" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-foreground/85"><span className="text-thread">{nameOf(e.entityId)}</span> — {e.description || e.value}</span>
-              <span className="block text-[10px] uppercase tracking-wide text-faint">secret · {e.change}{e.target ? ` → ${nameOf(e.target)}` : ''}</span>
+              <span className="block text-[10px] uppercase tracking-wide text-faint">{t('label.secret')} · {e.change}{e.target ? ` → ${nameOf(e.target)}` : ''}</span>
             </span>
           </Row>
         ))}
       </Section>
 
       {/* Custody — who HOLDS. Subject = the ITEM; `target` = the new holder. Click → the item's journey. */}
-      <Section icon={Package} label="Custody" count={custodyHere.length} empty={custodyHere.length === 0} ghost="Items changing hands in this scene appear here." last>
+      <Section icon={Package} label={t('section.custody')} count={custodyHere.length} empty={custodyHere.length === 0} ghost={t('ghost.custody')} last>
         {custodyHere.map((e, i) => (
-          <Row key={`c${i}`} onClick={() => selectEntity(e.entityId, ctx.sceneId ? `${ctx.sceneId}${e.value}` : null)} title={`Open ${nameOf(e.entityId)}'s journey`}>
+          <Row key={`c${i}`} onClick={() => selectEntity(e.entityId, ctx.sceneId ? `${ctx.sceneId}${e.value}` : null)} title={t('tooltip.openJourney', { name: nameOf(e.entityId) })}>
             <span className="mt-1 size-2 shrink-0 rounded-full bg-character" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-foreground/85"><span className="text-lore">{nameOf(e.entityId)}</span>{e.target ? <> → <span className="text-thread">{nameOf(e.target)}</span></> : null}</span>
-              <span className="block text-[10px] uppercase tracking-wide text-faint">custody · {e.change}</span>
+              <span className="block text-[10px] uppercase tracking-wide text-faint">{t('label.custody')} · {e.change}</span>
             </span>
           </Row>
         ))}

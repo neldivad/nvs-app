@@ -7,6 +7,7 @@
  * immediately; the edit lands in Tasks for review-then-apply.
  */
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { Sparkles, X, Library, Search } from 'lucide-react'
 import { composeInstruction, isAnalysis, type PromptCategory } from '@shared/config/agentCommands'
 import type { SavedPrompt } from '@shared/ipc'
@@ -19,6 +20,7 @@ const MAX_PILLS = 8 // category + search narrow the library down to this many pi
 const EDIT_CATS: PromptCategory[] = ['maintenance', 'generation']
 
 export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element | null {
+  const { t } = useTranslation('agentCommand')
   const body = useWorkspace((s) => s.body)
   const activePage = useWorkspace((s) => s.activePage)
   const enqueueTask = useWorkspace((s) => s.enqueueTask)
@@ -80,7 +82,7 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
         onMouseDown={(e) => e.stopPropagation()}
       >
         <div className="mb-2 flex items-center gap-2 text-[12px] font-medium text-foreground">
-          <Sparkles className="size-3.5 text-thread" /> Ask AI to write this page
+          <Sparkles className="size-3.5 text-thread" /> {t('title')}
           <button onClick={onClose} className="ml-auto rounded p-0.5 text-muted-foreground hover:bg-panel-soft"><X className="size-3.5" /></button>
         </div>
         <textarea
@@ -91,7 +93,7 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
             if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) run()
             else if (e.key === 'Escape') onClose()
           }}
-          placeholder="Describe what to write or change… (⌘/Ctrl+Enter to queue)"
+          placeholder={t('placeholder')}
           rows={3}
           className="w-full resize-none rounded-md border border-border bg-canvas px-2 py-1.5 text-[12px] text-foreground outline-none focus:border-foreground/30"
         />
@@ -104,7 +106,7 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
               onClick={() => setCat(c)}
               className={cn('rounded px-1.5 py-0.5 text-[10px] capitalize', cat === c ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}
             >
-              {c}
+              {t(`cat.${c}`)}
             </button>
           ))}
           <div className="ml-1 flex flex-1 items-center gap-1 rounded-md border border-border bg-canvas px-1.5">
@@ -112,7 +114,7 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search prompts…"
+              placeholder={t('searchPlaceholder')}
               className="min-w-0 flex-1 bg-transparent py-1 text-[11px] text-foreground outline-none placeholder:text-faint"
             />
           </div>
@@ -121,7 +123,7 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
         {/* Up to 8 prompt pills (single-select) */}
         <div className="mt-2 flex flex-wrap gap-1.5">
           {pills.length === 0 ? (
-            <span className="text-[10px] text-faint">No prompts match.</span>
+            <span className="text-[10px] text-faint">{t('noMatch')}</span>
           ) : (
             pills.map((p) => {
               const on = selected?.id === p.id
@@ -140,16 +142,16 @@ export function AgentCommandDialog({ open, onClose }: { open: boolean; onClose: 
         </div>
 
         <div className="mt-2 flex items-center gap-2">
-          <button onClick={() => setPromptsOpen(true)} title="Manage prompts" className="flex items-center gap-1 rounded-md border border-dashed border-border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-panel-soft">
-            <Library className="size-3" /> Library
+          <button onClick={() => setPromptsOpen(true)} title={t('managePrompts')} className="flex items-center gap-1 rounded-md border border-dashed border-border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-panel-soft">
+            <Library className="size-3" /> {t('library')}
           </button>
-          <span className="text-[10px] text-faint">runs in the background → Tasks</span>
+          <span className="text-[10px] text-faint">{t('background')}</span>
           <button
             disabled={!canRun}
             onClick={run}
             className="ml-auto rounded-md border border-border bg-panel-soft px-2.5 py-1 text-[11px] text-foreground hover:border-foreground/30 disabled:opacity-50"
           >
-            Queue edit
+            {t('queueEdit')}
           </button>
         </div>
       </div>

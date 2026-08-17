@@ -3,6 +3,7 @@
  * Single purpose: assign (or clear). Renaming the swatch labels lives in the graph legend, not here.
  * Fixed-positioned at the cursor with a click-away backdrop. Tags are session-scoped (workspace store).
  */
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +17,7 @@ export const resolveNodePalette = (): string[] =>
   NODE_PALETTE_VARS.map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#888')
 
 export function ColorTagMenu({ x, y, id, name, onClose }: { x: number; y: number; id: string; name?: string; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('colorTagMenu')
   const nodeColor = useWorkspace((s) => s.nodeColor)
   const setNodeColor = useWorkspace((s) => s.setNodeColor)
   const palette = resolveNodePalette()
@@ -29,14 +31,14 @@ export function ColorTagMenu({ x, y, id, name, onClose }: { x: number; y: number
             <button
               key={i}
               onClick={() => { setNodeColor(id, i); onClose() }}
-              title={`Group ${i + 1}`}
+              title={t('group', { n: i + 1 })}
               className={cn('size-4 rounded-full border', nodeColor[id] === i ? 'border-foreground' : 'border-transparent')}
               style={{ backgroundColor: palette[i] }}
             />
           ))}
         </div>
         <button onClick={() => { setNodeColor(id, null); onClose() }} className="mt-1 w-full rounded px-1 py-0.5 text-left text-[11px] text-faint hover:bg-panel-soft hover:text-foreground">
-          Clear tag
+          {t('clearTag')}
         </button>
       </div>
     </>

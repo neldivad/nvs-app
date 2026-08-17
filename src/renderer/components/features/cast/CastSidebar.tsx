@@ -5,6 +5,7 @@
  * the character pages on row-click, so this panel stays a pure toggle. Counts come from the graph.
  */
 import { useMemo, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { Eye, EyeOff } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
@@ -16,6 +17,7 @@ import { cn, compactNumber } from '@/lib/utils'
 import { SidebarEmpty } from '@/components/ui/EmptyRailState'
 
 export function CastSidebar(): JSX.Element {
+  const { t } = useTranslation('cast')
   const characters = useWorkspace((s) => s.characters)
   const graph = useWorkspace((s) => s.timelineGraph)
   const excluded = useWorkspace((s) => s.castExcluded)
@@ -51,13 +53,13 @@ export function CastSidebar(): JSX.Element {
   return (
     <div {...regionAttrs('castSidebar')} className="flex h-full flex-col bg-panel">
       <SidebarHeader
-        title={<>Cast · {shown}/{characters.length}</>}
-        search={{ results: searchResults, onSelect: toggle, placeholder: 'Search cast…' }}
+        title={<>{t('rail.name')} · {shown}/{characters.length}</>}
+        search={{ results: searchResults, onSelect: toggle, placeholder: t('sidebar.searchCast') }}
         action={
           characters.length > 0 && (
             <button
               onClick={() => setExcluded(ex.size === 0 ? characters.map((c) => c.id) : [])}
-              title={ex.size === 0 ? 'Hide all' : 'Show all'}
+              title={ex.size === 0 ? t('sidebar.hideAll') : t('sidebar.showAll')}
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
               {ex.size === 0 ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
@@ -67,7 +69,7 @@ export function CastSidebar(): JSX.Element {
       />
       <SidebarScroll className="pb-3">
         {characters.length === 0 ? (
-          <SidebarEmpty>No characters yet.</SidebarEmpty>
+          <SidebarEmpty>{t('sidebar.noCharacters')}</SidebarEmpty>
         ) : (
           rows.map((c) => {
             const off = ex.has(c.id)
@@ -81,7 +83,7 @@ export function CastSidebar(): JSX.Element {
                   e.preventDefault()
                   setMenu({ x: e.clientX, y: e.clientY, id: c.id, name: c.name })
                 }}
-                title={off ? 'Include in the matrices' : 'Exclude from the matrices'}
+                title={off ? t('sidebar.include') : t('sidebar.exclude')}
                 leading={
                   c.avatar ? (
                     <img src={`nvs-asset://${c.avatar}`} alt="" className="size-5 shrink-0 rounded-full object-cover" />
@@ -92,7 +94,7 @@ export function CastSidebar(): JSX.Element {
                 label={c.name}
                 trailing={
                   <>
-                    <span className="shrink-0 font-mono text-[10px] text-faint" title={`${n.toLocaleString()} chars spoken`}>{compactNumber(n)}</span>
+                    <span className="shrink-0 font-mono text-[10px] text-faint" title={t('sidebar.charsSpoken', { chars: n.toLocaleString() })}>{compactNumber(n)}</span>
                     {nodeColor[c.id] != null ? (
                       <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: palette[nodeColor[c.id] % palette.length] }} />
                     ) : (

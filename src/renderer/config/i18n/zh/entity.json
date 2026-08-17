@@ -1,0 +1,63 @@
+{
+  "changes_one": "{{count}} 处变化",
+  "changes_other": "{{count}} 处变化",
+  "sceneCount_one": "{{count}} 个场景",
+  "sceneCount_other": "{{count}} 个场景",
+  "panel": {
+    "category": "类别",
+    "highlight": "高亮",
+    "noJourneys": "— 尚未记录任何旅程",
+    "clear": "清除",
+    "rowNoFacet": "{{name}} — 无 {{facet}}",
+    "rowOpen": "{{name}} — 打开旅程",
+    "bandTitle": "{{name}} · {{title}}：{{changes}}",
+    "entitiesNoun": "实体",
+    "range": "范围",
+    "all": "全部",
+    "trimTip": "按变更次数筛选实体 — 向上拖动低端滑块，隐藏几乎未跟踪的项目，聚焦于最繁忙的旅程。",
+    "railName": "实体旅程"
+  },
+  "detail": {
+    "openPage": "打开 {{type}} 页面",
+    "changesHeading": "变化",
+    "firstAppears": "首次出现",
+    "lastAppears": "最后出现",
+    "appearsIn": "出现于",
+    "journey": "旅程",
+    "changesThisChapter_one": "本章 {{count}} 处变化",
+    "changesThisChapter_other": "本章 {{count}} 处变化"
+  },
+  "help": {
+    "title": "实体旅程——如何阅读",
+    "grid": {
+      "title": "网格",
+      "items": [
+        "每一**行**代表一个被追踪的事物（物品 · 阵营 · …）；**列**按阅读顺序对应各个场景。",
+        "**色带**将场景分组为章节——某个事物的变化会按章节累计，就像角色的变化一样。",
+        "色带中的**圆点**表示该章节中的变化，并按变化方向着色；点击某一行即可阅读其旅程。"
+      ]
+    },
+    "moved": {
+      "title": "它如何变化（每次变化都属于四种之一）",
+      "rows": {
+        "● gain": "它变强 / 被获得 / 上升",
+        "● loss": "它变弱 / 被摧毁 / 下降",
+        "● shift": "横向变化——易手、被改变或重新调整",
+        "● reveal": "它变得众所周知——被揭露或发现"
+      }
+    },
+    "facet": {
+      "title": "发生了什么变化（维度）",
+      "items": [
+        "各类别都有对应的**维度**：物品沿着持有 · 状态 · 位置 · 功能变化；阵营沿着权力 · 地位 · 效忠关系 · 领地变化。",
+        "只有**值得展开故事线**的事物才会有旅程：它拥有世界页面、在多个场景中反复出现，或被分析标记为重要。"
+      ]
+    },
+    "provenance": {
+      "title": "来源",
+      "items": [
+        "这段旅程是分析代理对场景的解读——代表它的理解，而非作者写定的事实。重新运行分析即可刷新。"
+      ]
+    }
+  }
+}

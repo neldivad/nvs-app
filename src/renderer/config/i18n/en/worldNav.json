@@ -1,0 +1,30 @@
+{
+  "title": "World",
+  "searchPlaceholder": "Search world pages…",
+  "newCategory": "New {{name}}",
+  "custodyHint": "Custody topics anchor to existing entities — create them from the Custody rail",
+  "custodyBadge": "via <key/>",
+  "createError": "Couldn't create \"{{name}}\". Fully quit & relaunch the app if this keeps happening; the name may also be taken.",
+  "emptyCategory": "None yet.",
+  "archived": "Archived",
+  "namePlaceholder": "Name, then Enter",
+  "categoryPhase": "Phase — every {{name}} page",
+  "menu": {
+    "rename": "Rename",
+    "exportMd": "Export .md…",
+    "delete": "Delete"
+  },
+  "createMenu": {
+    "heading": "New page"
+  },
+  "row": {
+    "restore": "Restore",
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "delete": {
+    "title": "Delete page?",
+    "confirm": "Delete",
+    "message": "Delete <hl>{{name}}</hl>? This removes the file from disk. To set it aside instead, set its phase to <hl>Archived</hl> in Properties."
+  }
+}

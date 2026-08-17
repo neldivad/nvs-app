@@ -1,0 +1,19 @@
+{
+  "close": "关闭",
+  "mainView": {
+    "resolves": "解决",
+    "appears": "出现"
+  },
+  "allCategories": "所有类别",
+  "sort": {
+    "latest": "最新优先 — 点击切换为最早优先",
+    "oldest": "最早优先 — 点击切换为最新优先"
+  },
+  "hideEmpty": {
+    "on": "已隐藏安静章节 — 点击显示",
+    "off": "正在显示安静章节 — 点击隐藏"
+  },
+  "events": "事件",
+  "noEvents": "没有事件。",
+  "selectPrompt": "选择左侧的事件以在此处阅读。"
+}

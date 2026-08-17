@@ -1,0 +1,15 @@
+{
+  "auto": "自动",
+  "autoReadingOrder": "自动 — 阅读顺序",
+  "noLoadouts": "没有配置 — 在时间线 ▸ 图表配置中创建一个。",
+  "loadoutBlurb": "<term>配置</term>是对分支故事的一种阅读方式 — 它会重新确定每个图表显示的场景、行和分析。",
+  "inlineTitle": "配置 — 选择驱动每个图表的故事阅读方式",
+  "cornerTitle": "图表轴 — 选择序列",
+  "axesTitle": "图表轴",
+  "maxAxesTitle": "最多 {{max}} 个轴 — 删除一个后才能添加另一个",
+  "newAxis": "新建轴",
+  "newAxisName": "轴 {{n}}",
+  "autoVariantOrder": "自动 — 变体的阅读顺序",
+  "renameAxis": "重命名轴",
+  "deleteAxis": "删除轴"
+}

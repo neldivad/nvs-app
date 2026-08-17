@@ -1,0 +1,96 @@
+{
+  "title": "任务",
+  "tab": {
+    "queue": "队列",
+    "logs": "日志",
+    "storage": "存储"
+  },
+  "jobCount_one": "{{count}} 个任务",
+  "jobCount_other": "{{count}} 个任务",
+  "noProject": "无项目",
+  "projectFallback": "项目",
+  "button": {
+    "startAnalysis": "开始分析",
+    "pause": "暂停",
+    "clear": "清除"
+  },
+  "kind": {
+    "analysis": "分析",
+    "coherence": "连贯性"
+  },
+  "label": {
+    "elapsed": "已用时",
+    "remaining": "剩余时间"
+  },
+  "scale": {
+    "relative": "相对",
+    "absolute": "绝对"
+  },
+  "cat": {
+    "db": "数据库",
+    "history": "历史记录",
+    "backups": "备份",
+    "chat": "聊天",
+    "tasks": "任务",
+    "logs": "日志"
+  },
+  "column": {
+    "project": "项目",
+    "composition": "构成",
+    "footprint": "占用空间",
+    "total": "总计"
+  },
+  "menu": {
+    "compact": "压缩快照",
+    "compacting": "正在压缩…",
+    "none": "无",
+    "clear": "清除 {{cat}}",
+    "empty": "空"
+  },
+  "result": {
+    "ok": "{{n}} 个成功",
+    "failed": "{{n}} 个失败",
+    "skipped": "{{n}} 个跳过"
+  },
+  "empty": {
+    "queue": "还没有任务——请对项目运行分析。",
+    "logsNoProject": "打开或运行一个项目即可查看其分析日志。",
+    "logsNoTelemetry": "还没有遥测数据——运行读取第一个场景后才会显示。",
+    "storage": "还没有项目。"
+  },
+  "tag": {
+    "local": "本地"
+  },
+  "tooltip": {
+    "machineLocal": "仅限本机——从不导出",
+    "storageActions": "存储操作",
+    "scaleRelative": "每个条形图都填满 100%——仅显示构成",
+    "scaleAbsolute": "条形图按最大项目缩放——显示实际大小"
+  },
+  "error": {
+    "connectionWall": "因连接阻塞而暂停："
+  },
+  "footer": "历史记录是全局的——无论你在哪里，都能看到每个项目的运行记录。暂停很安全（会从中断处继续）。费用 / 内存 / 提供商仅限本机。",
+  "clear": {
+    "logs": {
+      "title": "清除分析日志？",
+      "message": "删除此项目的遥测日志。\n\n仅影响诊断——下次运行时会重新生成。其他内容不受影响。"
+    },
+    "history": {
+      "title": "清除运行历史？",
+      "message": "移除过往运行记录及其还原快照。\n\n当前分析保持不变——只是无法再还原到早期版本。"
+    },
+    "chat": {
+      "title": "删除聊天会话？",
+      "message": "从你的设备中删除此项目的聊天记录。\n\n此操作无法撤销。"
+    },
+    "tasks": {
+      "title": "清空任务收件箱？",
+      "message": "删除此项目的后台任务收件箱，包括任何已完成但尚未应用的编辑。\n\n此操作无法撤销。"
+    },
+    "backups": {
+      "title": "删除重置备份？",
+      "message": "移除每次重置分析前保存的完整“.nvs.bak-…”副本。\n\n请放心——它们只是用于恢复的快照；你当前的项目和分析不受影响。此操作无法撤销。"
+    }
+  }
+}

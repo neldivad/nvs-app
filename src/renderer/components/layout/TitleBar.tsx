@@ -1,5 +1,6 @@
 import { useState, type JSX } from 'react'
 import { FolderInput, Minus, Search, Square, X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { HOTKEYS } from '@/config/hotkeys'
 import { useWorkspace } from '@/stores/workspace'
@@ -41,6 +42,7 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
   const setSearchOpen = useWorkspace((s) => s.setSearchOpen)
   const saveToLibrary = useWorkspace((s) => s.saveToLibrary)
   const pro = useWorkspace((s) => s.pro)
+  const { t } = useTranslation('header')
   const [saving, setSaving] = useState(false)
   const [changelogOpen, setChangelogOpen] = useState(false)
   const [supportOpen, setSupportOpen] = useState(false)
@@ -50,7 +52,7 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
   // Opened via "Open Folder…" from outside the library root — offer to collect it into My Works
   // (the DAW Collect-and-Save move; external open stays an escape hatch, saving is one click, never forced).
   const outsideLibrary = hasProject && project?.insideLibrary === false
-  const title = projectTitle || (hasProject ? project?.name : 'Novel Visual Studio')
+  const title = projectTitle || (hasProject ? project?.name : t('appName'))
 
   const ctlBtn =
     'app-no-drag flex h-9 w-11 items-center justify-center text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground'
@@ -66,60 +68,60 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
 
       <div className="app-no-drag">
         <Menubar>
-          <MenubarMenu id="file" label="File">
-            <MenubarItem onSelect={() => void openExternal()}>Open Folder…</MenubarItem>
-            <MenubarItem onSelect={() => void importProject()}>Import Project…</MenubarItem>
-            <MenubarItem onSelect={() => void importStructured()}>Import Structured JSON…</MenubarItem>
+          <MenubarMenu id="file" label={t('menu.file')}>
+            <MenubarItem onSelect={() => void openExternal()}>{t('item.openFolder')}</MenubarItem>
+            <MenubarItem onSelect={() => void importProject()}>{t('item.importProject')}</MenubarItem>
+            <MenubarItem onSelect={() => void importStructured()}>{t('item.importStructured')}</MenubarItem>
             <MenubarSeparator />
             <MenubarItem disabled={!hasProject} onSelect={() => requestReturnToLibrary()}>
-              Return to Library
+              {t('item.returnToLibrary')}
             </MenubarItem>
           </MenubarMenu>
 
           {hasProject && (
-            <MenubarMenu id="project" label="Project">
-              <MenubarItem onSelect={() => setStructureDialogOpen(true)}>Structure…</MenubarItem>
-              <MenubarItem onSelect={() => setDetailsDialogOpen(true)}>Info…</MenubarItem>
-              <MenubarItem onSelect={() => setShareDialogOpen(true)}>Share…</MenubarItem>
+            <MenubarMenu id="project" label={t('menu.project')}>
+              <MenubarItem onSelect={() => setStructureDialogOpen(true)}>{t('item.structure')}</MenubarItem>
+              <MenubarItem onSelect={() => setDetailsDialogOpen(true)}>{t('item.info')}</MenubarItem>
+              <MenubarItem onSelect={() => setShareDialogOpen(true)}>{t('item.share')}</MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onSelect={() => void exportManuscript()}>Export Manuscript</MenubarItem>
+              <MenubarItem onSelect={() => void exportManuscript()}>{t('item.exportManuscript')}</MenubarItem>
               {/* Structured JSON/CSV/MD export is SCENE-scoped (the scene FAB's Download) — a whole-project dump
                   is too large to be a useful interchange unit, so it's deliberately not offered at project level. */}
             </MenubarMenu>
           )}
 
-          <MenubarMenu id="view" label="View">
-            <MenubarItem onSelect={() => setDockOpen(!dockOpen)}>Toggle Console</MenubarItem>
-            {aiEnabled && <MenubarItem onSelect={() => setChatOpen(!chatOpen)}>Toggle Assistant</MenubarItem>}
+          <MenubarMenu id="view" label={t('menu.view')}>
+            <MenubarItem onSelect={() => setDockOpen(!dockOpen)}>{t('item.toggleConsole')}</MenubarItem>
+            {aiEnabled && <MenubarItem onSelect={() => setChatOpen(!chatOpen)}>{t('item.toggleAssistant')}</MenubarItem>}
             {/* theme lives on the status-bar toggle (not duplicated here); composition is project-only */}
             {hasProject && (
               <>
                 <MenubarSeparator />
                 <MenubarItem onSelect={() => setComposing(true)} shortcut={HOTKEYS.compose.display}>
-                  Composition mode
+                  {t('item.compositionMode')}
                 </MenubarItem>
               </>
             )}
             <MenubarSeparator />
             <MenubarItem onSelect={() => void window.nvs.toggleDevTools()} shortcut="F12">
-              Toggle Developer Tools
+              {t('item.toggleDevTools')}
             </MenubarItem>
           </MenubarMenu>
 
-          <MenubarMenu id="help" label="Help">
-            <MenubarItem onSelect={() => setHelpDialogOpen(true)}>Reference &amp; Docs</MenubarItem>
+          <MenubarMenu id="help" label={t('menu.help')}>
+            <MenubarItem onSelect={() => setHelpDialogOpen(true)}>{t('item.referenceDocs')}</MenubarItem>
             {/* the replayable walkthrough — spotlights data-regions step by step (TourOverlay) */}
-            <MenubarItem onSelect={() => useWorkspace.getState().setTourStep(0)}>Tour the app</MenubarItem>
+            <MenubarItem onSelect={() => useWorkspace.getState().setTourStep(0)}>{t('item.tour')}</MenubarItem>
             <MenubarSeparator />
             {/* Using NVS from Claude is a setup task people look for under Help, not in a store tab. */}
-            <MenubarItem onSelect={() => setDiscoverOpen('claude')}>Use NVS with Claude…</MenubarItem>
+            <MenubarItem onSelect={() => setDiscoverOpen('claude')}>{t('item.useWithClaude')}</MenubarItem>
             <MenubarSeparator />
-            <MenubarItem onSelect={() => setSupportOpen(true)}>Support &amp; community</MenubarItem>
+            <MenubarItem onSelect={() => setSupportOpen(true)}>{t('item.supportCommunity')}</MenubarItem>
             <MenubarSeparator />
             {/* Pro + version live here (VS Code-style) instead of taking permanent header space */}
-            <MenubarItem onSelect={() => setProOpen(true)}>{pro ? 'NVS Pro — active' : 'NVS Pro'}</MenubarItem>
+            <MenubarItem onSelect={() => setProOpen(true)}>{pro ? t('item.proActive') : t('item.pro')}</MenubarItem>
             <MenubarItem onSelect={() => setChangelogOpen(true)} shortcut={`v${version || '—'}`}>
-              What&apos;s new
+              {t('item.whatsNew')}
             </MenubarItem>
           </MenubarMenu>
         </Menubar>
@@ -129,11 +131,11 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
       {hasProject ? (
         <button
           onClick={() => setSearchOpen(true)}
-          title={`Search scenes, world, threads… (${HOTKEYS.search.display})`}
+          title={t('search.tooltip', { shortcut: HOTKEYS.search.display })}
           className="app-no-drag absolute left-1/2 flex h-6 w-72 max-w-[42vw] -translate-x-1/2 items-center gap-2 rounded-md border border-border bg-canvas/60 px-2 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
         >
           <Search className="size-3.5 shrink-0" />
-          <span className="flex-1 truncate text-left text-[11px] text-faint">Search…</span>
+          <span className="flex-1 truncate text-left text-[11px] text-faint">{t('search.placeholder')}</span>
           <kbd className="shrink-0 rounded border border-border px-1 text-[9px] text-faint">{HOTKEYS.search.display}</kbd>
         </button>
       ) : (
@@ -152,11 +154,11 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
               setSaving(true)
               void saveToLibrary().finally(() => setSaving(false))
             }}
-            title={`Opened from outside your library (${project?.root}). Save a copy to My Works so it shows on the Welcome page.`}
+            title={t('saveToLibrary.tooltip', { root: project?.root })}
             className="app-no-drag mr-2 flex h-6 items-center gap-1.5 rounded-md border border-amber-600/40 bg-amber-500/10 px-2 text-[11px] text-amber-600 transition-colors hover:bg-amber-500/20 disabled:opacity-50 dark:text-amber-400"
           >
             <FolderInput className="size-3.5" />
-            {saving ? 'Saving…' : 'Save to Library'}
+            {saving ? t('saveToLibrary.saving') : t('saveToLibrary.label')}
           </button>
         )}
 
@@ -165,15 +167,15 @@ export function TitleBar({ version }: { version: string }): JSX.Element {
         {/* window controls (win/linux; macOS uses native traffic lights) */}
         {!isMac && (
           <div className="flex items-stretch">
-            <button className={ctlBtn} title="Minimize" onClick={() => void window.nvs.minimizeWindow()}>
+            <button className={ctlBtn} title={t('window.minimize')} onClick={() => void window.nvs.minimizeWindow()}>
               <Minus className="size-4" />
             </button>
-            <button className={ctlBtn} title="Maximize" onClick={() => void window.nvs.toggleMaximizeWindow()}>
+            <button className={ctlBtn} title={t('window.maximize')} onClick={() => void window.nvs.toggleMaximizeWindow()}>
               <Square className="size-3.5" />
             </button>
             <button
               className="app-no-drag flex h-9 w-11 items-center justify-center text-muted-foreground transition-colors hover:bg-flag hover:text-white"
-              title="Close"
+              title={t('window.close')}
               onClick={() => void window.nvs.closeWindow()}
             >
               <X className="size-4" />

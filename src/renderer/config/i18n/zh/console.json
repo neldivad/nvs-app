@@ -1,0 +1,220 @@
+{
+  "tab": {
+    "analysis": "分析",
+    "database": "数据库",
+    "agent": "代理"
+  },
+  "header": {
+    "help": "控制台如何工作"
+  },
+  "empty": {
+    "noProject": "打开一个作品以使用控制台。"
+  },
+  "nonfiction": {
+    "title": "仅显示确定性视图",
+    "body": "对于非虚构作品，NVS 会直接读取你的文字稿——<b>角色</b>显示谁在说话以及说了多少（按角色台词量计算），<b>时间线</b>显示内容流程。AI 分析目前已关闭；自定义提取功能将作为可按需运行的技能提供。"
+  },
+  "health": {
+    "updating": "正在更新…",
+    "noAi": "未连接 AI——添加 AI 后才会执行这些步骤。"
+  },
+  "statusDetail": {
+    "upToDate": "{{n}} 项为最新",
+    "outdated": "{{n}} 项已过时",
+    "notRead": "{{n}} 项未读取",
+    "draft": "{{n}} 项为草稿"
+  },
+  "run": {
+    "stop": "停止",
+    "stopTip": "当前场景完成后停止",
+    "moreActions": "更多分析操作",
+    "tip": {
+      "viewing": "正在查看过去的版本——返回当前版本以更新",
+      "cycle": "时间线存在 leads_to 循环——修复它，以便分析能够遍历图",
+      "dirty": "将已更改的场景读入分析",
+      "graph": "时间线图自上次运行后已更改——重新运行以更新",
+      "skim_one": "已快速读取 {{count}} 个场景——运行专家分析以构建角色弧线和档案",
+      "skim_other": "已快速读取 {{count}} 个场景——运行专家分析以构建角色弧线和档案",
+      "upToDate": "所有内容均为最新"
+    },
+    "label": {
+      "update": "更新分析（{{n}}）",
+      "graph": "更新分析 · 图已更改",
+      "expert": "专家分析（{{n}}）",
+      "upToDate": "已是最新"
+    }
+  },
+  "coherence": {
+    "tipViewing": "正在查看过去的版本——返回当前版本以检查",
+    "tipNone": "目前还没有同时拥有页面和弧线的角色",
+    "tipReady": "将每个角色的页面与故事实际呈现的内容进行对比",
+    "check": "检查连贯性",
+    "checkCount": "检查连贯性（{{n}}）"
+  },
+  "readiness": {
+    "tip": "让 AI 在运行分析前对项目进行预检",
+    "label": "准备度检查"
+  },
+  "rebuild": {
+    "tip": "从文件重新构建分析",
+    "button": "从文件重新构建…",
+    "confirmTitle": "要从文件重新构建分析吗？",
+    "confirmBody": "当分析与故事不同步时，从你的场景中干净地重新构建分析。<b>绝不会修改你的写作内容。</b>",
+    "confirmLabel": "重新构建",
+    "table": {
+      "whenLabel": "何时",
+      "whenBody": "线程、弧线或连贯性看起来不对时——通常发生在重命名或重构章节之后",
+      "whatLabel": "功能说明",
+      "whatBody": "清除派生分析（线索、情节弧、连贯性、版本历史）并重新读取文件",
+      "writingLabel": "你的写作内容",
+      "writingBody": "不会被触碰——只会重建分析",
+      "safetyLabel": "安全保障",
+      "safetyBody": "当前分析会先备份到 .nvs.bak-… 文件夹，因此不会丢失任何内容",
+      "afterLabel": "之后",
+      "afterBody": "重新运行 AI 分析流程，以填充线索/情节弧/连贯性"
+    }
+  },
+  "reanalyze": {
+    "confirmTitle_one": "重新分析 {{count}} 个场景？",
+    "confirmTitle_other": "重新分析 {{count}} 个场景？",
+    "confirmBody_one": "即使 {{count}} 个场景已是最新，这仍会重新读取它们——通过 <b>{{conn}}</b> 大约进行 {{count}} 次 AI 调用（切换模型后很实用）。数据库会先创建快照。",
+    "confirmBody_other": "即使 {{count}} 个场景已是最新，这仍会重新读取它们——通过 <b>{{conn}}</b> 大约进行 {{count}} 次 AI 调用（切换模型后很实用）。数据库会先创建快照。",
+    "yourConnection": "你的连接",
+    "confirmLabel": "重新分析",
+    "selectedTip": "即使选中的场景已是最新，也重新读取它们（例如使用更快的模型）",
+    "selected": "重新分析选中的 {{n}} 个场景"
+  },
+  "timetravel": {
+    "viewing": "正在查看过去的版本（只读）——{{time}}",
+    "restore": "恢复此版本",
+    "return": "返回当前版本"
+  },
+  "recent": {
+    "title": "最近更新",
+    "behind": "· 连贯性落后于当前分析",
+    "historyTip": "按章节查看每次过去的运行所分析的内容",
+    "history": "历史记录",
+    "empty": "运行一次后，过去的更新会显示在这里。",
+    "current": "当前",
+    "prunedTip": "较旧的版本会被清理以节省空间——此版本已无法预览或恢复",
+    "pruned": "已清理",
+    "restoreTip": "将此版本设为当前版本（可撤销——当前版本仍会保留在列表中）",
+    "restore": "恢复",
+    "targets_one": "{{count}} 个目标",
+    "targets_other": "{{count}} 个目标",
+    "rows": "{{n}} 行"
+  },
+  "provenance": {
+    "viewedTip": "此版本涵盖的内容",
+    "noneTip": "未记录来源信息",
+    "versionCurrentTip": "当前版本（实时）",
+    "versionPrunedTip": "快照已清理——时间太久，无法预览（仅保留最新版本）",
+    "versionViewTip": "查看此版本（只读）",
+    "scene_one": "{{count}} 个场景",
+    "scene_other": "{{count}} 个场景",
+    "arc_one": "{{count}} 条情节弧",
+    "arc_other": "{{count}} 条情节弧",
+    "coherence": "{{n}} 项连贯性",
+    "more": "另有 {{n}} 项"
+  },
+  "coherenceRow": {
+    "behind": "连贯性滞后——请重新检查此版本",
+    "notChecked": "连贯性——尚未检查",
+    "tip": "连贯性检查（基于此分析版本）",
+    "findings_one": "连贯性 · {{count}} 个问题",
+    "findings_other": "连贯性 · {{count}} 个问题"
+  },
+  "scenes": {
+    "all": "全部场景（{{n}}）",
+    "empty": "还没有场景——写一个，它就会显示在这里。",
+    "clear": "清除",
+    "selectAll": "全选",
+    "draft": "草稿",
+    "showMore": "再显示 200 个——{{n}} 个未显示"
+  },
+  "queue": {
+    "updating": "正在更新——{{settled}}/{{total}}",
+    "lastRun": "上次运行",
+    "phaseTip": "{{label}}：{{settled}}/{{total}}",
+    "phaseTipFailed": "{{label}}：{{settled}}/{{total}} · {{failed}} 个失败",
+    "earlier": "更早的 {{n}} 个",
+    "queued": "已排队的 {{n}} 个"
+  },
+  "phase": {
+    "scene": "场景",
+    "window": "情节线",
+    "profile": "档案",
+    "digest": "摘要",
+    "coherence": "连贯性"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minAgo": "{{m}} 分钟前",
+    "hAgo": "{{h}} 小时前"
+  },
+  "db": {
+    "filter": "筛选已加载的行…",
+    "ofRows_one": "共 {{count}} 行中的",
+    "ofRows_other": "共 {{count}} 行中的",
+    "reread": "重新读取表",
+    "healthTip": "检查数据库健康状况——智能体会审查重复项、残留数据、孤立数据和过时数据（只读；由你确认任何修复）",
+    "none": "还没有数据库——运行分析以构建数据库。",
+    "empty": "空表。",
+    "loading": "正在加载…",
+    "loadMore": "再加载 {{n}} 个"
+  },
+  "copy": {
+    "copy": "复制",
+    "copied": "已复制",
+    "url": "URL",
+    "json": "复制 JSON"
+  },
+  "status": {
+    "active": "活跃",
+    "ready": "就绪",
+    "needs-key": "需要密钥"
+  },
+  "agent": {
+    "connections": "连接（密钥）",
+    "plan": "计划（Claude Code）"
+  },
+  "connections": {
+    "intro": "提供商密钥——一次只能激活一个（类似已保存的卡片）。激活的连接会驱动<​span>聊天（右侧面板）和分析运行</span>。",
+    "add": "添加连接",
+    "use": "使用",
+    "deactivate": "停用",
+    "changeModel": "更改模型",
+    "setKey": "设置/替换密钥",
+    "remove": "移除",
+    "customModelId": "自定义模型 id",
+    "save": "保存",
+    "current": "当前：{{dots}}",
+    "replaceKey": "替换密钥…",
+    "saveKey": "保存密钥",
+    "custom": "自定义…",
+    "model": "模型",
+    "label": "标签",
+    "cancel": "取消",
+    "keyless": "无需 API 密钥——使用你的 Claude Code 登录运行。如果尚未登录，请使用 <code>claude</code> 登录一次。",
+    "aboutLogin": "关于 Claude Code 登录",
+    "getKey": "获取 {{provider}} 密钥",
+    "pricing": "价格"
+  },
+  "notice": {
+    "keySaved": "密钥已保存——将其设为激活状态，然后在聊天中测试。",
+    "modelSet": "模型已设置为 {{model}}。"
+  },
+  "mcp": {
+    "title": "应用内 MCP 服务器",
+    "running": "运行中",
+    "stopped": "已停止",
+    "recheck": "重新检查",
+    "error": "错误：{{error}}",
+    "intro": "代理（Claude Code / Desktop）连接到正在运行的应用，并将这些功能作为实时工具调用——使用与 UI 相同的引擎契约。无需密钥：模型在代理中运行，而不是在此处运行。",
+    "connectOne": "连接——一条命令（Claude Code）",
+    "orConfig": "…或添加到代理的 MCP 配置中",
+    "capture": "这些工具包括 <code>captureView</code>——代理可以截取应用屏幕来<b>查看</b>你的轨道（杂乱的时间线、连贯性甘特图），而不仅仅是读取数据。",
+    "fullGuide": "完整指南——Store → 使用 Claude（设置 + 示例）→",
+    "tools": "已公开的工具"
+  }
+}

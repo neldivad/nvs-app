@@ -18,6 +18,7 @@ import { CHANNELS, type AnalysisDepth, type IngestProgress, type IngestSession, 
 import * as engine from '@engine/index'
 import { readSceneBatch, readWindow, readEntityWindow, readCoherence, readDigest, readProfile, resolveModelOutputCap, analysisConcurrency, pooled } from './sceneReader'
 import { readContinuity } from './continuityReader'
+import { readCritique } from './critiqueReader'
 import { batchOutBudget } from '@engine/analysis/extractionBatches'
 import { AiError } from './aiErrors'
 import { getState, getAnalysis } from './registry'
@@ -486,8 +487,11 @@ export async function startIngestRun(forceScenes?: string[], depth: AnalysisDept
  * character's declared page against their observed arc. It is a CHILD of the current analysis version, not a
  * peer: it records which analysis version it diffed (`basedOn`), does NOT snapshot or move `current` (the
  * findings ride the live DB, re-derivable), and a no-op check isn't recorded at all.
+ *
+ * `opts.critique` — the author explicitly asked the TOUGH QUESTIONS too (story-critique.md): after the two
+ * linter passes, run the opt-in dramaturge pass. Never on by default (deterministic-over-AI ruling).
  */
-export async function startCoherenceRun(): Promise<void> {
+export async function startCoherenceRun(opts?: { critique?: boolean }): Promise<void> {
   if (running) return
   running = true
   runAbort = new AbortController()
@@ -565,6 +569,36 @@ export async function startCoherenceRun(): Promise<void> {
     if (cStep.startedAt) cStep.ms = Date.now() - Date.parse(cStep.startedAt)
     broadcast()
 
+    // ── Critique ("Tough questions") — ONLY when explicitly asked (opt-in dramaturge pass, story-critique.md).
+    const qSteps: IngestStep[] = []
+    if (opts?.critique) {
+      const qStep: IngestStep = { id: 't3:critique', kind: 'critique', targetId: 'story', label: 'Tough questions', status: 'running', note: null, startedAt: new Date().toISOString(), ms: null }
+      qSteps.push(qStep)
+      if (progress) { progress = { ...progress, steps: [...progress.steps, qStep] }; broadcast(); await tick() }
+      try {
+        const r = await readCritique(signal)
+        if ('skip' in r) {
+          qStep.status = 'skipped'
+          qStep.note = r.skip
+          skipped++
+        } else {
+          const res = engine.writeTier(r.write)
+          const n = res.ok ? Object.values(res.written).reduce((a, b) => a + b, 0) : 0
+          qStep.status = res.ok ? 'done' : 'failed'
+          qStep.note = res.ok ? `${n} question${n === 1 ? '' : 's'}` : (res.error ?? 'write failed')
+          if (res.ok) { rowsWritten += n; ok++ } else { failed++ }
+        }
+      } catch (e) {
+        const aiErr = e instanceof AiError ? e : null
+        qStep.status = 'failed'
+        qStep.note = aiErr?.userMessage ?? (e instanceof Error ? e.message : 'error')
+        failed++
+        if (aiErr?.fatal && !fatalError) fatalError = { kind: aiErr.kind, message: aiErr.userMessage }
+      }
+      if (qStep.startedAt) qStep.ms = Date.now() - Date.parse(qStep.startedAt)
+      broadcast()
+    }
+
     const finishedAt = new Date().toISOString()
     // Record only if it actually re-diffed something (ok>0). No snapshot, no `current` move — recordSession
     // keeps it a child of `basedOn` (the analysis version it was computed against).
@@ -572,7 +606,7 @@ export async function startCoherenceRun(): Promise<void> {
       engine.recordSession({
         id: sessionId, kind: 'coherence', basedOn,
         startedAt, finishedAt, total: 1, ok, failed, skipped, rowsWritten, snapshotId: null,
-        targets: [step, cStep].filter((s) => s.status === 'done').map((s) => ({ kind: s.kind, targetId: s.targetId, label: s.note ? `${s.label} · ${s.note}` : s.label }))
+        targets: [step, cStep, ...qSteps].filter((s) => s.status === 'done').map((s) => ({ kind: s.kind, targetId: s.targetId, label: s.note ? `${s.label} · ${s.note}` : s.label }))
       })
     }
     if (progress) progress = { ...progress, finishedAt, active: false, error: fatalError }

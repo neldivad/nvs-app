@@ -1,0 +1,73 @@
+{
+  "tab": {
+    "browse": "Browse",
+    "library": "Library",
+    "history": "History"
+  },
+  "preview": {
+    "heading": "Inside the app"
+  },
+  "size": {
+    "scenes_one": "{{count}} scene",
+    "scenes_other": "{{count}} scenes",
+    "world": "{{n}} world",
+    "custody": "{{n}} custody"
+  },
+  "loading": {
+    "registry": "Fetching registry…"
+  },
+  "empty": {
+    "registryUnreachable": "Registry unreachable. Check your connection — or set NVS_REGISTRY_URL to a local index.json.",
+    "noMatch": "No works match your search.",
+    "noWorks": "No works in the registry.",
+    "libraryEmpty": "Your library is empty — install a work from Browse, or restore the examples above.",
+    "noDownloadMatch": "No downloads match your search.",
+    "historyEmpty": "Your reading list is empty — anything you install from Browse shows up here, and stays even if you later delete the local copy."
+  },
+  "button": {
+    "open": "Open",
+    "install": "Install",
+    "installing": "Installing…",
+    "remove": "Remove",
+    "back": "Back",
+    "getAgain": "Get again",
+    "restoreExamples": "Restore examples",
+    "needsVersion": "Needs NVS ≥ {{version}}"
+  },
+  "status": {
+    "installed": "Installed",
+    "inLibrary": "in library",
+    "verifiedClean": "verified clean",
+    "notInRegistry": "no longer in registry"
+  },
+  "error": {
+    "installFailed": "install failed"
+  },
+  "detail": {
+    "registryBlurb": "A verified community work. Installing downloads the bundle, checks its integrity (sha256), and adds a copy to your library — yours to edit.",
+    "libraryBlurb": "In your library. Open it to write + analyze, or remove it from disk."
+  },
+  "restore": {
+    "restored": "Restored {{n}}",
+    "allPresent": "All examples already present"
+  },
+  "confirm": {
+    "remove": "Remove \"{{title}}\" from your library? The files are deleted from disk."
+  },
+  "tooltip": {
+    "enlarge": "{{label}} — click to enlarge",
+    "verifiedClean": "Verified clean",
+    "deleteFromLibrary": "Delete from your library",
+    "removeFromLibrary": "Remove from library",
+    "downloadAgain": "Download it again",
+    "restoreExamples": "Re-add the bundled Getting Started + demo projects (skips any you still have)"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutes": "{{n}}m ago",
+    "hours": "{{n}}h ago",
+    "days": "{{n}}d ago",
+    "months": "{{n}}mo ago",
+    "years": "{{n}}y ago"
+  }
+}

@@ -203,6 +203,8 @@ export function callTool(name: string, input: Record<string, unknown>, model: st
     case 'listCharacterArcs': return capList(engine.listCharacterArcs())
     case 'listCast': return capList(engine.listCast())
     case 'listStructuralIssues': return capList(engine.listIntegrityIssues())
+    case 'listChapterLedgers': return capList(engine.chapterLedgerStatus())
+    case 'readChapterLedger': return engine.readChapterLedger(String(input.unitId))
     case 'listLoreView': { // was MISSING from the switch → "unknown tool" for a catalogued tool; wired + bounded
       const lv = engine.listLoreView()
       return { topics: capList(lv.topics), clock: capList(lv.clock) }

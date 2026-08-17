@@ -1,0 +1,20 @@
+{
+  "title": "通知",
+  "clearAll": "全部清除",
+  "empty": "你已查看所有通知。",
+  "outdated_one": "{{count}} 个场景已过期",
+  "outdated_other": "{{count}} 个场景已过期",
+  "outdatedBody": "部分场景在上次读入分析后发生了更改。",
+  "openAnalysis": "打开分析",
+  "copy": "复制",
+  "copied": "已复制",
+  "copyAria": "复制通知",
+  "dismiss": "忽略",
+  "dismissAria": "关闭通知",
+  "open": "打开",
+  "update": {
+    "title": "有可用更新 — {{version}}",
+    "body": "你当前使用的是 {{current}}。下载新版本以进行更新。",
+    "action": "下载"
+  }
+}

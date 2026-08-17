@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { TreesHistory } from '@/lib/timeline/treesHistory'
-import type { AgentEvent, AgentTask, AiState, AnalysisDepth, ChatContext, ChatRef, ChatSession, CharacterArc, CoherenceFinding, EntityTrack, IngestProgress, IngestSession, PageRef, ProjectChange, ProjectInfo, ProjectMeta, RecentEntry, SavedPrompt, SceneFile, StoryNode, StructureView, TaskInput, Thread, TimelineLayout, TimelineGraph, TimelineLayers, ChartSequence, TreesFile, TreeVariant, WorkCard, WorldPage , MergeResult, LoreView, CustodyTopic, ExtensionStatus } from '@shared/ipc'
+import type { AgentEvent, AgentTask, AiState, AnalysisDepth, ChatContext, ChatRef, ChatSession, CharacterArc, CoherenceFinding, EntityTrack, IngestProgress, IngestSession, PageRef, ProjectChange, ProjectInfo, ProjectMeta, RecentEntry, SavedPrompt, SceneFile, StoryNode, StructureView, TaskInput, Thread, TimelineLayout, TimelineGraph, TimelineLayers, ChartSequence, TreesFile, TreeVariant, WorkCard, WorldPage , MergeResult, LoreView, CustodyTopic, ExtensionStatus, UpdateCheck } from '@shared/ipc'
 
 const EMPTY_STRUCTURE: StructureView = { world: [], scene: [] }
 import { TIMELINE_VERSION, DEFAULT_TIMELINE_VIEW, MAX_TIMELINE_VARIANTS } from '@shared/ipc'
@@ -11,6 +11,7 @@ import { firstTime } from '@/lib/onceFlag'
 import { activeVariant, adjacencyHas, addAdjacency, removeAdjacency, adjacencyReaches } from '@/lib/timeline/treeVariant'
 import { canvasSceneIds } from '@/lib/timeline/canvasScenes'
 import { defaultBody, defaultFrontmatter, slugify } from '@/config/worldSchema'
+import i18n, { applyLocale, type UiLocale } from '@/config/i18n'
 
 /** A fresh, empty timeline layout — project-wide view only (canvas lives per variant). Overwritten by readTimeline. */
 const emptyTimeline: TimelineLayout = { version: TIMELINE_VERSION, view: DEFAULT_TIMELINE_VIEW }
@@ -113,6 +114,22 @@ const FLOAT_DOCK_KEY = 'nvs.floatDock'
 function initialFloatDock(): boolean {
   try { return localStorage.getItem(FLOAT_DOCK_KEY) === 'on' } catch { return false } // default OFF
 }
+// UI language (chrome only) — the NVS Settings "Language" row. `system` follows the OS/app locale; en/zh/ja pin it.
+// NEVER touches prose or the AI's output (those follow project.inLanguage / the user's request) — see config/i18n.ts.
+// The app-update nudge remembers the last release the user dismissed, so we never re-nag for the SAME version
+// (a newer one still notifies). '' = never dismissed. We do NOT auto-update — see internal/distribution-updates.md.
+const UPDATE_DISMISSED_KEY = 'nvs.updateDismissed'
+function initialUpdateDismissed(): string {
+  try { return localStorage.getItem(UPDATE_DISMISSED_KEY) ?? '' } catch { return '' }
+}
+const UI_LOCALE_KEY = 'nvs.uiLocale'
+function initialUiLocale(): UiLocale {
+  try {
+    const v = localStorage.getItem(UI_LOCALE_KEY)
+    if (v === 'system' || v === 'en' || v === 'zh' || v === 'ja') return v
+  } catch { /* localStorage unavailable — fall through to the default */ }
+  return 'system' // default: follow the OS/app locale
+}
 
 export type ThemeMode = 'light' | 'dark'
 const THEME_KEY = 'nvs.theme'
@@ -155,6 +172,8 @@ export interface AppNotification {
   kind: 'warning' | 'success' | 'info'
   title: string
   body?: string
+  href?: string // when set, the mailbox card shows an action button that opens this URL externally (e.g. the update nudge)
+  actionLabel?: string // label for that button — localized at push time; the mailbox falls back to a generic "Open"
   ts: number
   read?: boolean
 }
@@ -435,6 +454,10 @@ interface WorkspaceState {
   dismissNotification: (id: string) => void
   markNotificationsRead: () => void
   clearNotifications: () => void
+  // App-update nudge (no auto-update): compare installed vs latest public release, push a dismissible card.
+  updateDismissed: string // last release version the user dismissed the nudge for ('' = none)
+  updateLatest: string | null // version the current nudge points at, so dismiss can record it
+  runUpdateCheck: (opts?: { force?: boolean }) => Promise<UpdateCheck | null> // force ignores the dismissed version (manual "check now")
   // global feature prefs (per-user, localStorage) — the NVS Settings dialog
   showMood: boolean // VN-style delivery tags in the Write editor; off = hidden (prose + Source keep them)
   setShowMood: (v: boolean) => void
@@ -444,6 +467,8 @@ interface WorkspaceState {
   setEditableSource: (v: boolean) => void
   aiEnabled: boolean // master switch — off hides ALL generative-AI UI (assistant, /agent, AI-write, analysis running)
   setAiEnabled: (v: boolean) => void
+  uiLocale: UiLocale // NVS UI language (chrome only), persisted. Never affects prose or AI output.
+  setUiLocale: (l: UiLocale) => void
   saveSceneRaw: (text: string) => Promise<void> // write the Source buffer verbatim, then re-sync the split buffer
   settingsOpen: boolean
   setSettingsOpen: (v: boolean) => void
@@ -463,7 +488,7 @@ interface WorkspaceState {
   applyIngestProgress: (p: IngestProgress | null) => void // the onIngestProgress sink (AppShell wires it)
   startIngestRun: (forceScenes?: string[], depth?: AnalysisDepth) => Promise<void> // forceScenes = re-read these even if fresh
   resetAnalysis: () => Promise<void> // backup-aside + rebuild the derived analysis from the manuscript (escape hatch)
-  checkCoherence: () => Promise<void> // the coherence pass — its own trigger (page vs arc), shares the queue
+  checkCoherence: (opts?: { critique?: boolean }) => Promise<void> // the coherence pass — its own trigger (page vs arc), shares the queue; opts.critique = also ask the tough questions
   aiState: AiState | null // the active AI connection set — drives the status-bar provider chip (null = not loaded)
   setAiState: (s: AiState) => void
   refreshAiState: () => Promise<void>
@@ -613,6 +638,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
   showTiming: initialShowTiming(),
   editableSource: initialEditableSource(),
   aiEnabled: initialAiEnabled(),
+  uiLocale: initialUiLocale(),
+  updateDismissed: initialUpdateDismissed(),
+  updateLatest: null,
   settingsOpen: false,
   floatDockOpen: initialFloatDock(),
   theme: initialTheme(),
@@ -2387,6 +2415,28 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
     // library, Jobs dashboard, AND the bottom console dock (its Ingest/Agent tabs are analysis-running + AI output).
     set(v ? { aiEnabled: v } : { aiEnabled: v, chatOpen: false, promptsOpen: false, jobsOpen: false, dockOpen: false })
   },
+  setUiLocale: (l) => {
+    try { localStorage.setItem(UI_LOCALE_KEY, l) } catch { /* ignore */ }
+    applyLocale(l) // switch the live i18next language (resolves `system` via navigator.language)
+    set({ uiLocale: l })
+  },
+  runUpdateCheck: async (opts) => {
+    const res = await window.nvs.checkForUpdate?.().catch(() => null)
+    if (!res) return null
+    // Only nudge for a genuinely newer release the user hasn't already waved off (force = manual "check now").
+    if (res.isNewer && res.latest && (opts?.force || res.latest !== get().updateDismissed)) {
+      set({ updateLatest: res.latest })
+      get().pushNotification({
+        id: 'update',
+        kind: 'info',
+        title: i18n.t('notifications:update.title', { version: res.latest }),
+        body: i18n.t('notifications:update.body', { current: res.current }),
+        href: res.url,
+        actionLabel: i18n.t('notifications:update.action'),
+      })
+    }
+    return res
+  },
   // Commit a verbatim Source edit: write the bytes as-typed, then RE-READ the file so the split frontmatter/body
   // buffer (and the derived views) re-sync from what actually landed on disk. Mirrors saveScene's post-save
   // side-effects (ingest + freshness for scenes; world-page refresh + freshness otherwise), since a raw edit can
@@ -2439,7 +2489,14 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
         ...s.notifications.filter((x) => x.id !== n.id)
       ]
     })),
-  dismissNotification: (id) => set((s) => ({ notifications: s.notifications.filter((x) => x.id !== id) })),
+  dismissNotification: (id) => set((s) => {
+    // Dismissing the update nudge remembers the version, so it won't re-nag until a newer release ships.
+    if (id === 'update' && s.updateLatest) {
+      try { localStorage.setItem(UPDATE_DISMISSED_KEY, s.updateLatest) } catch { /* ignore */ }
+      return { notifications: s.notifications.filter((x) => x.id !== id), updateDismissed: s.updateLatest }
+    }
+    return { notifications: s.notifications.filter((x) => x.id !== id) }
+  }),
   markNotificationsRead: () => set((s) => ({ notifications: s.notifications.map((x) => ({ ...x, read: true })) })),
   clearNotifications: () => set({ notifications: [] }),
 
@@ -2530,9 +2587,9 @@ export const useWorkspace = create<WorkspaceState>((set, get) => ({
       body: backup ? `Your writing is untouched. Old analysis backed up to ${backup}. Re-run the AI passes when ready.` : 'Your writing is untouched. Re-run the AI passes when ready.'
     })
   },
-  checkCoherence: async () => {
+  checkCoherence: async (opts) => {
     set({ dockOpen: true, dockTab: 'ingest' }) // same dock — the coherence run shares the queue + history
-    await window.nvs.startCoherenceRun()
+    await window.nvs.startCoherenceRun(opts)
   },
   setAiState: (s) => set({ aiState: s }),
   refreshAiState: async () => {

@@ -1,0 +1,70 @@
+{
+  "title": "Update analysis",
+  "timeline": {
+    "label": "Timeline",
+    "tooltip": "Analysis follows the active timeline. Switch it on the canvas to analyze a different one.",
+    "count": "{{index}} of {{total}}"
+  },
+  "summary": {
+    "upToDate": "Everything is up to date at this depth — nothing to run.",
+    "targets": "{{n}} targets",
+    "planning": "planning…"
+  },
+  "kind": {
+    "scene_one": "scene",
+    "scene_other": "scenes",
+    "window_one": "arc",
+    "window_other": "arcs",
+    "profile_one": "profile",
+    "profile_other": "profiles",
+    "digest_one": "digest",
+    "digest_other": "digests"
+  },
+  "previewByChapter": "Preview by chapter",
+  "mode": {
+    "label": "Mode",
+    "fast": {
+      "label": "Fast",
+      "hint": "summary + threads + presence — story-so-far & timeline stay fresh; arcs wait for an expert pass"
+    },
+    "expert": {
+      "label": "Expert",
+      "hint": "the full ledger: goals, conflicts, items, lore, arcs, profiles"
+    }
+  },
+  "connection": {
+    "runsOn": "Runs on",
+    "runsOnTooltip": "Estimates are approximate. Set your analysis connection in the console’s Connections list.",
+    "colConnection": "Connection",
+    "colTime": "Time",
+    "colCost": "Cost",
+    "current": "current",
+    "empty": "No AI connections yet — add one in Settings → AI."
+  },
+  "cost": {
+    "planUsage": "plan usage",
+    "checkPricing": "check pricing"
+  },
+  "warning": {
+    "plan": {
+      "body": "This runs on your Claude subscription (no API key), which is ~15× slower per scene and can’t run in parallel — about ",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "hoursSeveral": "several hours",
+      "tail": " for this run, long enough that it usually hits your usage limit before finishing.",
+      "switchPre": "Switch the analysis connection to ",
+      "switchPost": " (an API key) in the console — it finishes in minutes.",
+      "addKey": "Add an API-key connection (Anthropic / OpenRouter) in Settings → AI and use it for full analysis; it finishes in minutes."
+    }
+  },
+  "button": {
+    "cancel": "Cancel",
+    "start": "Start {{mode}} run",
+    "modeFast": "fast",
+    "modeExpert": "expert"
+  },
+  "readiness": {
+    "link": "Check readiness",
+    "tooltip": "Run a read-only preflight in chat — checks canon prose, structure, and connection before you spend a run."
+  }
+}

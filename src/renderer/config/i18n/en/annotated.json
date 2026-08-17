@@ -1,0 +1,7 @@
+{
+  "openCharacter": "{{name}} — open character",
+  "inspectThread": "{{name}} — inspect thread",
+  "threadLabel": "thread: {{name}}",
+  "definedTerm": "defined term",
+  "chapter": "Chapter {{num}}"
+}

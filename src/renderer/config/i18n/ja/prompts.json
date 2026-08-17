@@ -1,0 +1,72 @@
+{
+  "title": "プロンプト",
+  "search": "プロンプトを検索…",
+  "filter": {
+    "all": "すべて",
+    "maintenance": "メンテナンス",
+    "generation": "生成",
+    "analysis": "分析"
+  },
+  "new": "新規",
+  "newTooltip": "新しいプロンプト",
+  "untitled": "無題",
+  "builtIn": "組み込み",
+  "copySuffix": "コピー",
+  "empty": {
+    "noneYet": "まだプロンプトがありません — 「新規」から追加できます。",
+    "noMatch": "一致するプロンプトがありません。",
+    "selectBefore": "プロンプトを選択してAIに伝える内容を確認するか、次から自分で作成してください：",
+    "selectNew": "新規",
+    "selectAfter": "で選択してください。"
+  },
+  "category": {
+    "maintenance": "メンテナンス",
+    "generation": "生成",
+    "analysis": "分析"
+  },
+  "categoryHint": {
+    "maintenance": "ページを修正／整理",
+    "generation": "新しいコンテンツを作成",
+    "analysis": "作品について尋ねる — チャットで実行"
+  },
+  "kind": {
+    "analysis": "分析 — チャットで回答",
+    "replace": "置換 — ページ全体を書き換え",
+    "append": "追加 — ページ末尾に追加"
+  },
+  "detail": {
+    "replaces": "ページを置換",
+    "appends": "ページに追加",
+    "answersInChat": "チャットで回答",
+    "whatToldLabel": "AIに伝える内容",
+    "builtInNote": "組み込み — 読み取り専用です。複製して自分用にできます。",
+    "delete": "削除",
+    "duplicate": "複製",
+    "edit": "編集"
+  },
+  "editor": {
+    "nameLabel": "名前",
+    "namePlaceholder": "例：会話を引き締める",
+    "promptLabel": "プロンプト — AIに伝える内容",
+    "promptPlaceholder": "例：このシーンの会話をより簡潔に書き直す — 冗長な部分を削り、各セリフの話者らしさは残す。筋書きは変えない。",
+    "promptHelp": "AIに指示するように書いてください。実行時にページのテキストと最新のcanonが自動的に追加されます。",
+    "runs": "実行",
+    "output": "出力",
+    "replacePage": "ページを置換",
+    "append": "追加",
+    "replaceTooltip": "ページ全体を書き換えます",
+    "appendTooltip": "ページ末尾に追加します",
+    "answersInChat": "チャットで回答します。",
+    "cancel": "キャンセル",
+    "save": "保存"
+  },
+  "preview": {
+    "toggle": "完全な実行時テンプレート",
+    "formatFor": "フォーマット対象：",
+    "scene": "シーン",
+    "world": "ワールド",
+    "filledPerRun": "＝実行ごとの補完数",
+    "system": "システム",
+    "user": "ユーザー"
+  }
+}

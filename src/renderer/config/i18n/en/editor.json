@@ -1,0 +1,135 @@
+{
+  "view": {
+    "write": "Write",
+    "preview": "Preview",
+    "source": "Source",
+    "chart": "Chart",
+    "records": "Records"
+  },
+  "action": {
+    "properties": "Properties",
+    "print": "Print",
+    "save": "Save",
+    "cancel": "Cancel",
+    "apply": "Apply",
+    "openProperties": "Open Properties"
+  },
+  "tooltip": {
+    "unsaved": "unsaved",
+    "showOutline": "Show outline",
+    "hideOutline": "Hide outline",
+    "showInspector": "Show scene inspector — summary, cast, threads, flags, reveals",
+    "hideInspector": "Hide scene inspector",
+    "print": "Print / Save as PDF (paper preview)",
+    "goToLine": "Go to line {{line}} in Source",
+    "viewFullImage": "View full image"
+  },
+  "find": {
+    "placeholder": "Find in page"
+  },
+  "empty": {
+    "pick": "Pick a page from the sidebar to start writing.",
+    "scene": "This scene is empty.",
+    "page": "This {{kind}} page is empty.",
+    "sceneHint": {
+      "typing": "Just start typing for narration",
+      "blockPre": "Type",
+      "blockPost": "for a block — speech, thinking, action, transition",
+      "speaker": "sets a speaker",
+      "propertiesPre": "Open",
+      "propertiesPost": "for the cast & beat (goal · conflict · outcome)"
+    },
+    "worldHint": {
+      "propertiesPre": "Open",
+      "propertiesPost": "to set the page's details and phase",
+      "markdownPre": "Write in Markdown — start a section with",
+      "markdownMid": "(or type",
+      "markdownPost": ")",
+      "preview": "Switch to Preview to see the wiki panel"
+    }
+  },
+  "confirm": {
+    "replaceTitle": "Replace the whole page?",
+    "replace": "Replace",
+    "replaceLead": "This replaces all of",
+    "replaceTrail": "with the AI's version (one Ctrl/Cmd+Z undoes it).",
+    "replaceEdited": "You've also edited the page since this ran — those edits will be lost."
+  },
+  "property": {
+    "titleScene": "Scene properties",
+    "titleOther": "{{kind}} properties",
+    "phase": "Phase",
+    "media": "Media",
+    "sections": "Sections",
+    "sectionsHintPre": "On the page below. Add one by typing",
+    "sectionsHintPost": "in the Write tab.",
+    "cover": "cover",
+    "avatar": "avatar",
+    "remove": "Remove",
+    "addImages": "Add images",
+    "firstImageScene": "First image is the cover shown on the timeline.",
+    "firstImageWorld": "First image is the avatar used in lists.",
+    "openPage": "Open page",
+    "noPages": "No {{kind}} pages in world/{{kind}}s yet.",
+    "defaultsToPre": "Defaults to",
+    "defaultsToPost": "(the scene’s main speaker) — pick to override.",
+    "searchPlaceholder": "@ search {{label}}…",
+    "commaSeparated": "comma-separated",
+    "select": "Select…",
+    "none": "None",
+    "cropAvatar": "Set avatar (crop)",
+    "cropCover": "Set cover (crop)"
+  },
+  "timing": {
+    "relative": "relative",
+    "absolute": "absolute"
+  },
+  "preview": {
+    "untitled": "Untitled",
+    "mentionedBy": "Mentioned by",
+    "more": "+{{count}} more",
+    "speakerIsA": "is a speaker in your scenes, but has no character page yet.",
+    "speakerCreates": "Creating one adds",
+    "createCharacter": "Create character page",
+    "close": "Close",
+    "openCharacter": "Open character page",
+    "linkNoId": "No page or discovered concept with id \"{{id}}\"",
+    "linkLearnMore": "{{label}} — no page yet · learn more"
+  },
+  "tab": {
+    "allOpen": "All open tabs",
+    "close": "Close",
+    "closeOthers": "Close others",
+    "closeAll": "Close all"
+  },
+  "findBar": {
+    "placeholder": "Find",
+    "prev": "Previous ({{keys}})",
+    "next": "Next ({{keys}})",
+    "closeBtn": "Close ({{keys}})"
+  },
+  "slashMenu": {
+    "added": "added"
+  },
+  "outline": {
+    "title": "Outline"
+  },
+  "aside": {
+    "resize": "Drag to resize"
+  },
+  "print": {
+    "titleWith": "Print — {{title}}",
+    "previewHint": "Preview — scroll to review; the PDF matches this theme",
+    "light": "Light",
+    "dark": "Dark",
+    "save": "Print / Save as PDF",
+    "iframeTitle": "Print preview"
+  },
+  "zoomCrop": {
+    "apply": "Apply crop",
+    "cancel": "Cancel",
+    "zoom": "Zoom",
+    "hint": "Drag to reposition. Scroll or use the slider to zoom. Double-click to reset.",
+    "loadError": "Could not load this image for cropping."
+  }
+}

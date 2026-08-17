@@ -1,0 +1,96 @@
+{
+  "title": "Jobs",
+  "tab": {
+    "queue": "Queue",
+    "logs": "Logs",
+    "storage": "Storage"
+  },
+  "jobCount_one": "{{count}} job",
+  "jobCount_other": "{{count}} jobs",
+  "noProject": "no project",
+  "projectFallback": "project",
+  "button": {
+    "startAnalysis": "Start analysis",
+    "pause": "Pause",
+    "clear": "Clear"
+  },
+  "kind": {
+    "analysis": "Analysis",
+    "coherence": "Coherence"
+  },
+  "label": {
+    "elapsed": "Elapsed",
+    "remaining": "Remaining"
+  },
+  "scale": {
+    "relative": "relative",
+    "absolute": "absolute"
+  },
+  "cat": {
+    "db": "Database",
+    "history": "History",
+    "backups": "Backups",
+    "chat": "Chat",
+    "tasks": "Tasks",
+    "logs": "Logs"
+  },
+  "column": {
+    "project": "Project",
+    "composition": "Composition",
+    "footprint": "Footprint",
+    "total": "Total"
+  },
+  "menu": {
+    "compact": "Compact snapshots",
+    "compacting": "Compacting…",
+    "none": "none",
+    "clear": "Clear {{cat}}",
+    "empty": "empty"
+  },
+  "result": {
+    "ok": "{{n}} ok",
+    "failed": "{{n}} failed",
+    "skipped": "{{n}} skipped"
+  },
+  "empty": {
+    "queue": "No jobs yet — run analysis on a project.",
+    "logsNoProject": "Open or run a project to see its analysis logs.",
+    "logsNoTelemetry": "No telemetry yet — it appears once a run reads its first scene.",
+    "storage": "No projects yet."
+  },
+  "tag": {
+    "local": "local"
+  },
+  "tooltip": {
+    "machineLocal": "Machine-local — never exported",
+    "storageActions": "Storage actions",
+    "scaleRelative": "Each bar fills 100% — shows composition only",
+    "scaleAbsolute": "Bars scaled to the largest project — shows actual size"
+  },
+  "error": {
+    "connectionWall": "Paused on a connection wall:"
+  },
+  "footer": "History is universal — every project's runs, wherever you are. Pause is safe (resumes where it left off). Cost / memory / provider are machine-local.",
+  "clear": {
+    "logs": {
+      "title": "Clear analysis logs?",
+      "message": "Deletes this project’s telemetry logs.\n\nDiagnostics only — regenerated on the next run. Nothing else is affected."
+    },
+    "history": {
+      "title": "Clear run history?",
+      "message": "Removes past-run records and their revert snapshots.\n\nYour current analysis stays intact — you just lose the ability to revert to earlier versions."
+    },
+    "chat": {
+      "title": "Delete chat sessions?",
+      "message": "Deletes this project’s chat history from your machine.\n\nThis can’t be undone."
+    },
+    "tasks": {
+      "title": "Clear the task inbox?",
+      "message": "Deletes this project’s background-task inbox — including any completed edits you haven’t applied yet.\n\nThis can’t be undone."
+    },
+    "backups": {
+      "title": "Delete reset backups?",
+      "message": "Removes the full “.nvs.bak-…” copies saved before each Reset analysis.\n\nSafe — they’re only recovery snapshots; your current project and analysis are untouched. This can’t be undone."
+    }
+  }
+}

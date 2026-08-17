@@ -1,0 +1,44 @@
+{
+  "menu": {
+    "file": "ファイル",
+    "project": "プロジェクト",
+    "view": "表示",
+    "help": "ヘルプ"
+  },
+  "item": {
+    "openFolder": "フォルダーを開く…",
+    "importProject": "プロジェクトをインポート…",
+    "importStructured": "構造化 JSON をインポート…",
+    "returnToLibrary": "ライブラリに戻る",
+    "structure": "構成…",
+    "info": "情報…",
+    "share": "共有…",
+    "exportManuscript": "原稿をエクスポート",
+    "toggleConsole": "コンソールの表示/非表示",
+    "toggleAssistant": "アシスタントの表示/非表示",
+    "compositionMode": "執筆モード",
+    "toggleDevTools": "開発者ツールの表示/非表示",
+    "referenceDocs": "リファレンスとドキュメント",
+    "tour": "アプリを見てみる",
+    "useWithClaude": "NVS を Claude で使う…",
+    "supportCommunity": "サポートとコミュニティ",
+    "pro": "NVS Pro",
+    "proActive": "NVS Pro — 有効",
+    "whatsNew": "新機能"
+  },
+  "appName": "Novel Visual Studio",
+  "search": {
+    "placeholder": "検索…",
+    "tooltip": "シーン、世界観、スレッドを検索… ({{shortcut}})"
+  },
+  "saveToLibrary": {
+    "label": "ライブラリに保存",
+    "saving": "保存中…",
+    "tooltip": "ライブラリ外 ({{root}}) から開いています。マイワークスにコピーを保存すると、ウェルカムページに表示されます。"
+  },
+  "window": {
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "close": "閉じる"
+  }
+}

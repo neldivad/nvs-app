@@ -6,14 +6,17 @@
  * 99% path is the button. Paths come from mcpHeadlessInfo (correct for this install: dev vs packaged).
  */
 import { useEffect, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Copy, Check, TriangleAlert, Download, Camera, Sparkles, Lock, ChevronRight } from 'lucide-react'
 import type { McpHeadlessInfo } from '@shared/ipc'
+import { HelpMd } from '@/components/ui/help'
 import stepUpload from '@/assets/claude/step-upload.png'
 import stepPickZip from '@/assets/claude/step-pick-zip.png'
 import stepInstalled from '@/assets/claude/step-installed.png'
 
 /** Shows a REDACTED command (screenshot-safe: no live token, home shown as ~) but copies the REAL working one. */
 function Copyable({ display, copy }: { display: string; copy: string }): JSX.Element {
+  const { t } = useTranslation('claudeConnect')
   const [copied, setCopied] = useState(false)
   return (
     <div className="flex items-stretch gap-2">
@@ -22,7 +25,7 @@ function Copyable({ display, copy }: { display: string; copy: string }): JSX.Ele
         onClick={() => void navigator.clipboard.writeText(copy).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1400) })}
         className="flex shrink-0 items-center gap-1 self-start rounded-md border border-border px-2 py-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
       >
-        {copied ? <><Check className="size-3 text-ok" /> Copied</> : <><Copy className="size-3" /> Copy</>}
+        {copied ? <><Check className="size-3 text-ok" /> {t('copyable.copied')}</> : <><Copy className="size-3" /> {t('copyable.copy')}</>}
       </button>
     </div>
   )
@@ -63,6 +66,7 @@ function Step({ n, title, children, shots }: { n: number; title: string; childre
 }
 
 export function ClaudeConnectPage(): JSX.Element {
+  const { t } = useTranslation('claudeConnect')
   const [info, setInfo] = useState<McpHeadlessInfo | null>(null)
   const [plugin, setPlugin] = useState<{ state: 'idle' | 'busy' | 'done' | 'error'; error?: string }>({ state: 'idle' })
   useEffect(() => { void window.nvs.mcpHeadlessInfo?.().then(setInfo).catch(() => setInfo(null)) }, [])
@@ -72,7 +76,7 @@ export function ClaudeConnectPage(): JSX.Element {
   const genPlugin = async (): Promise<void> => {
     setPlugin({ state: 'busy' })
     try {
-      if (!window.nvs.generateClaudePlugin) throw new Error('Restart NVS to pick up this feature.')
+      if (!window.nvs.generateClaudePlugin) throw new Error(t('step.getFile.restart'))
       const r = await window.nvs.generateClaudePlugin()
       setPlugin(r.ok ? { state: 'done' } : { state: r.error === 'cancelled' ? 'idle' : 'error', error: r.error })
     } catch (e) {
@@ -96,56 +100,54 @@ export function ClaudeConnectPage(): JSX.Element {
     <div className="mx-auto max-w-3xl">
       {/* Hero */}
       <div className="mb-10">
-        <h1 className="text-2xl font-semibold text-foreground">Talk to Claude about your novel</h1>
+        <h1 className="text-2xl font-semibold text-foreground">{t('hero.title')}</h1>
         <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
-          Add NVS to Claude once, and you can ask Claude anything about your story — what threads are still open,
-          where the plot holes are, what happens in a scene. It reads the same analysis you see in the rails.
+          {t('hero.intro')}
         </p>
       </div>
 
-      <Step n={1} title="Get the plugin file">
-        <p>One file, made for this computer. Save it somewhere you can find it — your Desktop is fine.</p>
+      <Step n={1} title={t('step.getFile.title')}>
+        <p>{t('step.getFile.body')}</p>
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => void genPlugin()}
             disabled={plugin.state === 'busy' || (info != null && !info.built)}
             className="inline-flex items-center gap-2 rounded-lg bg-thread px-4 py-2.5 text-[14px] font-medium text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50"
           >
-            <Download className="size-4" /> {plugin.state === 'busy' ? 'Saving…' : 'Download the plugin'}
+            <Download className="size-4" /> {plugin.state === 'busy' ? t('step.getFile.saving') : t('step.getFile.download')}
           </button>
-          {plugin.state === 'done' && <span className="flex items-center gap-1.5 text-[13px] text-ok"><Check className="size-4" /> Saved — now do step 2.</span>}
+          {plugin.state === 'done' && <span className="flex items-center gap-1.5 text-[13px] text-ok"><Check className="size-4" /> {t('step.getFile.saved')}</span>}
           {plugin.state === 'error' && <span className="text-[13px] text-warn">{plugin.error}</span>}
         </div>
         {info && !info.built && (
           <div className="flex items-start gap-2 rounded-md border border-warn/40 bg-warn/10 px-3 py-2 text-[12px] text-warn">
             <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-            <span>Not ready in this dev build — run <code className="font-medium">npm run mcp:build</code> once. (Shipped copies include it.)</span>
+            <span><HelpMd>{t('step.getFile.notBuilt')}</HelpMd></span>
           </div>
         )}
       </Step>
 
       <Step
         n={2}
-        title="Add it to Claude"
+        title={t('step.addToClaude.title')}
         shots={[
-          { src: stepUpload, caption: 'Claude → Settings → Plugins → Add → Upload plugin' },
-          { src: stepPickZip, caption: 'Pick the file you just saved, then Upload' }
+          { src: stepUpload, caption: t('step.addToClaude.shotUpload') },
+          { src: stepPickZip, caption: t('step.addToClaude.shotPickZip') }
         ]}
       >
         <p>
-          In <b className="text-foreground/90">Claude Desktop</b>, open <b className="text-foreground/90">Settings → Plugins</b>,
-          click <b className="text-foreground/90">Add → Upload plugin</b>, and choose the file. That's it — no accounts, no keys.
+          <HelpMd>{t('step.addToClaude.body')}</HelpMd>
         </p>
       </Step>
 
       <Step
         n={3}
-        title="Type /nvs and ask"
-        shots={[{ src: stepInstalled, caption: 'Installed — Claude now has an /nvs skill' }]}
+        title={t('step.ask.title')}
+        shots={[{ src: stepInstalled, caption: t('step.ask.shotInstalled') }]}
       >
-        <p>In any Claude chat, start your message with <code className="rounded bg-panel-soft px-1 text-foreground/90">/nvs</code> and ask in plain words:</p>
+        <p><HelpMd>{t('step.ask.intro')}</HelpMd></p>
         <ul className="space-y-1.5">
-          {['/nvs read scene 3 and tell me what it sets up', '/nvs what plot holes did you find?', '/nvs take a screenshot of my timeline — does it look tangled?'].map((p) => (
+          {(t('step.ask.examples', { returnObjects: true }) as string[]).map((p) => (
             <li key={p} className="flex items-start gap-2">
               <ChevronRight className="mt-0.5 size-3.5 shrink-0 text-thread" />
               <span className="text-foreground/85">{p}</span>
@@ -155,49 +157,45 @@ export function ClaudeConnectPage(): JSX.Element {
         <p className="flex items-start gap-2 rounded-md border border-border bg-panel/40 px-3 py-2 text-[12px] text-muted-foreground">
           <Camera className="mt-0.5 size-3.5 shrink-0 text-thread" />
           <span>
-            <b className="text-foreground/90">While NVS is open</b>, Claude follows whatever project you have on screen and can
-            screenshot your rails. Close the app and it still answers — from the project you had open when you made the file.
+            <HelpMd>{t('step.ask.liveNote')}</HelpMd>
           </span>
         </p>
-        <p className="text-faint">Claude works from the analysis in your project folder — your writing never leaves this computer.</p>
+        <p className="text-faint">{t('step.ask.privacy')}</p>
       </Step>
 
       {/* Everything technical, out of the way. */}
       <details className="mt-2 rounded-xl border border-border bg-panel/30 p-4">
-        <summary className="cursor-pointer text-[13px] font-medium text-muted-foreground hover:text-foreground">Advanced — Claude Code, and letting Claude see your screen</summary>
+        <summary className="cursor-pointer text-[13px] font-medium text-muted-foreground hover:text-foreground">{t('advanced.summary')}</summary>
         <div className="mt-4 space-y-6">
           <div>
-            <div className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-foreground"><Camera className="size-4 text-thread" /> Connect Claude Code to the open app</div>
+            <div className="mb-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-foreground"><Camera className="size-4 text-thread" /> {t('advanced.connect.title')}</div>
             <p className="mb-2 text-[12px] leading-relaxed text-muted-foreground">
-              The plugin above already does this for you — it detects the running app and hands off to it. This is the direct
-              connection for <b className="text-foreground/90">Claude Code</b> users who'd rather not install the plugin:
+              <HelpMd>{t('advanced.connect.body')}</HelpMd>
             </p>
             {liveCmd
               ? <>
                   <Copyable display={redact(liveCmd)} copy={liveCmd} />
-                  <p className="mt-1.5 flex items-center gap-1.5 text-[11px] text-warn"><Lock className="size-3 shrink-0" /> Copy it — don't screenshot or share it. That token lets any local process drive your open project.</p>
+                  <p className="mt-1.5 flex items-center gap-1.5 text-[11px] text-warn"><Lock className="size-3 shrink-0" /> {t('advanced.connect.tokenWarn')}</p>
                 </>
-              : <p className="text-[12px] text-faint">Open a project first — then this command appears.</p>}
+              : <p className="text-[12px] text-faint">{t('advanced.connect.needProject')}</p>}
           </div>
           <div>
-            <div className="mb-1.5 text-[13px] font-semibold text-foreground">Claude Code, without the app running</div>
+            <div className="mb-1.5 text-[13px] font-semibold text-foreground">{t('advanced.headless.title')}</div>
             <p className="mb-2 text-[12px] leading-relaxed text-muted-foreground">
-              Same engine, no window — it can also build the analysis for a folder of markdown from scratch. The
-              {' '}<code>--live</code> path is what lets it hand off to the app whenever that's running.
+              <HelpMd>{t('advanced.headless.body')}</HelpMd>
             </p>
             <Copyable display={redact(headlessCmd)} copy={headlessCmd} />
           </div>
           <div>
-            <div className="mb-1.5 text-[13px] font-semibold text-foreground">Claude Desktop by hand</div>
+            <div className="mb-1.5 text-[13px] font-semibold text-foreground">{t('advanced.byHand.title')}</div>
             <p className="mb-2 text-[12px] leading-relaxed text-muted-foreground">
-              The plugin above does this for you. If you'd rather edit config yourself: <b>Settings → Developer → Edit Config</b>
-              {' '}(the <b>Developer</b> tab — not <b>Connectors</b>, which is for cloud servers and can't reach your machine).
+              <HelpMd>{t('advanced.byHand.body')}</HelpMd>
             </p>
             <Copyable display={redact(desktopJson)} copy={desktopJson} />
           </div>
           <p className="flex items-center gap-2 text-[11px] text-faint">
             <Sparkles className="size-3.5 text-lore/70" />
-            {info?.toolCount ?? 31} engine tools · local connection, not a cloud service.
+            {t('advanced.toolsLine', { n: info?.toolCount ?? 31 })}
           </p>
         </div>
       </details>

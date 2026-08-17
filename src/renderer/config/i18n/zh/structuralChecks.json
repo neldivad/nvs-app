@@ -1,0 +1,10 @@
+{
+  "checkTitle": "确定性结构检查 — 无重复 id 或损坏的时间线连接",
+  "clean": "结构 — 无损坏的引用",
+  "issues_one": "结构 — {{count}} 个问题",
+  "issues_other": "结构 — {{count}} 个问题",
+  "toFix": "· {{count}} 个待修复",
+  "openPage": "打开页面",
+  "openScene": "打开场景",
+  "more": "…以及另外 {{count}} 个"
+}

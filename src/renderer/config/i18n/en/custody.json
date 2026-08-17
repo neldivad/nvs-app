@@ -1,0 +1,226 @@
+{
+  "title": "Custody",
+  "railCaption": "Custody — the authored possession/revelation chart",
+  "delete": "Delete",
+  "save": "Save",
+  "unsaved": "unsaved",
+  "all": "all",
+  "saveFailed": "save failed — the page may have been moved or deleted",
+  "help": {
+    "title": "Custody — how it works",
+    "shows": {
+      "title": "What it shows",
+      "items": [
+        "Each topic page's **custody block** drawn **exactly as written** — your declaration of where an item or a piece of information travels. No AI interpretation in this chart, ever.",
+        "**Items** are a baton (one holder at a time — a character's gain takes it FROM the previous holder). **Information** is a contagion (knowledge spreads; AUDIENCE is a lane; the faint tints are mystery/suspense).",
+        "The purpose: **learn the audience's experience** — when the reader learns what, and how long the suspense windows run."
+      ]
+    },
+    "flow": {
+      "title": "How it gets built (the flow)",
+      "rows": [
+        { "k": "1 · Write", "v": "Scenes + world pages first — custody is a revision-phase (2nd/3rd draft) tool that anchors to existing content." },
+        { "k": "2 · Run analysis", "v": "Extraction observes possession/knowledge events. Unpaged objects appear under \"From analysis\"." },
+        { "k": "3 · Create the page", "v": "From an analysis suggestion (drafts the Timeline from observed events — data, not AI) or the + button (anchored to an existing character/item). Free-floating topics can’t be created." },
+        { "k": "4 · Curate", "v": "Edit the Timeline — add, correct, delete lines. The page is yours; the chart mirrors it verbatim." },
+        { "k": "5 · Iterate", "v": "Re-runs never touch your page. Analysis keeps watching and (soon) flags divergence — a character learning off-plan." }
+      ]
+    },
+    "grammar": {
+      "title": "The grammar — three verbs, meaning from the topic kind",
+      "rows": [
+        { "k": "gain · who: [x]", "v": "item: who REPLACES the holders (one record per handoff; several who = joint possession) · information: x now KNOWS it" },
+        { "k": "lost · who: [x]", "v": "item with no who: destroyed/vanished · information: x forgets it (amnesia)" },
+        { "k": "lost · who: [public]", "v": "GLOBAL event — destruction or mass amnesia: everyone in-world loses it; the audience remembers" },
+        { "k": "public", "v": "everyone in-world knows — the flood line" },
+        { "k": "scene: start", "v": "true before page one (e.g. Claudius always knew)" },
+        { "k": "gain · who: [audience]", "v": "declares WHEN the reader learns it — without one, the AUDIENCE row falls back to the first checkpoint" },
+        { "k": "old pages", "v": "v1 verbs (held-by · known-by · forgotten-by) and `since` still parse — saving rewrites them as v2" }
+      ]
+    },
+    "observed": {
+      "title": "The Observed layer — the diff, live",
+      "items": [
+        "Your records are the **plan**; analysis is the **witness**. The ANALYSIS ghost lane (⟡ dashed marks) shows events analysis observed about this topic at scenes with **no declared checkpoint** — an unplanned reveal, a handoff you dated differently, or a misread to ignore.",
+        "**Silence is the success state**: when your ledger covers everything the witness saw, the lane disappears.",
+        "**Click a ghost** → the Records tab opens with the quick-add line drafted from the observed event — review it, press ⏎ to accept, or just ignore the whisper. Toggle the lane off under LAYERS."
+      ]
+    },
+    "where": {
+      "title": "Where it sits",
+      "items": [
+        "Custody is **authored T3** — interpretation-altitude, like Coherence, but flipped: Coherence is what the **AI surfaces**; Custody is what **you declare**. The diff between them is where findings live."
+      ]
+    }
+  },
+  "lanes": {
+    "reader": "READER",
+    "audience": "AUDIENCE",
+    "public": "PUBLIC",
+    "analysis": "ANALYSIS",
+    "unresolved": "unresolved"
+  },
+  "marks": {
+    "takes": "takes it here",
+    "learns": "learns it here",
+    "lostHere": "lost here",
+    "destroyedAll": "destroyed — gone for everyone",
+    "globalAmnesia": "global amnesia — everyone forgets",
+    "goneForEveryone": "gone for everyone",
+    "losesHere": "loses it here",
+    "forgetsHere": "forgets it here",
+    "publicEveryone": "public — everyone knows",
+    "public": "public",
+    "clickToDraft": "click → draft this checkpoint in Records"
+  },
+  "zones": {
+    "mystery": "MYSTERY zone — someone knows what the audience doesn’t yet",
+    "suspense": "SUSPENSE zone — the audience knows what they don’t"
+  },
+  "sidebar": {
+    "aiSuggestTip": "AI suggest — topics worth creating + queued record drafting",
+    "newTopicTip": "New custody topic — anchor it to a world page, or create a standalone one",
+    "topics": "Topics",
+    "topicSub_one": "{{kind}} · {{count}} checkpoint",
+    "topicSub_other": "{{kind}} · {{count}} checkpoints",
+    "deleteTopicTip": "Delete this topic page",
+    "emptyTopics": {
+      "before": "No topic pages yet. A custody page is YOUR chart — its",
+      "timeline": "Timeline",
+      "mid": "is drawn exactly as written. Hit",
+      "after": "to add one — anchor it to a world page, or make a standalone topic."
+    },
+    "emptyStart": {
+      "before": "Custody is a",
+      "bold": "revision-phase",
+      "after": "tool — it declares where items and information travel across scenes you've already written. Anchoring to world pages auto-seeds the chart from analysis, but you can start a standalone topic any time."
+    },
+    "newTopicHeading": "New custody topic",
+    "searchPlaceholder": "Name a topic, or search to anchor…",
+    "anchorTo": "Anchor to an existing page:",
+    "moreHint": "+{{count}} more — keep typing (categories match too: “location”, “lore”…)",
+    "newTopicNamed": "New topic “{{name}}”",
+    "standaloneSuffix": "— standalone",
+    "andInfo": {
+      "before": "…and add a world",
+      "link": "information page",
+      "after": "too"
+    },
+    "deleteTopicTitle": "Delete topic page",
+    "deleteMsg": {
+      "before": "Delete",
+      "after": "? The page file ({{file}}) is removed — its chart disappears; scenes and world pages are untouched."
+    },
+    "itemAnalysisCat": "item · analysis",
+    "declaredSecretCat": "declared secret",
+    "reason": {
+      "seedFrom_one": "{{count}} possession event to seed from",
+      "seedFrom_other": "{{count}} possession events to seed from",
+      "features_one": "features in {{count}} scene — no hand-offs observed",
+      "features_other": "features in {{count}} scenes — no hand-offs observed",
+      "notTracked": "not tracked yet",
+      "scenesTouch_one": "{{count}} scene touch it",
+      "scenesTouch_other": "{{count}} scenes touch it",
+      "declaredOn": "declared on {{owner}}’s page"
+    }
+  },
+  "panel": {
+    "observedUndeclared": "observed, undeclared —",
+    "emptyChart": "No checkpoints yet — add records in the Records tab (or queue the AI populate job).",
+    "extractionBanner": "extraction’s reading — create the page to own this chart",
+    "inferredHolder": "segments = inferred holder",
+    "inferredKnowledge": "█ inferred knowledge",
+    "selectPrompt": "Select a topic — or an unpaged object from analysis.",
+    "emptySecret": "No knowledge events cite this secret yet — run analysis, then lanes appear here (and Create page can draft your records from them).",
+    "emptyItem": "No custody events for this item yet — run analysis.",
+    "holdersNoun": "holders",
+    "rangeLabel": "Range",
+    "rangeTip": "Trim lanes by activity — drag the low thumb up to hide barely-active holders/knowers."
+  },
+  "history": {
+    "aiApply": "AI apply — {{name}}",
+    "recordsEdit": "records edit",
+    "proseEdit": "prose edit"
+  },
+  "ai": {
+    "dialogTitle": "AI suggest — custody",
+    "createTopicPage": "Create topic page",
+    "queueJob": "Queue job",
+    "reRun": "Re-run",
+    "accept": "Accept",
+    "grammarErrTip": "The draft has grammar errors — Re-run instead of accepting a broken block",
+    "undoRestore": "Undo — restore previous text",
+    "tabRecommend": "Recommended topics",
+    "tabPopulate": "Auto-populate records",
+    "moreSuggestions": "+{{count}} more — or anchor directly via the sidebar + search",
+    "allHaveTopic": "Every eligible world page already has a topic.",
+    "noTopicsYet": "No topics yet — create one from the Recommended tab first.",
+    "creatingA": "Creating a topic makes a page that tracks",
+    "who": "who ",
+    "holds": "holds",
+    "knows": "knows",
+    "learns": "learns",
+    "it": " it",
+    "sceneByScene": ", scene by scene, drawn as a chart.",
+    "pageLabel": "page · ",
+    "startsWithLabel": "starts with · ",
+    "draftedFrom_one": "{{count}} checkpoint drafted from what analysis noticed — yours to edit",
+    "draftedFrom_other": "{{count}} checkpoints drafted from what analysis noticed — yours to edit",
+    "noCheckpoints": "no checkpoints — add them by hand, or queue the auto-populate job after",
+    "hasDeclared_one": "has {{count}} declared checkpoint.",
+    "hasDeclared_other": "has {{count}} declared checkpoints.",
+    "jobReads1": "The job reads this page’s prose and drafts the missing checkpoints — who ",
+    "jobReads2": " it, at which scene. You review the result here; nothing is written until you accept.",
+    "whatNoticed": "What analysis noticed",
+    "moreFindings": "+{{count}} more",
+    "drafting": "drafting…",
+    "failedPrefix": "failed — ",
+    "unknownError": "unknown error",
+    "ifAccept": "If you accept, the chart becomes",
+    "appliedTag": "· applied ✓",
+    "emptyDraft": "The draft contains no readable checkpoints.",
+    "readingDraft": "reading the draft…",
+    "rawDraft": "raw draft",
+    "pickPre": "Pick ",
+    "aSuggestion": "a suggestion",
+    "aTopic": "a topic",
+    "pickPost": " on the left — this pane shows what will change before you confirm."
+  },
+  "who": {
+    "holderPh": "holder…",
+    "whoPh": "who…"
+  },
+  "quickAdd": {
+    "verbGain": "takes / learns it",
+    "verbLost": "destroyed / forgets",
+    "verbPublic": "everyone in-world knows",
+    "audienceOpt": "audience — the reader",
+    "publicOpt": "public — everyone in-world",
+    "placeholder": "quick add:  gain @{{slot}} @audience #scene …why  ⏎",
+    "holderSlot": "holder",
+    "whoSlot": "who",
+    "slotVerb": "!verb — type ! (gain if skipped)",
+    "noSuchPage": " — no such page",
+    "slotWhoReq": "@who — type @",
+    "slotWhoOpt": "@who (optional)",
+    "noSuchScene": " — no such scene",
+    "slotScene": "#scene — type #",
+    "readyNote": "⏎ adds the checkpoint",
+    "noteOptional": "note (optional) · ⏎ adds",
+    "noteType": "note — just type"
+  },
+  "records": {
+    "inLabel": "in",
+    "notePh": "note — the why",
+    "deleteCheckpoint": "Delete checkpoint",
+    "checkpointBtn": "Checkpoint",
+    "askAiTip": "Draft the missing checkpoints from this page's prose — you review the chart it would draw before anything is written",
+    "askAi": "Ask AI"
+  },
+  "preview": {
+    "checkpoints": "Checkpoints"
+  },
+  "write": {
+    "fenceBroken": "fence broken — {{error}} (fix it, or edit records in the Records tab)"
+  }
+}

@@ -8,6 +8,7 @@
  * CENTERED instead of skipping — the tour never auto-advances (the v1 skip read as a bug).
  */
 import { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace, type WorkspaceId } from '@/stores/workspace'
 import { regionSelector, type RegionId } from '@/config/regions'
 import { useModalEscape } from '@/lib/editor/escapeStack'
@@ -15,10 +16,11 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface TourStep {
+  /** Section key — a stable id used for grouping/comparison; the display label comes from `section.<key>`. */
   section: string
   region: RegionId
-  title: string
-  body: string
+  /** Catalog key for this step's title/body (`step.<key>.title` / `.body`). */
+  key: string
   workspace?: WorkspaceId
   /** Which KIND(s) this step is for. Omitted = both. Fiction gets Sequencing + Custody; non-fiction skips those
    *  (a transcript has no author-authored timeline or custody) and gets Learnings instead. See the create-wizard
@@ -28,194 +30,47 @@ interface TourStep {
 
 const TOUR_STEPS: TourStep[] = [
   // ── Writing ─────────────────────────────────────────────────────────────────
-  {
-    section: 'Writing',
-    region: 'sceneNavigator',
-    workspace: 'editor',
-    title: 'Your first pages',
-    body: 'A novel here is the completed sum of SCENE files — don’t one-shot a manuscript. Break the story into scenes, organize scenes into chapter folders; every rail downstream reads this structure.'
-  },
-  {
-    section: 'Writing',
-    region: 'sceneEditor',
-    workspace: 'editor',
-    title: 'Scenes are turn-based, not free text',
-    body: 'A scene follows a Fountain-style format: characters take turns speaking, thinking, and acting — closer to a screenplay than prose. Type / for a block (speaking · thinking · action); prefer character action over long narration.'
-  },
-  {
-    section: 'Writing',
-    region: 'sceneEditor',
-    workspace: 'editor',
-    title: 'Write · Preview · Source',
-    body: 'Every page has three views in the header: Write (the editor), Preview (how it reads), and Source (raw Markdown). Source is read-only by default — advanced authors can enable Settings → “Edit source directly” to hand-edit the raw file (know the format first).'
-  },
-  {
-    section: 'Writing',
-    region: 'editorFab',
-    workspace: 'editor',
-    title: 'Properties & help',
-    body: 'Properties (header) holds a page’s frontmatter — cast, beat, phase. The ? help Fab (bottom of every rail) and F8 explain the pane you’re in.'
-  },
-  {
-    section: 'Writing',
-    region: 'worldNavigator',
-    workspace: 'world',
-    title: 'World pages — the private wiki',
-    body: 'World pages are the author’s declaration of identity: who a character IS, what a place means. Readers never see them and the novel doesn’t ship them — they exist so you (and the analysis) share one truth.'
-  },
-  {
-    section: 'Writing',
-    region: 'worldNavigator',
-    workspace: 'world',
-    title: 'Categories & avatars',
-    body: 'Characters, locations, items, factions, lore, information — your Project Structure template picks the set. Add an image in Properties to give characters avatars; the wiki reads better complete.'
-  },
-  {
-    section: 'Writing',
-    region: 'corkboardPanel',
-    workspace: 'corkboard',
-    title: 'Corkboard — think it through',
-    body: 'A freeform planning canvas: drop cards, jot notes, draw connections by hand, and pin scenes or pages to a card. Your loose thinking space — separate from the reading-order timeline — for outlines, theories, and what-ifs before they become scenes. Multiple boards per project.'
-  },
-  {
-    section: 'Writing',
-    region: 'sceneNavigator',
-    workspace: 'editor',
-    title: 'CRITICAL: declare pages canon',
-    body: 'Analysis only reads pages YOU have confirmed. Right-click a page (or open Properties) and set its phase to canon — non-canon pages are ignored by every AI feature. If a rail looks empty, check canon first.'
-  },
+  { section: 'writing', region: 'sceneNavigator', workspace: 'editor', key: 'firstPages' },
+  { section: 'writing', region: 'sceneEditor', workspace: 'editor', key: 'turnBased' },
+  { section: 'writing', region: 'sceneEditor', workspace: 'editor', key: 'views' },
+  { section: 'writing', region: 'editorFab', workspace: 'editor', key: 'properties' },
+  { section: 'writing', region: 'worldNavigator', workspace: 'world', key: 'worldPages' },
+  { section: 'writing', region: 'worldNavigator', workspace: 'world', key: 'categories' },
+  { section: 'writing', region: 'corkboardPanel', workspace: 'corkboard', key: 'corkboard' },
+  { section: 'writing', region: 'sceneNavigator', workspace: 'editor', key: 'declareCanon' },
 
   // ── Sequencing pages ────────────────────────────────────────────────────────
-  {
-    section: 'Sequencing',
-    kinds: ['fiction'], // a transcript has no author-authored reading-order timeline
-    region: 'timelinePanel',
-    workspace: 'timeline',
-    title: 'The timeline — how the story is read',
-    body: 'Connect scenes in reading order. Branching and merging are supported — alternate timelines, or multiple POV strands converging on one point.'
-  },
-  {
-    section: 'Sequencing',
-    kinds: ['fiction'], // a transcript has no author-authored reading-order timeline
-    region: 'timelinePanel',
-    workspace: 'timeline',
-    title: 'Connecting scenes',
-    body: 'Drop a chapter folder to lay its scenes down in order, or connect scenes by hand (side-story folders included). Quick-connect and quick-remove keep rework cheap; the layer view sanity-checks canon status per scene.'
-  },
-  {
-    section: 'Sequencing',
-    kinds: ['fiction'], // a transcript has no author-authored reading-order timeline
-    region: 'timelinePanel',
-    workspace: 'timeline',
-    title: 'Chart Config — saved routes',
-    body: 'Save multiple SEQUENCES of the same scenes: branching paths, alternate routes, or a parallel story joining mid-way. Every chart follows the active route — and each route can get its own analysis run.'
-  },
-  {
-    section: 'Sequencing',
-    kinds: ['fiction'],
-    region: 'cellView',
-    workspace: 'timeline',
-    title: 'Cell flow — see the branches',
-    body: 'The Cells tab draws the active route as a visual-novel flowchart: main route centered, branches flanking, merges colored. Right-click a scene to paint its whole route a color. Read-only — a way to SEE the shape you wired on the Canvas.'
-  },
+  // a transcript has no author-authored reading-order timeline → fiction-only
+  { section: 'sequencing', kinds: ['fiction'], region: 'timelinePanel', workspace: 'timeline', key: 'timeline' },
+  { section: 'sequencing', kinds: ['fiction'], region: 'timelinePanel', workspace: 'timeline', key: 'connecting' },
+  { section: 'sequencing', kinds: ['fiction'], region: 'timelinePanel', workspace: 'timeline', key: 'chartConfig' },
+  { section: 'sequencing', kinds: ['fiction'], region: 'cellView', workspace: 'timeline', key: 'cellFlow' },
 
   // ── Project details ──────────────────────────────────────────────────────────
-  {
-    section: 'Project details',
-    region: 'titleBar',
-    title: 'Set up the project',
-    body: 'Project → Info holds the work’s identity — title, cover, credits — and its KIND (fiction / non-fiction), which shapes what the analysis looks for. Set the work’s language here too (Project Structure, ⌘,): every summary and finding is written in it, so a wrong first run costs a re-run.'
-  },
+  { section: 'projectDetails', region: 'titleBar', key: 'setup' },
 
   // ── Analysis (basic → advanced) ──────────────────────────────────────────────
-  {
-    section: 'Analysis',
-    region: 'castPanel',
-    workspace: 'cast',
-    title: 'Basic & free: presence',
-    body: 'Cast and Relationships count who appears where across your files — no AI needed. Each person’s footprint, shared scenes, and dialogue volume, straight from the text.'
-  },
-  {
-    section: 'Analysis',
-    kinds: ['fiction'],
-    region: 'threadsPanel',
-    workspace: 'threads',
-    title: 'Advanced: tracing what you opened',
-    body: 'Update analysis reads your canon scenes and returns Threads (every promise and its payoff), character arcs, entity journeys, and Lore reveals — the plot points you opened, traced.'
-  },
-  {
-    section: 'Analysis',
-    kinds: ['fiction'],
-    region: 'coherencePanel',
-    workspace: 'coherence',
-    title: 'Advanced: a second reader',
-    body: 'Coherence compares what your pages DECLARE against what the scenes SHOW — drift, contradictions, gaps. A tireless second audience verifying your intention, not an editor rewriting you.'
-  },
-  {
-    section: 'Analysis',
-    kinds: ['nonfiction'],
-    region: 'castPanel',
-    workspace: 'cast',
-    title: 'Who’s talking, and how much',
-    body: 'No AI, no waiting — Cast reads your transcript directly: who speaks, and how much by CHARACTER VOLUME (a long answer outweighs many short questions — turn counts would call them equal). Timeline shows the flow. Deeper, custom analysis will arrive as a skill you run on demand.'
-  },
+  { section: 'analysis', region: 'castPanel', workspace: 'cast', key: 'presence' },
+  { section: 'analysis', kinds: ['fiction'], region: 'threadsPanel', workspace: 'threads', key: 'tracing' },
+  { section: 'analysis', kinds: ['fiction'], region: 'coherencePanel', workspace: 'coherence', key: 'secondReader' },
+  { section: 'analysis', kinds: ['nonfiction'], region: 'castPanel', workspace: 'cast', key: 'whoTalking' },
 
   // ── Custody ─────────────────────────────────────────────────────────────────
-  {
-    section: 'Custody',
-    kinds: ['fiction'],
-    region: 'custodyPanel',
-    workspace: 'custody',
-    title: 'Reader experience: who holds, who knows',
-    body: 'Your authored timetable of possession: which character holds an item, who knows a secret, scene by scene. The AUDIENCE row is the reader — the shaded gaps are your suspense and mystery windows, the reader’s experience made visible.'
-  },
-  {
-    section: 'Custody',
-    kinds: ['fiction'],
-    region: 'custodySidebar',
-    workspace: 'custody',
-    title: 'A revision-phase tool',
-    body: 'Custody is writable any time but earns its keep on the 2nd/3rd draft — once scenes and world pages exist and analysis has run, declare the reveals and let the ghost marks show where the story disagrees with your plan.'
-  },
+  { section: 'custody', kinds: ['fiction'], region: 'custodyPanel', workspace: 'custody', key: 'possession' },
+  { section: 'custody', kinds: ['fiction'], region: 'custodySidebar', workspace: 'custody', key: 'revisionTool' },
 
   // ── Learnings (non-fiction) ──────────────────────────────────────────────────
-  {
-    section: 'Learnings',
-    kinds: ['nonfiction'],
-    region: 'coherencePanel',
-    workspace: 'coherence',
-    title: 'What the conversation reveals',
-    body: 'For a transcript, coherence reads as CONSISTENCY — does a speaker hold the same position, do the stated facts line up across the whole record? Paired with the topic and speaker rails, it’s the durable read: what was claimed, by whom, and whether it holds up.'
-  },
+  { section: 'learnings', kinds: ['nonfiction'], region: 'coherencePanel', workspace: 'coherence', key: 'reveals' },
 
   // ── More (get help · get ai · get community) ─────────────────────────────────
-  {
-    section: 'More',
-    region: 'titleBar',
-    title: 'Get help',
-    body: 'F8 opens any pane’s help; Help → Reference & Docs is the manual; and this tour replays any time. File and PNG exports live on the rails and menus.'
-  },
-  {
-    section: 'More',
-    region: 'statusBar',
-    title: 'Make it yours',
-    body: 'The dock handle (bottom center) opens Composition · Settings · Theme. Settings holds optional display toggles — Mood chips, Timing codes, and “Edit source directly” — plus a one-button Storage cleanup that purges cached analysis when the project’s .nvs folder grows large.'
-  },
-  {
-    section: 'More',
-    region: 'consoleDock',
-    title: 'Get AI',
-    body: 'AI features need a connection — an API key, or your Claude plan (Settings → AI). It unlocks Update analysis, the assistant chat, the background Tasks inbox (edits you review before they land), and /agent while writing. You can also drive NVS FROM Claude — see the Store.'
-  },
-  {
-    section: 'More',
-    region: 'storeView',
-    title: 'Get community',
-    body: 'The Store is a place: community works to open and learn from, and extensions that add capabilities. Share your own when it’s ready.'
-  }
+  { section: 'more', region: 'titleBar', key: 'getHelp' },
+  { section: 'more', region: 'statusBar', key: 'makeYours' },
+  { section: 'more', region: 'consoleDock', key: 'getAi' },
+  { section: 'more', region: 'storeView', key: 'getCommunity' }
 ]
 
 export function TourOverlay(): JSX.Element | null {
+  const { t } = useTranslation('tourOverlay')
   const step = useWorkspace((s) => s.tourStep)
   const setStep = useWorkspace((s) => s.setTourStep)
   const setWorkspace = useWorkspace((s) => s.setWorkspace)
@@ -296,34 +151,34 @@ export function TourOverlay(): JSX.Element | null {
                 sec === spec.section ? 'border-lore bg-lore/10 text-foreground' : 'border-border text-muted-foreground hover:bg-panel-soft'
               )}
             >
-              {sec}
+              {t(`section.${sec}`)}
             </button>
           ))}
         </div>
         <p className="text-[10px] font-semibold uppercase tracking-wide text-lore">
-          {spec.section} · {sectionIdx}/{inSection.length}
+          {t('counter', { section: t(`section.${spec.section}`), index: sectionIdx, total: inSection.length })}
         </p>
-        <p className="pt-0.5 text-[13px] font-medium text-foreground">{spec.title}</p>
-        <p className="pt-1 text-[12px] leading-relaxed text-muted-foreground">{spec.body}</p>
-        {!rect && <p className="pt-1 text-[10px] text-faint">(this surface isn’t on screen right now — e.g. it needs an open page or a project)</p>}
+        <p className="pt-0.5 text-[13px] font-medium text-foreground">{t(`step.${spec.key}.title`)}</p>
+        <p className="pt-1 text-[12px] leading-relaxed text-muted-foreground">{t(`step.${spec.key}.body`)}</p>
+        {!rect && <p className="pt-1 text-[10px] text-faint">{t('offscreen')}</p>}
         <div className="flex items-center gap-2 pt-3">
           <div className="flex flex-1 items-center gap-1">
             {steps.map((s, i) => (
               <button
                 key={i}
                 onClick={() => setStep(i)}
-                title={`${s.section} — ${s.title}`}
+                title={t('stepHint', { section: t(`section.${s.section}`), title: t(`step.${s.key}.title`) })}
                 className={cn('size-1.5 rounded-full transition-transform hover:scale-150', i === step ? 'bg-lore' : 'bg-border')}
               />
             ))}
           </div>
           {step > 0 && (
             <Button size="sm" variant="ghost" onClick={() => setStep(step - 1)}>
-              Back
+              {t('back')}
             </Button>
           )}
           <Button size="sm" onClick={() => setStep(step + 1 < steps.length ? step + 1 : null)}>
-            {step + 1 < steps.length ? 'Next' : 'Done'}
+            {step + 1 < steps.length ? t('next') : t('done')}
           </Button>
         </div>
       </div>

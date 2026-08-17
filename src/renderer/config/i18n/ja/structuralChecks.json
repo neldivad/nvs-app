@@ -1,0 +1,10 @@
+{
+  "checkTitle": "決定論的な構造チェック — 重複するidや壊れたタイムラインエッジがないことを確認",
+  "clean": "構造 — 壊れた参照なし",
+  "issues_one": "構造 — {{count}}件の問題",
+  "issues_other": "構造 — {{count}}件の問題",
+  "toFix": "· {{count}}件を修正",
+  "openPage": "ページを開く",
+  "openScene": "シーンを開く",
+  "more": "…さらに{{count}}件"
+}

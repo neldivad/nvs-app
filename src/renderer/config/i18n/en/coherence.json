@@ -1,0 +1,117 @@
+{
+  "help": {
+    "title": "Coherence — how it works",
+    "flags": {
+      "title": "What it flags",
+      "items": [
+        "Each finding compares what a **page says** (a character or thread's declared profile) against what your **scenes show** — read at chapter checkpoints.",
+        "It's the analysis agent's reading, not authored truth — a queue of places to check, never a verdict you have to obey."
+      ]
+    },
+    "questions": {
+      "title": "The question behind each chip"
+    },
+    "reading": {
+      "title": "Reading a finding",
+      "rows": {
+        "category": "the kind chip — Says vs shows · Slow drift · Page is silent · Never shown · Fact flip · Impossible · Broken rule",
+        "severity": "the triage color — high · medium · low (what to weigh first)",
+        "Subject": "who/what it concerns — a character, a thread, or the whole story",
+        "Where": "the chapter the issue actually occurs in (drawn from its evidence)",
+        "Analyzed through": "how far the run read — the same for every finding, so not where the issue is",
+        "page says / scenes show": "the declared profile vs the prose — the heart of the flag"
+      }
+    },
+    "acting": {
+      "title": "Acting on it",
+      "items": [
+        "**Open …'s page** — edit the profile that's out of sync (the fix the finding points at).",
+        "**Verify in scenes** — open the scenes it draws on and read the prose for yourself before changing anything.",
+        "**Inspect thread** — jump to the thread a finding is about.",
+        "The amber **Suggestion** is the assistant's read — fenced off from the facts on purpose. It's advice, your call."
+      ]
+    },
+    "confirmation": {
+      "title": "Confirmation",
+      "items": [
+        "**Confirmation** findings are consistency *confirmed* — nothing to fix; they sink to the bottom of the roster."
+      ]
+    }
+  },
+  "rail": {
+    "name": "Coherence",
+    "caption": "Coherence — findings"
+  },
+  "loading": "Loading…",
+  "filter": {
+    "highlight": "Highlight",
+    "clear": "clear"
+  },
+  "scale": {
+    "characters": "characters",
+    "rangeLabel": "Range",
+    "all": "all",
+    "rangeTitle": "Trim rows by finding count — drag the low thumb up to hide lightly-flagged characters and focus the most-flagged."
+  },
+  "row": {
+    "noKind": "{{name}} — no {{kind}}",
+    "openPage": "{{name}} — {{kind}} · open page"
+  },
+  "review": {
+    "wholeStory": "The whole story",
+    "subjectKind": {
+      "character": "Character",
+      "item": "Item",
+      "faction": "Faction",
+      "lore": "Lore",
+      "location": "Location",
+      "thread": "Thread",
+      "story": "Story"
+    },
+    "ownersPage": "{{owner}}’s page",
+    "pageSays": "The page says",
+    "noMention": "doesn’t mention this",
+    "scenesShow": "The scenes show",
+    "earlier": "Established earlier",
+    "later": "The later scene shows",
+    "suggestion": "Suggestion — the assistant’s read, your call",
+    "intentional": "Intentional",
+    "markIntentional": "Mark intentional",
+    "intentionalTitleOn": "Ruled intentional — click to resume flagging",
+    "intentionalTitleOff": "By design (a deception/twist)? Rule it intentional so re-runs stay quiet",
+    "related": "Related",
+    "openOwnersPage": "Open {{name}}’s page",
+    "inspectThread": "Inspect the thread",
+    "chapterEvidenceTitle": "Read at chapter level — pick the scene that matches",
+    "noScenes": "no scenes found",
+    "openScene": "Open “{{title}}”",
+    "setsUp": "The story sets up",
+    "comesOf": "What comes of it"
+  },
+  "detail": {
+    "fallbackName": "Coherence",
+    "unplaced": "Unplaced",
+    "findingCount_one": "{{count}} finding",
+    "findingCount_other": "{{count}} findings",
+    "tabFindings": "Findings",
+    "tabFinding": "Finding"
+  },
+  "sidebar": {
+    "title": "Coherence",
+    "runTitle": "Check coherence — diff each character’s page against what the story shows",
+    "reading": "Reading…",
+    "empty": "No findings — they appear after you run analysis.",
+    "severity": {
+      "high": "high",
+      "medium": "medium",
+      "low": "low"
+    },
+    "noCharacterIssues": "No character coherence issues.",
+    "pageVsStory": "Page vs story · {{count}}",
+    "plotHoles": "Plot holes · {{count}}",
+    "onTrack": "Deception on track ✓ · {{count}}",
+    "intentional": "Intentional ✓ · {{count}}",
+    "threadVerdicts": "Thread verdicts · {{count}}",
+    "toughQuestions": "Tough questions · {{count}}"
+  }
+}

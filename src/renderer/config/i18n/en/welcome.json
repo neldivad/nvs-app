@@ -1,0 +1,59 @@
+{
+  "search": {
+    "placeholder": "Search works…"
+  },
+  "button": {
+    "new": "New",
+    "openFolder": "Open a project folder from anywhere",
+    "import": "Import a shared .nvsproj bundle",
+    "showMore": "Show more ({{n}})",
+    "continue": "Continue"
+  },
+  "section": {
+    "continue": "Continue writing",
+    "elsewhere": "Opened elsewhere",
+    "results": "Results · {{n}}",
+    "allWorks": "All works · {{n}}"
+  },
+  "kind": {
+    "all": "all",
+    "originals": "originals",
+    "forks": "forks"
+  },
+  "sort": {
+    "edited": "Last edited",
+    "name": "Name"
+  },
+  "empty": {
+    "library": {
+      "before": "No works in your library yet — create one, or import a ",
+      "after": "."
+    },
+    "noMatch": "No {{noun}} match your search.",
+    "none": "No {{noun}}.",
+    "noun": {
+      "works": "works",
+      "originals": "originals",
+      "forks": "forks"
+    }
+  },
+  "menu": {
+    "open": "Open",
+    "details": "Details…",
+    "fork": "Fork",
+    "renameFolder": "Rename folder to “{{title}}”",
+    "delete": "Delete…"
+  },
+  "confirmDelete": {
+    "title": "Delete project?",
+    "body": "will be moved to your system Trash — prose and analysis together. You can restore it from there if you change your mind.",
+    "cancel": "Cancel",
+    "confirm": "Move to Trash"
+  },
+  "card": {
+    "forkedFrom": "Forked from {{name}}",
+    "from": "from {{name}}",
+    "stats": "{{scenes}} scenes · {{world}} world",
+    "actions": "Project actions"
+  }
+}

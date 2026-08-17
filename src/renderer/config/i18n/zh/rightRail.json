@@ -1,0 +1,11 @@
+{
+  "agent": "代理（聊天 + 任务）",
+  "taskRunning": "任务运行中",
+  "tasksReady_one": "{{count}} 个任务就绪",
+  "tasksReady_other": "{{count}} 个任务就绪",
+  "promptLibrary": "提示词库",
+  "jobs": "作业 — 分析运行与进度",
+  "analysisRunning": "分析运行中",
+  "store": "商店 — 社区作品与扩展",
+  "extensionTools": "扩展工具 — 运行已安装的扩展"
+}

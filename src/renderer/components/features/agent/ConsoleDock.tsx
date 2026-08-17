@@ -5,6 +5,8 @@
  * bundle runner over `writeTier`); Database/Agent are still placeholders. Collapsed by default (L16).
  */
 import { useCallback, useEffect, useState, type JSX } from 'react';
+import { useTranslation, Trans } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { regionAttrs } from '@/config/regions'
 import { Bot, Camera, Check, ChevronRight, Circle, ClipboardCheck, Copy, Cpu, Database, Eye, HeartPulse, HelpCircle, History, Key, Loader2, Minus, MoreHorizontal, Play, Plug, Plus, RefreshCw, RotateCcw, ShieldAlert, Terminal, Trash2, XCircle } from 'lucide-react'
 import type { AiConnection, AiConnectionStatus, AiProviderType, AiState, CoherenceStatusRow, DbTable, IngestProgress, IngestSession, IngestStep, McpStatus, SaveConnectionInput, TierStatusRow, TimelineStatus } from '@shared/ipc'
@@ -30,13 +32,14 @@ const RUNQUEUE_CAP = 24 // most step rows the live queue paints — a window nea
 
 // Database is a raw-records DEBUG surface — hidden from users (dev-only) so the console stays uncluttered;
 // the north star is an undistracted writing space, not a DB browser. Flip on in dev builds.
-const TABS: { id: Tab; label: string; icon: typeof Play; blurb: string }[] = [
-  { id: 'ingest', label: 'Analysis', icon: Play, blurb: '' },
-  ...(import.meta.env.DEV ? [{ id: 'database' as const, label: 'Database', icon: Database, blurb: '' }] : []),
-  { id: 'agent', label: 'Agent', icon: Bot, blurb: '' }
+const TABS: { id: Tab; labelKey: string; icon: typeof Play }[] = [
+  { id: 'ingest', labelKey: 'tab.analysis', icon: Play },
+  ...(import.meta.env.DEV ? [{ id: 'database' as const, labelKey: 'tab.database', icon: Database }] : []),
+  { id: 'agent', labelKey: 'tab.agent', icon: Bot }
 ]
 
 export function ConsoleDock(): JSX.Element {
+  const { t } = useTranslation('console')
   const project = useWorkspace((s) => s.project)
   const tab = useWorkspace((s) => s.dockTab) // lifted so the rail freshness badge can deep-link here
   const setTab = useWorkspace((s) => s.setDockTab)
@@ -45,30 +48,30 @@ export function ConsoleDock(): JSX.Element {
   return (
     <div {...regionAttrs('consoleDock')} className="relative flex h-full flex-col bg-canvas" style={{ userSelect: 'text' }}>
       <div className="flex items-center gap-1 border-b border-border px-2 py-1">
-        {TABS.map((t) => (
+        {TABS.map((tb) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={tb.id}
+            onClick={() => setTab(tb.id)}
             className={cn(
               'flex items-center gap-1.5 rounded px-2 py-1 text-[11px] transition-colors',
-              tab === t.id ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
+              tab === tb.id ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
             )}
           >
-            <t.icon className="size-3.5" />
-            {t.label}
+            <tb.icon className="size-3.5" />
+            {t(tb.labelKey)}
           </button>
         ))}
         <button
           onClick={() => setHelp(true)}
           className="ml-auto flex items-center gap-1 rounded px-1.5 py-1 text-[11px] text-muted-foreground hover:bg-panel-soft"
-          title="How the console works"
+          title={t('header.help')}
         >
           <HelpCircle className="size-3.5" />
         </button>
       </div>
 
       {!project ? (
-        <Centered>Open a work to use the console.</Centered>
+        <Centered>{t('empty.noProject')}</Centered>
       ) : tab === 'ingest' ? (
         <IngestTab />
       ) : tab === 'agent' ? (
@@ -93,6 +96,7 @@ function Centered({ children }: { children: React.ReactNode }): JSX.Element {
 }
 
 function IngestTab(): JSX.Element {
+  const { t } = useTranslation('console')
   const [rows, setRows] = useState<TierStatusRow[]>([])
   const [cohRows, setCohRows] = useState<CoherenceStatusRow[]>([])
   const [hasAi, setHasAi] = useState<boolean | undefined>(undefined)
@@ -199,10 +203,10 @@ function IngestTab(): JSX.Element {
   const allScenesSelected = canonRows.length > 0 && selectedScenes.size === canonRows.length
   // Status detail: only the non-zero segments — "120 up to date" when clean, not "…· 0 outdated · 0 not read".
   const statusDetail = [
-    `${counts.fresh} up to date`,
-    counts.stale ? `${counts.stale} outdated` : null,
-    counts.pending ? `${counts.pending} not read` : null,
-    counts.draft ? `${counts.draft} draft` : null
+    t('statusDetail.upToDate', { n: counts.fresh }),
+    counts.stale ? t('statusDetail.outdated', { n: counts.stale }) : null,
+    counts.pending ? t('statusDetail.notRead', { n: counts.pending }) : null,
+    counts.draft ? t('statusDetail.draft', { n: counts.draft }) : null
   ].filter(Boolean).join(' · ')
 
   // Non-fiction is deterministic-only for now: the AI analysis run (T2/T3) is off — a conversation surfaces
@@ -211,9 +215,9 @@ function IngestTab(): JSX.Element {
   if (domain === 'nonfiction')
     return (
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1.5 px-6 text-center">
-        <span className="text-[12px] font-medium text-foreground/90">Deterministic views only</span>
+        <span className="text-[12px] font-medium text-foreground/90">{t('nonfiction.title')}</span>
         <span className="max-w-sm text-[11px] leading-snug text-muted-foreground">
-          For non-fiction, NVS reads your transcript directly — <b>Cast</b> shows who speaks and how much (by character volume), and <b>Timeline</b> shows the flow. AI analysis is off for now; custom extraction will arrive as a skill you can run on demand.
+          <Trans t={t} i18nKey="nonfiction.body" components={{ b: <b /> }} />
         </span>
       </div>
     )
@@ -227,18 +231,18 @@ function IngestTab(): JSX.Element {
         ) : (
           <span className="inline-block size-2 rounded-full" style={{ backgroundColor: headDot }} />
         )}
-        <span className="text-[12px] font-medium text-foreground/90">{running ? 'Updating…' : health}</span>
+        <span className="text-[12px] font-medium text-foreground/90">{running ? t('health.updating') : health}</span>
         <span className="text-[10px] text-faint">{statusDetail}</span>
 
         <div className="ml-auto flex items-center gap-2">
-          {hasAi === false && !running && <span className="max-w-60 text-[10px] text-faint">No AI connected — steps will be skipped until you add one.</span>}
+          {hasAi === false && !running && <span className="max-w-60 text-[10px] text-faint">{t('health.noAi')}</span>}
           {running ? (
             <button
               onClick={() => void window.nvs.cancelIngestRun()}
-              title="Stop after the current scene"
+              title={t('run.stopTip')}
               className="flex items-center gap-1.5 rounded-md border border-flag/50 bg-flag/10 px-2.5 py-1 text-[11px] text-foreground hover:bg-flag/20"
             >
-              <Loader2 className="size-3 animate-spin" /> Stop
+              <Loader2 className="size-3 animate-spin" /> {t('run.stop')}
             </button>
           ) : (
             <>
@@ -247,7 +251,7 @@ function IngestTab(): JSX.Element {
               <div className="relative">
                 <button
                   onClick={() => setMoreOpen((v) => !v)}
-                  title="More analysis actions"
+                  title={t('run.moreActions')}
                   className="flex items-center rounded-md border border-border px-1.5 py-1 text-muted-foreground hover:bg-panel-soft"
                 >
                   <MoreHorizontal className="size-3.5" />
@@ -260,27 +264,27 @@ function IngestTab(): JSX.Element {
                         disabled={!canCheckCoherence}
                         onMouseDown={(e) => { e.preventDefault(); setMoreOpen(false); setCohRunDialog(true) }}
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-foreground hover:bg-panel-soft disabled:cursor-not-allowed disabled:opacity-50"
-                        title={viewing ? 'Viewing a past version — return to current to check' : cohRows.length === 0 ? 'No characters with both a page and an arc yet' : 'Diff each character’s page against what the story shows'}
+                        title={viewing ? t('coherence.tipViewing') : cohRows.length === 0 ? t('coherence.tipNone') : t('coherence.tipReady')}
                       >
                         <ShieldAlert className="size-3 shrink-0 text-muted-foreground" />
-                        {cohDirty > 0 ? `Check coherence (${cohDirty})` : 'Check coherence'}
+                        {cohDirty > 0 ? t('coherence.checkCount', { n: cohDirty }) : t('coherence.check')}
                       </button>
                       <button
                         onMouseDown={(e) => { e.preventDefault(); setMoreOpen(false); checkReadiness() }}
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-foreground hover:bg-panel-soft"
-                        title="Ask the AI to preflight-check the project before an analysis run"
+                        title={t('readiness.tip')}
                       >
                         <ClipboardCheck className="size-3 shrink-0 text-muted-foreground" />
-                        Readiness check
+                        {t('readiness.label')}
                       </button>
                       <div className="my-1 border-t border-border" />
                       <button
                         onMouseDown={(e) => { e.preventDefault(); setMoreOpen(false); setResetConfirm(true) }}
                         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] text-flag hover:bg-flag/10"
-                        title="Rebuild analysis from your files"
+                        title={t('rebuild.tip')}
                       >
                         <RotateCcw className="size-3 shrink-0" />
-                        Rebuild from files…
+                        {t('rebuild.button')}
                       </button>
                     </div>
                   </>
@@ -291,21 +295,21 @@ function IngestTab(): JSX.Element {
                 onClick={() => setRunDialog(true)}
                 title={
                   viewing
-                    ? 'Viewing a past version — return to current to update'
+                    ? t('run.tip.viewing')
                     : graphCycle
-                      ? 'Timeline has a leads_to cycle — fix it so the analysis can walk the graph'
+                      ? t('run.tip.cycle')
                       : dirty > 0
-                        ? 'Read changed scenes into the analysis'
+                        ? t('run.tip.dirty')
                         : graphStale
-                          ? 'The timeline graph changed since the last run — re-run to update'
+                          ? t('run.tip.graph')
                           : counts.skim > 0
-                            ? `${counts.skim} scene${counts.skim === 1 ? '' : 's'} read fast — run an Expert pass to build character arcs & profiles`
-                            : 'Everything is up to date'
+                            ? t('run.tip.skim', { count: counts.skim })
+                            : t('run.tip.upToDate')
                 }
                 className="flex items-center gap-1.5 rounded-md border border-thread/50 bg-thread/10 px-2.5 py-1 text-[11px] text-foreground hover:bg-thread/20 disabled:cursor-not-allowed disabled:border-border disabled:bg-transparent disabled:text-faint disabled:opacity-70"
               >
                 <Play className="size-3" />
-                {dirty > 0 ? `Update analysis (${dirty})` : graphStale ? 'Update analysis · graph changed' : counts.skim > 0 ? `Expert pass (${counts.skim})` : 'Up to date'}
+                {dirty > 0 ? t('run.label.update', { n: dirty }) : graphStale ? t('run.label.graph') : counts.skim > 0 ? t('run.label.expert', { n: counts.skim }) : t('run.label.upToDate')}
               </button>
             </>
           )}
@@ -316,9 +320,9 @@ function IngestTab(): JSX.Element {
       {viewing && (
         <div className="flex items-center gap-2 border-b border-lore/40 bg-lore/10 px-3 py-1.5 text-[11px] text-lore">
           <Eye className="size-3 shrink-0" />
-          <span className="min-w-0 flex-1 truncate">Viewing a past version (read-only) — {relTime(sessions.find((s) => s.id === viewingVersion)?.finishedAt ?? '')}</span>
-          <button onClick={() => void revertIngestSession(viewingVersion!)} className="shrink-0 rounded border border-lore/50 px-1.5 py-0.5 hover:bg-lore/20">Restore this version</button>
-          <button onClick={() => void viewVersion(null)} className="shrink-0 rounded px-1.5 py-0.5 hover:bg-lore/20">Return to current</button>
+          <span className="min-w-0 flex-1 truncate">{t('timetravel.viewing', { time: relTime(sessions.find((s) => s.id === viewingVersion)?.finishedAt ?? '', t) })}</span>
+          <button onClick={() => void revertIngestSession(viewingVersion!)} className="shrink-0 rounded border border-lore/50 px-1.5 py-0.5 hover:bg-lore/20">{t('timetravel.restore')}</button>
+          <button onClick={() => void viewVersion(null)} className="shrink-0 rounded px-1.5 py-0.5 hover:bg-lore/20">{t('timetravel.return')}</button>
         </div>
       )}
 
@@ -331,33 +335,33 @@ function IngestTab(): JSX.Element {
       <ConfirmDialog
         open={resetConfirm}
         className="h-[50vh] w-[50vw] max-w-none"
-        title="Rebuild analysis from your files?"
+        title={t('rebuild.confirmTitle')}
         message={
           <div className="space-y-3">
             <p className="text-[12px] text-muted-foreground">
-              Rebuilds the analysis cleanly from your scenes when it's drifted out of sync with your story. <b className="text-foreground/80">Your writing is never touched.</b>
+              <Trans t={t} i18nKey="rebuild.confirmBody" components={{ b: <b className="text-foreground/80" /> }} />
             </p>
             <HelpTable
               rows={[
-                ['When', 'threads, arcs or coherence look wrong — usually after renaming or restructuring chapters'],
-                ['What it does', 'clears the derived analysis (threads, arcs, coherence, version history) and re-reads your files'],
-                ['Your writing', 'never touched — only the analysis is rebuilt'],
-                ['Safety', 'the current analysis is backed up to a .nvs.bak-… folder first, so nothing is lost'],
-                ['After', 're-run the AI passes to refill threads/arcs/coherence']
+                [t('rebuild.table.whenLabel'), t('rebuild.table.whenBody')],
+                [t('rebuild.table.whatLabel'), t('rebuild.table.whatBody')],
+                [t('rebuild.table.writingLabel'), t('rebuild.table.writingBody')],
+                [t('rebuild.table.safetyLabel'), t('rebuild.table.safetyBody')],
+                [t('rebuild.table.afterLabel'), t('rebuild.table.afterBody')]
               ]}
             />
           </div>
         }
-        confirmLabel="Rebuild"
+        confirmLabel={t('rebuild.confirmLabel')}
         onConfirm={() => { setResetConfirm(false); void resetAnalysis() }}
         onCancel={() => setResetConfirm(false)}
       />
 
       <ConfirmDialog
         open={reanalyzeConfirm}
-        title={`Re-analyze ${selectedScenes.size} scene${selectedScenes.size === 1 ? '' : 's'}?`}
-        message={<>This re-reads {selectedScenes.size} scene{selectedScenes.size === 1 ? '' : 's'} even though they're up to date — about {selectedScenes.size} AI call{selectedScenes.size === 1 ? '' : 's'} via <b>{connLabel ?? 'your connection'}</b> (handy after switching models). The database is snapshotted first.</>}
-        confirmLabel="Re-analyze"
+        title={t('reanalyze.confirmTitle', { count: selectedScenes.size })}
+        message={<Trans t={t} i18nKey="reanalyze.confirmBody" count={selectedScenes.size} values={{ conn: connLabel ?? t('reanalyze.yourConnection') }} components={{ b: <b /> }} />}
+        confirmLabel={t('reanalyze.confirmLabel')}
         onConfirm={() => { setReanalyzeConfirm(false); reanalyze() }}
         onCancel={() => setReanalyzeConfirm(false)}
       />
@@ -371,17 +375,17 @@ function IngestTab(): JSX.Element {
         <div className="border-b border-border px-3 py-2">
           <div className="mb-1.5 flex items-center gap-2">
             <p className="text-[10px] font-medium uppercase tracking-wide text-faint">
-              Recent updates
-              {coherenceBehind && <span className="ml-1.5 normal-case text-flag/80">· coherence behind current analysis</span>}
+              {t('recent.title')}
+              {coherenceBehind && <span className="ml-1.5 normal-case text-flag/80">{t('recent.behind')}</span>}
             </p>
             {analysisSessions.length > 0 && (
-              <button onClick={() => setHistoryOpen(true)} className="ml-auto flex items-center gap-1 text-[10px] text-faint hover:text-foreground" title="See what each past run analyzed, by chapter">
-                <History className="size-3" /> History
+              <button onClick={() => setHistoryOpen(true)} className="ml-auto flex items-center gap-1 text-[10px] text-faint hover:text-foreground" title={t('recent.historyTip')}>
+                <History className="size-3" /> {t('recent.history')}
               </button>
             )}
           </div>
           {analysisSessions.length === 0 && orphanCoh.length === 0 ? (
-            <p className="text-[11px] text-muted-foreground">Past updates will appear here once you run one.</p>
+            <p className="text-[11px] text-muted-foreground">{t('recent.empty')}</p>
           ) : (
             <ul className="space-y-1">
               {analysisSessions.map((s) => {
@@ -396,7 +400,7 @@ function IngestTab(): JSX.Element {
                 const sc = tgts.filter((t) => t.kind === 'scene').length
                 const ar = tgts.filter((t) => t.kind === 'window').length
                 const co = tgts.filter((t) => t.kind === 'coherence').length
-                const provSummary = [sc && `${sc} scene${sc === 1 ? '' : 's'}`, ar && `${ar} arc${ar === 1 ? '' : 's'}`, co && `${co} coherence`].filter(Boolean).join(' · ')
+                const provSummary = [sc && t('provenance.scene', { count: sc }), ar && t('provenance.arc', { count: ar }), co && t('provenance.coherence', { n: co })].filter(Boolean).join(' · ')
                 return (
                   <li key={s.id} className={cn('rounded text-[11px]', isViewed && 'bg-lore/10')}>
                     <div className="flex items-center gap-2">
@@ -404,7 +408,7 @@ function IngestTab(): JSX.Element {
                       <button
                         onClick={() => toggleExpanded(s.id)}
                         disabled={!hasProvenance}
-                        title={hasProvenance ? 'What this version covered' : 'No provenance recorded'}
+                        title={hasProvenance ? t('provenance.viewedTip') : t('provenance.noneTip')}
                         className="shrink-0 text-faint hover:text-foreground disabled:opacity-0"
                       >
                         <ChevronRight className={cn('size-3 transition-transform', isExp && 'rotate-90')} />
@@ -416,12 +420,12 @@ function IngestTab(): JSX.Element {
                       <button
                         onClick={() => void viewVersion(isCurrent ? null : s.id)}
                         disabled={(!s.snapshotId || pruned) && !isCurrent}
-                        title={isCurrent ? 'Current version (live)' : pruned ? 'Snapshot pruned — too old to preview (only the newest versions are kept)' : 'View this version (read-only)'}
+                        title={isCurrent ? t('provenance.versionCurrentTip') : pruned ? t('provenance.versionPrunedTip') : t('provenance.versionViewTip')}
                         className={cn('flex min-w-0 flex-1 items-center gap-2 rounded py-0.5 text-left hover:bg-panel-soft/60 disabled:cursor-default disabled:hover:bg-transparent', pruned && 'opacity-45')}
                       >
-                        <span className="w-24 shrink-0 text-faint">{relTime(s.finishedAt)}</span>
+                        <span className="w-24 shrink-0 text-faint">{relTime(s.finishedAt, t)}</span>
                         <span className={cn('min-w-0 flex-1 truncate', isCurrent ? 'text-foreground/90' : 'text-muted-foreground')}>
-                          {s.total} target{s.total === 1 ? '' : 's'}
+                          {t('recent.targets', { count: s.total })}
                           {/* A clean run: "N targets" already means N succeeded — no ✓N noise. Show the split
                               ONLY when something failed or was skipped (then the failures are what matters). */}
                           {(s.failed > 0 || s.skipped > 0) && (
@@ -431,21 +435,21 @@ function IngestTab(): JSX.Element {
                               {s.skipped > 0 && <span> ⊘{s.skipped}</span>}
                             </>
                           )}
-                          {' · '}{s.rowsWritten} rows
+                          {' · '}{t('recent.rows', { n: s.rowsWritten })}
                         </span>
                       </button>
                       {isCurrent ? (
-                        <span className="shrink-0 px-1 text-[10px] text-faint">current</span>
+                        <span className="shrink-0 px-1 text-[10px] text-faint">{t('recent.current')}</span>
                       ) : pruned ? (
-                        <span className="shrink-0 px-1 text-[10px] text-faint" title="Older versions are pruned to save space — this one can no longer be previewed or restored">pruned</span>
+                        <span className="shrink-0 px-1 text-[10px] text-faint" title={t('recent.prunedTip')}>{t('recent.pruned')}</span>
                       ) : (
                         s.snapshotId && (
                           <button
                             onClick={() => void revertIngestSession(s.id)}
-                            title="Make this the current version (reversible — your current version stays in the list)"
+                            title={t('recent.restoreTip')}
                             className="flex shrink-0 items-center gap-1 rounded px-1 py-0.5 text-[10px] text-muted-foreground hover:bg-panel-soft hover:text-foreground"
                           >
-                            <RotateCcw className="size-2.5" /> Restore
+                            <RotateCcw className="size-2.5" /> {t('recent.restore')}
                           </button>
                         )
                       )}
@@ -457,12 +461,12 @@ function IngestTab(): JSX.Element {
                       <div className="ml-8 mb-1 mt-0.5">
                         <div className="mb-0.5 text-[10px] text-faint">{provSummary}</div>
                         <div className="flex flex-wrap gap-1">
-                          {tgts.slice(0, PROV_CHIP_CAP).map((t, i) => (
-                            <span key={i} className="rounded bg-panel-soft px-1.5 py-0.5 text-[10px] text-faint" title={`${t.kind} · ${t.targetId}`}>
-                              {t.label}
+                          {tgts.slice(0, PROV_CHIP_CAP).map((tg, i) => (
+                            <span key={i} className="rounded bg-panel-soft px-1.5 py-0.5 text-[10px] text-faint" title={`${tg.kind} · ${tg.targetId}`}>
+                              {tg.label}
                             </span>
                           ))}
-                          {tgts.length > PROV_CHIP_CAP && <span className="px-1.5 py-0.5 text-[10px] text-faint">+{tgts.length - PROV_CHIP_CAP} more</span>}
+                          {tgts.length > PROV_CHIP_CAP && <span className="px-1.5 py-0.5 text-[10px] text-faint">{t('provenance.more', { n: tgts.length - PROV_CHIP_CAP })}</span>}
                         </div>
                       </div>
                     )}
@@ -473,7 +477,7 @@ function IngestTab(): JSX.Element {
                     {isCurrent && !cohChildren.get(s.id)?.length && (
                       <div className="ml-8 flex items-center gap-2 py-0.5 text-[11px] italic text-faint">
                         <span>↳</span>
-                        <span>{latestCoh ? 'Coherence is behind — re-check this version' : 'Coherence — not checked yet'}</span>
+                        <span>{latestCoh ? t('coherenceRow.behind') : t('coherenceRow.notChecked')}</span>
                       </div>
                     )}
                   </li>
@@ -495,26 +499,26 @@ function IngestTab(): JSX.Element {
           className="flex w-full items-center gap-1.5 px-3 py-2 text-left text-[11px] text-muted-foreground hover:bg-panel-soft/50"
         >
           <ChevronRight className={cn('size-3 transition-transform', showScenes && 'rotate-90')} />
-          All scenes ({rows.length})
+          {t('scenes.all', { n: rows.length })}
         </button>
         {showScenes &&
           (rows.length === 0 ? (
-            <p className="px-3 pb-3 text-[11px] text-faint">No scenes yet — write one, and it'll show up here.</p>
+            <p className="px-3 pb-3 text-[11px] text-faint">{t('scenes.empty')}</p>
           ) : (
             <>
               {/* Manual re-analyze: pick scenes (or all) to re-read even when fresh — e.g. after a model switch. */}
               <div className="flex items-center gap-3 border-b border-border/50 px-3 py-1.5 text-[11px]">
                 <button onClick={() => setSelectedScenes(new Set(allScenesSelected ? [] : canonRows.map((r) => r.unitId)))} className="text-muted-foreground hover:text-foreground">
-                  {allScenesSelected ? 'Clear' : 'Select all'}
+                  {allScenesSelected ? t('scenes.clear') : t('scenes.selectAll')}
                 </button>
                 {selectedScenes.size > 0 && (
                   <button
                     disabled={running || viewing}
                     onClick={() => (hasAi ? setReanalyzeConfirm(true) : reanalyze())}
-                    title="Re-read the selected scenes even though they're up to date (e.g. on a faster model)"
+                    title={t('reanalyze.selectedTip')}
                     className="ml-auto flex items-center gap-1 rounded-md border border-thread/50 bg-thread/10 px-2 py-0.5 text-foreground hover:bg-thread/20 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    <RefreshCw className="size-3" /> Re-analyze {selectedScenes.size} selected
+                    <RefreshCw className="size-3" /> {t('reanalyze.selected', { n: selectedScenes.size })}
                   </button>
                 )}
               </div>
@@ -530,7 +534,7 @@ function IngestTab(): JSX.Element {
                           )}
                         </td>
                         <td className="w-2 py-1">
-                          <span className="inline-block size-2 rounded-full" style={{ backgroundColor: draft ? STATUS_COLOR.pending : STATUS_COLOR[r.status] }} title={draft ? 'Draft' : STATUS_LABEL[r.status]} />
+                          <span className="inline-block size-2 rounded-full" style={{ backgroundColor: draft ? STATUS_COLOR.pending : STATUS_COLOR[r.status] }} title={draft ? t('scenes.draft') : STATUS_LABEL[r.status]} />
                         </td>
                         <td className="w-16 py-1 pl-2 font-mono text-muted-foreground">{r.code ?? r.unitId}</td>
                         <td className="py-1 pl-2 text-foreground/90">{r.title}</td>
@@ -538,7 +542,7 @@ function IngestTab(): JSX.Element {
                           {/* Fresh rows say nothing — the status dot carries it; only the EXCEPTIONS (draft /
                               outdated / not-read) spell out a label, so a clean list reads as clean. */}
                           {draft ? (
-                            <span className="rounded border border-border px-1">Draft</span>
+                            <span className="rounded border border-border px-1">{t('scenes.draft')}</span>
                           ) : r.status !== 'fresh' ? (
                             <span style={{ color: STATUS_COLOR[r.status] }}>{STATUS_LABEL[r.status]}</span>
                           ) : null}
@@ -552,7 +556,7 @@ function IngestTab(): JSX.Element {
                   still operates on the full canon set, not just what's painted.) */}
               {rows.length > sceneLimit && (
                 <button onClick={() => setSceneLimit((n) => n + 200)} className="w-full px-3 py-1.5 text-left text-[11px] text-muted-foreground hover:bg-panel-soft/50">
-                  Show 200 more — {rows.length - sceneLimit} not shown
+                  {t('scenes.showMore', { n: rows.length - sceneLimit })}
                 </button>
               )}
             </>
@@ -565,12 +569,13 @@ function IngestTab(): JSX.Element {
 
 /** A coherence check shown nested under the analysis version it diffed — read-only (no snapshot, no revert). */
 function CoherenceChildRow({ s }: { s: IngestSession }): JSX.Element {
+  const { t } = useTranslation('console')
   return (
-    <div className="ml-8 flex items-center gap-2 py-0.5 text-[11px] text-muted-foreground" title="Coherence check (based on this analysis version)">
+    <div className="ml-8 flex items-center gap-2 py-0.5 text-[11px] text-muted-foreground" title={t('coherenceRow.tip')}>
       <ShieldAlert className="size-3 shrink-0 text-faint" />
-      <span className="w-20 shrink-0 text-faint">{relTime(s.finishedAt)}</span>
+      <span className="w-20 shrink-0 text-faint">{relTime(s.finishedAt, t)}</span>
       <span className="min-w-0 flex-1 truncate">
-        Coherence · {s.rowsWritten} finding{s.rowsWritten === 1 ? '' : 's'}
+        {t('coherenceRow.findings', { count: s.rowsWritten })}
       </span>
     </div>
   )
@@ -586,7 +591,6 @@ function fmtMs(ms: number): string {
 // run). The dock speaks these — NOT the aspirational Plan→Skim→Extract→Fold names — so what the author watches
 // matches what actually runs. window = arcs (matches the provenance summary's vocabulary above).
 const PHASE_ORDER = ['scene', 'window', 'profile', 'digest', 'coherence'] as const
-const PHASE_LABEL: Record<string, string> = { scene: 'Scenes', window: 'Arcs', profile: 'Profiles', digest: 'Digests', coherence: 'Coherence' }
 
 interface PhaseInfo { kind: string; total: number; settled: number; failed: number; running: boolean }
 
@@ -606,6 +610,7 @@ function phaseSummary(steps: IngestStep[]): PhaseInfo[] {
 
 /** The live (or just-finished) run, target by target — the visible queue + per-step loader + time cue. */
 function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
+  const { t } = useTranslation('console')
   // Tick while active so the running step's elapsed clock advances between progress pushes.
   const [, force] = useState(0)
   useEffect(() => {
@@ -628,7 +633,7 @@ function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
     <div className="border-b border-border px-3 py-2">
       <div className="mb-1.5 flex items-center gap-2">
         <p className="text-[10px] font-medium uppercase tracking-wide text-faint">
-          {progress.active ? `Updating — ${settled} of ${total}` : 'Last run'}
+          {progress.active ? t('queue.updating', { settled, total }) : t('queue.lastRun')}
         </p>
         {progress.active && <Loader2 className="size-3 animate-spin text-thread" />}
       </div>
@@ -639,6 +644,7 @@ function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
           {phases.map((p, i) => {
             const done = p.total > 0 && p.settled === p.total
             const active = p.running || (p.settled > 0 && p.settled < p.total)
+            const phaseLabel = t(`phase.${p.kind}`, { defaultValue: p.kind })
             return (
               <span key={p.kind} className="flex items-center">
                 {i > 0 && <ChevronRight className="size-2.5 shrink-0 text-faint/40" />}
@@ -647,10 +653,12 @@ function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
                     'flex items-center gap-1 rounded px-1 py-px text-[10px]',
                     p.failed ? 'text-flag' : done ? 'text-ok' : active ? 'bg-thread/10 text-thread' : 'text-faint'
                   )}
-                  title={`${PHASE_LABEL[p.kind] ?? p.kind}: ${p.settled} of ${p.total}${p.failed ? ` · ${p.failed} failed` : ''}`}
+                  title={p.failed
+                    ? t('queue.phaseTipFailed', { label: phaseLabel, settled: p.settled, total: p.total, failed: p.failed })
+                    : t('queue.phaseTip', { label: phaseLabel, settled: p.settled, total: p.total })}
                 >
                   {p.running && <Loader2 className="size-2.5 shrink-0 animate-spin" />}
-                  {PHASE_LABEL[p.kind] ?? p.kind}
+                  {phaseLabel}
                   <span className="tabular-nums opacity-75">{p.settled}/{p.total}</span>
                 </span>
               </span>
@@ -659,7 +667,7 @@ function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
         </div>
       )}
       <ul className="max-h-40 space-y-0.5 overflow-auto">
-        {start > 0 && <li className="text-[10px] text-faint">+{start} earlier</li>}
+        {start > 0 && <li className="text-[10px] text-faint">{t('queue.earlier', { n: start })}</li>}
         {windowSteps.map((s) => {
           // Live elapsed while running; the recorded duration once settled.
           const ms = s.status === 'running' && s.startedAt ? Date.now() - Date.parse(s.startedAt) : s.ms
@@ -672,7 +680,7 @@ function RunQueue({ progress }: { progress: IngestProgress }): JSX.Element {
             </li>
           )
         })}
-        {queued > 0 && <li className="text-[10px] text-faint">+{queued} queued</li>}
+        {queued > 0 && <li className="text-[10px] text-faint">{t('queue.queued', { n: queued })}</li>}
       </ul>
     </div>
   )
@@ -687,14 +695,14 @@ function StepIcon({ status }: { status: IngestStep['status'] }): JSX.Element {
 }
 
 /** Short relative time, e.g. "just now" · "5 min ago" · "2 h ago" · else a date. */
-function relTime(iso: string): string {
+function relTime(iso: string, t: TFunction): string {
   const d = Date.now() - Date.parse(iso)
   if (Number.isNaN(d)) return ''
   const m = Math.floor(d / 60000)
-  if (m < 1) return 'just now'
-  if (m < 60) return `${m} min ago`
+  if (m < 1) return t('time.justNow')
+  if (m < 60) return t('time.minAgo', { m })
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h} h ago`
+  if (h < 24) return t('time.hAgo', { h })
   return new Date(iso).toLocaleDateString()
 }
 
@@ -707,6 +715,7 @@ function relTime(iso: string): string {
 const DB_PAGE = 100
 
 function DbInspectorTab(): JSX.Element {
+  const { t } = useTranslation('console')
   const setChatDraft = useWorkspace((s) => s.setChatDraft)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
   // Health check: prefill the chat with the read-only DB audit (config/chatPrompts) — author reviews + sends.
@@ -773,18 +782,18 @@ function DbInspectorTab(): JSX.Element {
         <input
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          placeholder="Filter loaded rows…"
+          placeholder={t('db.filter')}
           className="w-40 rounded border border-border bg-canvas px-2 py-0.5 text-[11px] outline-none focus:border-thread"
         />
         <span className="ml-auto shrink-0 text-[10px] text-faint">
           {shown.length}
-          {q ? ` / ${rows.length}` : ''} of {total} row{total === 1 ? '' : 's'}
+          {q ? ` / ${rows.length}` : ''} {t('db.ofRows', { count: total })}
         </span>
-        <button onClick={loadTables} title="Re-read tables" className="shrink-0 rounded p-1 text-muted-foreground hover:bg-panel-soft">
+        <button onClick={loadTables} title={t('db.reread')} className="shrink-0 rounded p-1 text-muted-foreground hover:bg-panel-soft">
           <RefreshCw className="size-3" />
         </button>
         <button
-          title="Check DB health — the agent audits duplicates, residue, orphans & staleness (read-only; you confirm any fix)"
+          title={t('db.healthTip')}
           onClick={checkDbHealth}
           className="shrink-0 rounded p-1 text-muted-foreground hover:bg-panel-soft hover:text-foreground"
         >
@@ -793,9 +802,9 @@ function DbInspectorTab(): JSX.Element {
       </div>
       <div className="min-h-0 flex-1 overflow-auto">
         {tables.length === 0 ? (
-          <p className="p-3 text-[11px] text-muted-foreground">No database yet — run analysis to build it.</p>
+          <p className="p-3 text-[11px] text-muted-foreground">{t('db.none')}</p>
         ) : cols.length === 0 && !loading ? (
-          <p className="p-3 text-[11px] text-faint">Empty table.</p>
+          <p className="p-3 text-[11px] text-faint">{t('db.empty')}</p>
         ) : (
           <table className="w-full border-collapse text-[11px]">
             <thead className="sticky top-0 z-10 bg-panel">
@@ -827,7 +836,7 @@ function DbInspectorTab(): JSX.Element {
           disabled={loading}
           className="shrink-0 border-t border-border py-1 text-[11px] text-muted-foreground hover:bg-panel-soft disabled:opacity-50"
         >
-          {loading ? 'Loading…' : `Load ${DB_PAGE} more`}
+          {loading ? t('db.loading') : t('db.loadMore', { n: DB_PAGE })}
         </button>
       )}
     </div>
@@ -835,7 +844,8 @@ function DbInspectorTab(): JSX.Element {
 }
 
 
-function CopyButton({ text, label = 'Copy' }: { text: string; label?: string }): JSX.Element {
+function CopyButton({ text, label }: { text: string; label?: string }): JSX.Element {
+  const { t } = useTranslation('console')
   const [done, setDone] = useState(false)
   const copy = async (): Promise<void> => {
     try {
@@ -852,18 +862,20 @@ function CopyButton({ text, label = 'Copy' }: { text: string; label?: string }):
       className="flex items-center gap-1 rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:bg-panel-soft"
     >
       {done ? <Check className="size-3 text-ok" /> : <Copy className="size-3" />}
-      {done ? 'Copied' : label}
+      {done ? t('copy.copied') : (label ?? t('copy.copy'))}
     </button>
   )
 }
 
-const STATUS_BADGE: Record<AiConnectionStatus, { label: string; color: string }> = {
-  active: { label: 'Active', color: 'var(--ok)' },
-  ready: { label: 'Ready', color: 'var(--faint)' },
-  'needs-key': { label: 'Needs key', color: 'var(--warn)' }
+// Label text lives in the 'console' catalog (status.*); this map is colour-only.
+const STATUS_BADGE: Record<AiConnectionStatus, { color: string }> = {
+  active: { color: 'var(--ok)' },
+  ready: { color: 'var(--faint)' },
+  'needs-key': { color: 'var(--warn)' }
 }
 
 function AgentTab(): JSX.Element {
+  const { t } = useTranslation('console')
   const [view, setView] = useState<'connections' | 'plan'>('connections')
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -879,7 +891,7 @@ function AgentTab(): JSX.Element {
                 view === v ? 'bg-panel-soft text-foreground ring-1 ring-border' : 'text-muted-foreground hover:bg-panel-soft'
               )}
             >
-              {v === 'connections' ? 'Connections (key)' : 'Plan (Claude Code)'}
+              {v === 'connections' ? t('agent.connections') : t('agent.plan')}
             </button>
           ))}
         </div>
@@ -890,16 +902,18 @@ function AgentTab(): JSX.Element {
 }
 
 function StatusBadge({ status }: { status: AiConnectionStatus }): JSX.Element {
+  const { t } = useTranslation('console')
   const b = STATUS_BADGE[status]
   return (
     <span className="flex items-center gap-1 text-[10px]" style={{ color: b.color }}>
       <span className="inline-block size-1.5 rounded-full" style={{ backgroundColor: b.color }} />
-      {b.label}
+      {t(`status.${status}`)}
     </span>
   )
 }
 
 function ConnectionsManager(): JSX.Element {
+  const { t } = useTranslation('console')
   const [state, setState] = useState<AiState>({ connections: [], activeId: null, analysisId: null })
   const [adding, setAdding] = useState(false)
   const setAiState = useWorkspace((s) => s.setAiState)
@@ -912,7 +926,7 @@ function ConnectionsManager(): JSX.Element {
 
   return (
     <div className="min-h-0 flex-1 space-y-2 overflow-auto p-3">
-      <p className="text-[11px] text-faint">Provider keys — only one is active at a time (like saved cards). The active connection drives <span className="text-faint/80">both chat (right-hand panel) and analysis passes</span>.</p>
+      <p className="text-[11px] text-faint"><Trans t={t} i18nKey="connections.intro" components={{ span: <span className="text-faint/80" /> }} /></p>
       {state.connections.map((c) => (
         <ConnectionRow key={c.id} c={c} onChanged={apply} />
       ))}
@@ -920,7 +934,7 @@ function ConnectionsManager(): JSX.Element {
         <AddConnectionForm onDone={(s) => { if (s) apply(s); setAdding(false) }} />
       ) : (
         <button onClick={() => setAdding(true)} className="flex items-center gap-1 rounded-md border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-panel-soft">
-          <Plus className="size-3" /> Add connection
+          <Plus className="size-3" /> {t('connections.add')}
         </button>
       )}
     </div>
@@ -928,6 +942,7 @@ function ConnectionsManager(): JSX.Element {
 }
 
 function ConnectionRow({ c, onChanged }: { c: AiConnection; onChanged: (s: AiState) => void }): JSX.Element {
+  const { t } = useTranslation('console')
   const meta = AI_PROVIDERS[c.type]
   const setNotice = useWorkspace((s) => s.setNotice)
   const [editKey, setEditKey] = useState(false)
@@ -942,14 +957,14 @@ function ConnectionRow({ c, onChanged }: { c: AiConnection; onChanged: (s: AiSta
     onChanged(await window.nvs.saveConnection({ id: c.id, type: c.type, label: c.label, model: c.model, secret: key.trim() }))
     setKey('')
     setEditKey(false)
-    setNotice('Key saved — set it active and test it in chat.')
+    setNotice(t('notice.keySaved'))
   }
   // Retroactively switch the model on this saved connection — omits `secret`, so the stored key is kept.
   const saveModel = async (): Promise<void> => {
     const next = model.trim() || c.model
     onChanged(await window.nvs.saveConnection({ id: c.id, type: c.type, label: c.label, model: next }))
     setEditModel(false)
-    setNotice(`Model set to ${next}.`)
+    setNotice(t('notice.modelSet', { model: next }))
   }
 
   return (
@@ -962,16 +977,16 @@ function ConnectionRow({ c, onChanged }: { c: AiConnection; onChanged: (s: AiSta
           {/* ONE button per connection (2026-07-18): the active connection drives BOTH chat and analysis.
               The separate "Analysis" pin was removed — one connection, like saved cards. */}
           {c.status !== 'active' && (c.hasSecret || meta.keyless) && (
-            <button onClick={async () => onChanged(await window.nvs.setActiveConnection(c.id))} className="rounded-md border border-thread/50 bg-thread/10 px-1.5 py-0.5 text-foreground hover:bg-thread/20">Use</button>
+            <button onClick={async () => onChanged(await window.nvs.setActiveConnection(c.id))} className="rounded-md border border-thread/50 bg-thread/10 px-1.5 py-0.5 text-foreground hover:bg-thread/20">{t('connections.use')}</button>
           )}
           {c.status === 'active' && (
-            <button onClick={async () => onChanged(await window.nvs.setActiveConnection(null))} className="rounded-md border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">Deactivate</button>
+            <button onClick={async () => onChanged(await window.nvs.setActiveConnection(null))} className="rounded-md border border-border px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">{t('connections.deactivate')}</button>
           )}
-          <button onClick={() => setEditModel((v) => !v)} title="Change model" className={cn('rounded p-0.5 hover:bg-panel-soft', editModel ? 'text-foreground' : 'text-muted-foreground')}><Cpu className="size-3" /></button>
+          <button onClick={() => setEditModel((v) => !v)} title={t('connections.changeModel')} className={cn('rounded p-0.5 hover:bg-panel-soft', editModel ? 'text-foreground' : 'text-muted-foreground')}><Cpu className="size-3" /></button>
           {!meta.keyless && (
-            <button onClick={() => setEditKey((v) => !v)} title="Set / replace key" className="rounded p-0.5 text-muted-foreground hover:bg-panel-soft"><Key className="size-3" /></button>
+            <button onClick={() => setEditKey((v) => !v)} title={t('connections.setKey')} className="rounded p-0.5 text-muted-foreground hover:bg-panel-soft"><Key className="size-3" /></button>
           )}
-          <button onClick={async () => onChanged(await window.nvs.removeConnection(c.id))} title="Remove" className="rounded p-0.5 text-muted-foreground hover:bg-panel-soft"><Trash2 className="size-3" /></button>
+          <button onClick={async () => onChanged(await window.nvs.removeConnection(c.id))} title={t('connections.remove')} className="rounded p-0.5 text-muted-foreground hover:bg-panel-soft"><Trash2 className="size-3" /></button>
         </div>
       </div>
       {editModel && (
@@ -981,19 +996,19 @@ function ConnectionRow({ c, onChanged }: { c: AiConnection; onChanged: (s: AiSta
               className="w-56 shrink-0"
               value={custom ? '__custom__' : model}
               onChange={(v) => { if (v === '__custom__') setCustom(true); else { setCustom(false); setModel(v) } }}
-              options={[...meta.models.map((m) => ({ value: m, label: m })), { value: '__custom__', label: 'Custom…' }]}
+              options={[...meta.models.map((m) => ({ value: m, label: m })), { value: '__custom__', label: t('connections.custom') }]}
             />
-            {custom && <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="custom model id" className="w-48 rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />}
-            <button onClick={() => void saveModel()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30">Save</button>
+            {custom && <input value={model} onChange={(e) => setModel(e.target.value)} placeholder={t('connections.customModelId')} className="w-48 rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />}
+            <button onClick={() => void saveModel()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30">{t('connections.save')}</button>
           </div>
         </div>
       )}
       {editKey && (
         <div className="mt-1.5 space-y-1">
-          {dots && <p className="truncate font-mono text-[10px] text-faint">current: {dots}</p>}
+          {dots && <p className="truncate font-mono text-[10px] text-faint">{t('connections.current', { dots })}</p>}
           <div className="flex items-center gap-2">
-            <input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder={c.hasSecret ? 'replace key…' : meta.keyHint} className="flex-1 rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />
-            <button disabled={!key.trim()} onClick={() => void saveKey()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30 disabled:opacity-50">Save key</button>
+            <input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder={c.hasSecret ? t('connections.replaceKey') : meta.keyHint} className="flex-1 rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />
+            <button disabled={!key.trim()} onClick={() => void saveKey()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30 disabled:opacity-50">{t('connections.saveKey')}</button>
           </div>
         </div>
       )}
@@ -1002,6 +1017,7 @@ function ConnectionRow({ c, onChanged }: { c: AiConnection; onChanged: (s: AiSta
 }
 
 function AddConnectionForm({ onDone }: { onDone: (s: AiState | null) => void }): JSX.Element {
+  const { t } = useTranslation('console')
   const setNotice = useWorkspace((s) => s.setNotice)
   const [type, setType] = useState<AiProviderType>('anthropic')
   const [label, setLabel] = useState(AI_PROVIDERS.anthropic.label)
@@ -1019,7 +1035,7 @@ function AddConnectionForm({ onDone }: { onDone: (s: AiState | null) => void }):
   const save = async (): Promise<void> => {
     const input: SaveConnectionInput = { type, label: label.trim() || meta.label, model: model.trim() || meta.defaultModel, secret: key.trim() || undefined }
     onDone(await window.nvs.saveConnection(input))
-    if (key.trim()) setNotice('Key saved — set it active and test it in chat.')
+    if (key.trim()) setNotice(t('notice.keySaved'))
   }
 
   return (
@@ -1031,38 +1047,38 @@ function AddConnectionForm({ onDone }: { onDone: (s: AiState | null) => void }):
           onChange={(v) => changeType(v as AiProviderType)}
           options={PROVIDER_TYPES.map((t) => ({ value: t, label: AI_PROVIDERS[t].label }))}
         />
-        <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Label" className="min-w-0 flex-1 rounded-md border border-border bg-canvas px-2 py-1 outline-none focus:border-foreground/30" />
+        <input value={label} onChange={(e) => setLabel(e.target.value)} placeholder={t('connections.label')} className="min-w-0 flex-1 rounded-md border border-border bg-canvas px-2 py-1 outline-none focus:border-foreground/30" />
       </div>
       <div className="flex items-center gap-2">
-        <span className="w-10 shrink-0 text-faint">Model</span>
+        <span className="w-10 shrink-0 text-faint">{t('connections.model')}</span>
         {/* A real select shows ALL provider models; "Custom…" frees the field (model ids drift). */}
         <Select
           className="min-w-0 flex-1"
           value={custom ? '__custom__' : model}
           onChange={(v) => { if (v === '__custom__') setCustom(true); else { setCustom(false); setModel(v) } }}
-          options={[...meta.models.map((m) => ({ value: m, label: m })), { value: '__custom__', label: 'Custom…' }]}
+          options={[...meta.models.map((m) => ({ value: m, label: m })), { value: '__custom__', label: t('connections.custom') }]}
         />
       </div>
       {custom && (
-        <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="custom model id" className="w-full rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />
+        <input value={model} onChange={(e) => setModel(e.target.value)} placeholder={t('connections.customModelId')} className="w-full rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />
       )}
       <div className="flex items-center gap-2">
         {meta.keyless ? (
-          <span className="min-w-0 flex-1 text-faint">No API key — runs on your Claude Code login. Log in once with <code className="font-mono">claude</code> if you haven&apos;t.</span>
+          <span className="min-w-0 flex-1 text-faint"><Trans t={t} i18nKey="connections.keyless" components={{ code: <code className="font-mono" /> }} /></span>
         ) : (
           <>
             <Key className="size-3.5 shrink-0 text-muted-foreground" />
             <input type="password" value={key} onChange={(e) => setKey(e.target.value)} placeholder={meta.keyHint} className="min-w-0 flex-1 rounded-md border border-border bg-canvas px-2 py-1 font-mono text-[10px] outline-none focus:border-foreground/30" />
           </>
         )}
-        <button onClick={() => void save()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30">Save</button>
-        <button onClick={() => onDone(null)} className="rounded-md px-2 py-1 text-muted-foreground hover:bg-panel-soft">Cancel</button>
+        <button onClick={() => void save()} className="rounded-md border border-border px-2 py-1 hover:border-foreground/30">{t('connections.save')}</button>
+        <button onClick={() => onDone(null)} className="rounded-md px-2 py-1 text-muted-foreground hover:bg-panel-soft">{t('connections.cancel')}</button>
       </div>
       <p className="text-faint">
         {meta.keyless ? (
-          <ExternalLink href={meta.keysUrl}>About the Claude Code login</ExternalLink>
+          <ExternalLink href={meta.keysUrl}>{t('connections.aboutLogin')}</ExternalLink>
         ) : (
-          <><ExternalLink href={meta.keysUrl}>Get a {meta.label} key</ExternalLink> · <ExternalLink href={meta.pricingUrl}>pricing</ExternalLink></>
+          <><ExternalLink href={meta.keysUrl}>{t('connections.getKey', { provider: meta.label })}</ExternalLink> · <ExternalLink href={meta.pricingUrl}>{t('connections.pricing')}</ExternalLink></>
         )}
       </p>
     </div>
@@ -1070,6 +1086,7 @@ function AddConnectionForm({ onDone }: { onDone: (s: AiState | null) => void }):
 }
 
 function McpConnectBoard(): JSX.Element {
+  const { t } = useTranslation('console')
   const [status, setStatus] = useState<McpStatus | null>(null)
   const setDiscoverOpen = useWorkspace((s) => s.setDiscoverOpen)
   const reload = useCallback(async () => setStatus(await window.nvs.mcpStatus()), [])
@@ -1087,32 +1104,31 @@ function McpConnectBoard(): JSX.Element {
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex items-center gap-2 border-b border-border px-3 py-2">
         <Plug className="size-3.5 text-muted-foreground" />
-        <span className="text-[11px] font-medium text-foreground/80">In-app MCP server</span>
+        <span className="text-[11px] font-medium text-foreground/80">{t('mcp.title')}</span>
         <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
           <span
             className="inline-block size-2 rounded-full"
             style={{ backgroundColor: status?.running ? 'var(--ok)' : 'var(--faint)' }}
           />
-          {status?.running ? 'Running' : 'Stopped'}
+          {status?.running ? t('mcp.running') : t('mcp.stopped')}
         </span>
         {url && <code className="text-[11px] text-muted-foreground">{url}</code>}
-        {url && <CopyButton text={url} label="URL" />}
+        {url && <CopyButton text={url} label={t('copy.url')} />}
         <button
           onClick={() => void reload()}
           className="ml-auto flex items-center gap-1 rounded px-1.5 py-1 text-[11px] text-muted-foreground hover:bg-panel-soft"
-          title="Re-check"
+          title={t('mcp.recheck')}
         >
           <RefreshCw className="size-3" />
         </button>
       </div>
 
       <div className="min-h-0 flex-1 space-y-3 overflow-auto p-3 text-[11px]">
-        {status?.error && <p className="text-warn">Error: {status.error}</p>}
+        {status?.error && <p className="text-warn">{t('mcp.error', { error: status.error })}</p>}
 
         <div>
           <p className="mb-1 text-muted-foreground">
-            An agent (Claude Code / Desktop) connects to the running app and calls these as live tools — the same
-            engine contract the UI uses. Keyless: the model runs in the agent, not here.
+            {t('mcp.intro')}
           </p>
         </div>
 
@@ -1120,15 +1136,15 @@ function McpConnectBoard(): JSX.Element {
           <>
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <p className="font-medium text-foreground/80">Connect — one command (Claude Code)</p>
+                <p className="font-medium text-foreground/80">{t('mcp.connectOne')}</p>
                 <CopyButton text={cli} />
               </div>
               <pre className="overflow-auto rounded border border-border bg-panel-soft p-2 font-mono text-[10px] text-foreground/90">{cli}</pre>
             </div>
             <div>
               <div className="mb-1 flex items-center gap-2">
-                <p className="font-medium text-foreground/80">…or add to your agent's MCP config</p>
-                <CopyButton text={config} label="Copy JSON" />
+                <p className="font-medium text-foreground/80">{t('mcp.orConfig')}</p>
+                <CopyButton text={config} label={t('copy.json')} />
               </div>
               <pre className="overflow-auto rounded border border-border bg-panel-soft p-2 font-mono text-[10px] text-foreground/90">{config}</pre>
             </div>
@@ -1137,15 +1153,15 @@ function McpConnectBoard(): JSX.Element {
 
         <div className="flex items-start gap-1.5 rounded border border-lore/30 bg-lore/5 px-2 py-1.5">
           <Camera className="mt-0.5 size-3 shrink-0 text-lore" />
-          <p className="text-muted-foreground">The tools include <code className="text-foreground/80">captureView</code> — an agent can screenshot the app to <b className="text-foreground/80">see</b> your rails (a tangled timeline, the coherence gantt), not just read the data.</p>
+          <p className="text-muted-foreground"><Trans t={t} i18nKey="mcp.capture" components={{ code: <code className="text-foreground/80" />, b: <b className="text-foreground/80" /> }} /></p>
         </div>
 
         <button onClick={() => setDiscoverOpen('claude')} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground">
-          <Terminal className="size-3" /> Full guide — Store → Use with Claude (setup + examples) →
+          <Terminal className="size-3" /> {t('mcp.fullGuide')}
         </button>
 
         <div>
-          <p className="mb-1 font-medium text-foreground/80">Tools exposed</p>
+          <p className="mb-1 font-medium text-foreground/80">{t('mcp.tools')}</p>
           <div className="flex flex-wrap gap-1">
             {(status?.tools ?? []).map((t) => (
               <span key={t} className="rounded border border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">{t}</span>

@@ -1,4 +1,5 @@
 import { type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { BookOpen, SlidersHorizontal, Info, Share2 } from 'lucide-react'
 import { NAV } from '@/config/nav'
@@ -20,6 +21,7 @@ const ACCENT: Record<string, string> = {
  * in the TitleBar menus; the unsaved-changes prompt is UnsavedExitDialog.
  */
 export function Rail(): JSX.Element {
+  const { t } = useTranslation('nav')
   const workspace = useWorkspace((s) => s.workspace)
   const setWorkspace = useWorkspace((s) => s.setWorkspace)
   const requestReturnToLibrary = useWorkspace((s) => s.requestReturnToLibrary)
@@ -45,9 +47,9 @@ export function Rail(): JSX.Element {
 
   // Project setup actions — an always-visible cluster (was buried in the header menu). Only with a project open.
   const projectActions = [
-    { icon: SlidersHorizontal, title: `Project structure (${HOTKEYS.projectConfig.display})`, onClick: () => setStructureDialogOpen(true) },
-    { icon: Info, title: 'Project info', onClick: () => setDetailsDialogOpen(true) },
-    { icon: Share2, title: 'Share project', onClick: () => setShareDialogOpen(true) }
+    { id: 'structure', icon: SlidersHorizontal, title: t('action.structure', { shortcut: HOTKEYS.projectConfig.display }), onClick: () => setStructureDialogOpen(true) },
+    { id: 'info', icon: Info, title: t('action.info'), onClick: () => setDetailsDialogOpen(true) },
+    { id: 'share', icon: Share2, title: t('action.share'), onClick: () => setShareDialogOpen(true) }
   ]
 
   return (
@@ -57,7 +59,7 @@ export function Rail(): JSX.Element {
     >
       <button
         onClick={() => requestReturnToLibrary()}
-        title="Library"
+        title={t('library')}
         className="mb-2 flex size-9 items-center justify-center rounded-md text-thread transition-colors hover:bg-panel-soft"
       >
         <BookOpen className="size-4" />
@@ -73,7 +75,7 @@ export function Rail(): JSX.Element {
             data-group={item.group}
             onClick={() => setWorkspace(item.id as WorkspaceId)}
             disabled={!project || item.phase > 1}
-            title={!project ? `${item.label} (open a project first)` : item.phase > 1 ? `${item.label} (soon)` : item.label}
+            title={!project ? t('disabledNoProject', { label: t(item.id) }) : item.phase > 1 ? t('disabledSoon', { label: t(item.id) }) : t(item.id)}
             className={cn(
               'flex size-9 items-center justify-center rounded-md transition-colors disabled:cursor-default',
               on ? 'bg-panel-soft' : 'hover:bg-panel-soft',
@@ -94,7 +96,7 @@ export function Rail(): JSX.Element {
           <div className="my-1 h-px w-5 bg-border" />
           {projectActions.map((a) => (
             <button
-              key={a.title}
+              key={a.id}
               onClick={a.onClick}
               title={a.title}
               className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"

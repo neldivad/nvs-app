@@ -12,6 +12,7 @@ import { loadProjectInfo } from '@engine/content/projectInfo'
 import * as queries from '@engine/data/queries'
 import * as coherence from '@engine/analysis/coherence'
 import * as continuity from '@engine/analysis/continuity'
+import * as critique from '@engine/analysis/critique'
 import * as scenes from '@engine/content/scenes'
 import { searchAll as searchImpl } from '@engine/content/search'
 import * as world from '@engine/content/world'
@@ -47,6 +48,7 @@ export * as downloadsRegistry from '@engine/io/downloads'
 import { collectDeclaredSecrets as collectDeclaredSecretsImpl, type RosterSecret } from '@engine/io/secrets'
 import { listCustodyTopics as listCustodyTopicsImpl, createCustodyTopic as createCustodyTopicImpl, updateCustodyRecords as updateCustodyRecordsImpl, migrateCustodyPillar, parseCustodyMarkdown } from '@engine/content/custodyPages'
 export { cacheStats } from '@engine/enumCache' // in-memory memo counters (the mcpStats debug tool)
+import { readChapterLedger as readChapterLedgerImpl, chapterLedgerStatus as chapterLedgerStatusImpl, refoldStaleChapterLedgers as refoldStaleChapterLedgersImpl } from '@engine/analysis/chapterLedger'
 
 let current: ProjectMeta | null = null
 
@@ -87,6 +89,11 @@ export function openWork(root: string): ProjectMeta | null {
   migrateCustodyPillar(root) // Stage-1 custody pages (content/world/custody/) → the content/custody/ pillar
   mirrorFrontmatterToTrees(root, storyTree.listStoryTree(root)) // T2: seed the default tree variant from frontmatter (once, non-destructive)
   backfillThreadAncestry(root) // per-variant analysis: stamp legacy universal thread_events with the active variant's ancestry (idempotent)
+  try {
+    refoldStaleChapterLedgersImpl(root) // fractal-consolidation Slice 1: deterministic chapter Ledger fold (free, skips fresh)
+  } catch {
+    /* best-effort, like the other backfills — a locked/absent DB just leaves ledgers unfolded until next open */
+  }
   const content = join(root, 'content')
   current = {
     root,
@@ -189,6 +196,26 @@ export function scenePriorThreads(unitId: string): { threadId: string; action: s
 /** Threads open entering a scene, with last-activity position (drives the hot/dormant working-set split). */
 export function openThreadsAsOf(unitId: string): { id: string; description: string; title: string | null; resolutionCondition: string | null; lastPos: number }[] {
   return current ? queries.openThreadsAsOf(current.root, unitId) : []
+}
+
+/** Ordered open/advance/reopen beats of the given threads before a scene — the prior-event context the scene
+ *  reader surfaces so a close/advance can't contradict an earlier beat (thread-resolve-contradiction.md). */
+export function threadBeatsBefore(threadIds: string[], beforeUnitId: string): Record<string, { action: string; pos: number; description: string }[]> {
+  return current ? queries.threadBeatsBefore(current.root, threadIds, beforeUnitId) : {}
+}
+
+// ── Chapter Ledger fold (fractal-consolidation.md, Slice 1) — the first reduction-tree level ──────────────────
+/** One chapter's folded Ledger node (premise/conclusion + reconciled entries + openAtEnd + Tier-1 flags), or null. */
+export function readChapterLedger(chapterId: string): ReturnType<typeof readChapterLedgerImpl> {
+  return current ? readChapterLedgerImpl(current.root, chapterId) : null
+}
+/** Per-chapter fold staleness (pending | stale | fresh). */
+export function chapterLedgerStatus(): ReturnType<typeof chapterLedgerStatusImpl> {
+  return current ? chapterLedgerStatusImpl(current.root) : []
+}
+/** Re-fold every stale/pending leaf chapter (deterministic, free). Returns { folded, total }. */
+export function refoldStaleChapterLedgers(): ReturnType<typeof refoldStaleChapterLedgersImpl> {
+  return current ? refoldStaleChapterLedgersImpl(current.root) : { folded: 0, total: 0 }
 }
 
 /** One scene's dramatic purpose (goals + conflicts) — the Scene Inspector's Purpose section. */
@@ -346,6 +373,20 @@ export function continuityInputHash(inputs: continuity.ContinuityInputs): string
 export function continuityStatus(): 'pending' | 'stale' | 'fresh' {
   return current ? continuity.continuityStatus(current.root) : 'fresh'
 }
+// ── Critique ("Tough questions"): dramaturgical construction, the fourth family (internal/story-critique.md) ──
+/** The critique pass's whole-story inputs (graph cut-candidates + the shared timeline), or null. */
+export function critiqueInputs(): critique.CritiqueInputs | null {
+  return current ? critique.critiqueInputs(current.root) : null
+}
+/** The whole-story critique input hash — the reader stamps this as the run's input_hash. */
+export function critiqueInputHash(inputs: critique.CritiqueInputs): string {
+  return critique.critiqueInputHash(inputs)
+}
+/** Whole-story critique freshness: pending | stale | fresh. */
+export function critiqueStatus(): 'pending' | 'stale' | 'fresh' {
+  return current ? critique.critiqueStatus(current.root) : 'fresh'
+}
+
 /** name → canonical entity id resolver (the continuity reader's FK-validation for model-supplied entity_ids). */
 export function entityIdResolver(): (raw: string) => string | null {
   return current ? continuity.entityIdResolver(current.root) : () => null

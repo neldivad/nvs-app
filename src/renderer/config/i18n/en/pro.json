@@ -1,0 +1,33 @@
+{
+  "title": "NVS Pro",
+  "shareText": "Writing with Novel Visual Studio. It is a writing IDE for dialogue-driven fiction, with optional AI reading features.",
+  "active": {
+    "heading": "Pro is active",
+    "tiedTo": "Tied to <email>{{email}}</email>",
+    "body": "Thank you for supporting NVS. Unlocks the prettier chart-export theme today; more Pro niceties are on the way. Your writing and files are always free & local."
+  },
+  "comingSoon": {
+    "heading": "Pro features are coming soon",
+    "body": "Writing, analysis, and your files are free forever. Pro will add a few optional niceties down the line (maybe prettier exports)."
+  },
+  "share": {
+    "prompt": "In the meantime, show your support by sharing",
+    "shareX": "Share on X",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "starGithub": "Star on GitHub",
+    "joinDiscord": "Join Discord"
+  },
+  "activate": {
+    "prompt": "Already have a license? Enter your purchase email:",
+    "emailPlaceholder": "you@email.com",
+    "button": "Activate",
+    "haveLicense": "Already have a license?"
+  },
+  "msg": {
+    "activated": "Pro activated ✓",
+    "noPurchase": "No Pro purchase found for that email.",
+    "verifyError": "Couldn’t verify right now — try again."
+  },
+  "devToggle": "dev: toggle Pro"
+}

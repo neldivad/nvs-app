@@ -20,13 +20,15 @@ import { RailChrome } from '@/components/layout/RailChrome'
 import { RailHeader } from '@/components/ui/RailHeader'
 import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
 import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
-import { DetailSplitView, type FeedEvent, type FeedChapter, type DetailEndpoint } from '@/components/layout/DetailSplitView'
+import { DetailSplitView, type FeedEvent, type FeedChapter } from '@/components/layout/DetailSplitView'
 import { AppearanceHeatStrip, type HeatCell } from '@/components/layout/AppearanceHeatStrip'
 import { FACETS, FACET_BLURB, catLabel, facetVisual, changeVisual, changeDot } from '@/config/arcVisual'
 import type { CharacterArc, ArcEvent, ArcWindow } from '@shared/ipc'
 
 export function CharacterArcPanel(): JSX.Element {
+  const { t } = useTranslation('arc')
   const arcs = useWorkspace((s) => s.characterArc)
   const scenes = useWorkspace((s) => s.scenes)
   const graph = useWorkspace((s) => s.timelineGraph)
@@ -99,7 +101,7 @@ export function CharacterArcPanel(): JSX.Element {
                 if (pg) setPreview({ path: pg.path, title: pg.name, kind: 'character' })
               }}
               className={cn('flex h-full w-full items-center gap-2 border-l-2 border-transparent pr-2 pl-1.5 text-left', disabled && 'opacity-30')}
-              title={disabled ? `${a.name} — no ${facet}` : `${a.name} — open page`}
+              title={disabled ? t('row.noFacet', { name: a.name, facet }) : t('row.openPage', { name: a.name })}
             >
               <span className={GANTT_ROW_TITLE}>{a.name}</span>
             </button>
@@ -111,7 +113,7 @@ export function CharacterArcPanel(): JSX.Element {
               return i == null ? null : (
                 <span
                   key={`pov-${sid}`}
-                  title={`${a.name} — POV scene`}
+                  title={t('row.povScene', { name: a.name })}
                   className={cn('pointer-events-none absolute inset-y-0.5 rounded-sm bg-linear-to-t from-thread/55 to-lore/45 ring-1 ring-inset ring-lore/45', disabled && 'opacity-30')}
                   style={{ left: i * colW + 1, width: colW - 2 }}
                 />
@@ -128,7 +130,7 @@ export function CharacterArcPanel(): JSX.Element {
                   key={i}
                   disabled={disabled}
                   onClick={() => select(selectedId === a.entityId ? null : a.entityId)} // a BAND → the arc float (observed)
-                  title={`${a.name} · ${w.title}: ${w.events.length} event${w.events.length === 1 ? '' : 's'}`}
+                  title={t('row.band', { name: a.name, title: w.title, count: w.events.length })}
                   className={cn('absolute top-1/2 flex h-4 -translate-y-1/2 items-center gap-0.5 overflow-hidden rounded-sm border border-border bg-panel-soft px-1', disabled && 'opacity-30')}
                   style={{ left: min * colW + 1, width }}
                 >
@@ -155,7 +157,7 @@ export function CharacterArcPanel(): JSX.Element {
       {/* Highlight by FACET — shades non-matching dots + disables rows with none, and (shared via store)
           truncates the arc float to this facet. Mirrors the coherence map's Highlight row. */}
       <RailHeader data-export-hide="1" className="overflow-x-auto">
-        <span className="shrink-0 text-faint">Highlight</span>
+        <span className="shrink-0 text-faint">{t('highlight')}</span>
         {FACETS.map((f) => (
           <button
             key={f}
@@ -167,7 +169,7 @@ export function CharacterArcPanel(): JSX.Element {
           </button>
         ))}
         {facet && (
-          <button onClick={() => setFacet(null)} className="ml-1 shrink-0 text-faint hover:text-foreground">clear</button>
+          <button onClick={() => setFacet(null)} className="ml-1 shrink-0 text-faint hover:text-foreground">{t('clear')}</button>
         )}
       </RailHeader>
       <LifecycleGantt
@@ -191,23 +193,23 @@ export function CharacterArcPanel(): JSX.Element {
           onReset: win.range ? () => win.setRange(null) : undefined,
           title: `${sceneCols[win.lo]?.title ?? '?'} → ${sceneCols[win.hi]?.title ?? '?'}`
         }}
-        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: 'characters', page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
+        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: t('panel.charactersNoun'), page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
         metric={{
-          label: 'Range',
+          label: t('panel.rangeLabel'),
           min: 1,
           max: maxEv,
           value: [loEv, hiEv],
           onChange: setEvWin,
-          readout: evAll ? 'all' : `${loEv}${loEv !== hiEv ? `–${hiEv}` : ''}`,
+          readout: evAll ? t('all') : `${loEv}${loEv !== hiEv ? `–${hiEv}` : ''}`,
           onReset: evAll ? undefined : () => setEvWin(null),
-          title: 'Trim characters by event count — drag the low thumb up to hide the barely-developed and focus the busiest arcs.'
+          title: t('panel.rangeTitle')
         }}
       />
       <RailChrome
         region="characterArcPanel"
-        name="Character arc"
+        name={t('title')}
         layers={['chapters', 'pov']}
-        export={{ file: 'arc-rail', caption: () => 'Character arc' }}
+        export={{ file: 'arc-rail', caption: () => t('title') }}
         help={ArcHelp}
       />
       {preview && <PageReadDialog path={preview.path} kind={preview.kind} title={preview.title} onClose={() => setPreview(null)} />}
@@ -217,40 +219,24 @@ export function CharacterArcPanel(): JSX.Element {
 
 // ── Help ────────────────────────────────────────────────────────────────────────
 function ArcHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('arc')
   return (
-    <Dialog open={open} onClose={onClose} title="Character arc — how to read it" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="The grid">
-          <HelpList
-            items={[
-              <>Each <b className="text-foreground/80">row</b> is a character; <b className="text-foreground/80">columns</b> are scenes in reading order.</>,
-              <>The <b className="text-foreground/80">bands</b> group scenes into chapters (folders) — a character's changes are accumulated per chapter, not per scene, because a trait emerges over a stretch.</>,
-              <>A cell's <b className="text-foreground/80">dots</b> are the changes in that chapter, colored by kind; click a row to read them all.</>
-            ]}
-          />
+        <HelpSection title={t('help.grid.title')}>
+          <HelpList items={t('help.grid.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="What changed (the facet)">
+        <HelpSection title={t('help.facet.title')}>
           <HelpTable rows={FACETS.map((f) => [f, FACET_BLURB[f]])} />
         </HelpSection>
-        <HelpSection title="How it changed">
-          <HelpTable
-            rows={[
-              ['● gains', 'they acquire it (a goal, an ally, leverage)'],
-              ['● loses', 'they lose it'],
-              ['● revealed', 'it becomes known — exposed to others or the reader']
-            ]}
-          />
+        <HelpSection title={t('help.change.title')}>
+          <HelpTable rows={Object.entries(t('help.change.rows', { returnObjects: true }) as Record<string, string>)} />
         </HelpSection>
-        <HelpSection title="The Sheet (click a character)">
-          <HelpList
-            items={[
-              <>The sheet is a <b className="text-foreground/80">chapter railway</b>: each chapter is a <b className="text-foreground/80">station</b> — a stop (●) where the character changes, a hollow stop (○ ··) for a chapter they're <b className="text-foreground/80">offstage or static</b>.</>,
-              <>Open a station to read that chapter's <b className="text-foreground/80">summary</b>, what they <b className="text-foreground/80">want</b>, their <b className="text-foreground/80">tension</b> (and with whom), and the <b className="text-foreground/80">changes</b> themselves.</>
-            ]}
-          />
+        <HelpSection title={t('help.sheet.title')}>
+          <HelpList items={t('help.sheet.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Provenance">
-          <HelpList items={[<>Arc is the analysis agent's reading of the dialogue — its understanding, not authored truth. Re-running analysis refreshes it.</>]} />
+        <HelpSection title={t('help.provenance.title')}>
+          <HelpList items={t('help.provenance.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>
@@ -284,6 +270,7 @@ const statusColor = (s: string): string => (s === 'achieved' ? 'text-ok' : s ===
 /** Floating arc Sheet — the selected character's changes as a chapter RAILWAY (stations = chapters, hollow =
  *  offstage/static), latest chapter first; page link in header. */
 export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose: () => void; focus?: string | null }): JSX.Element {
+  const { t } = useTranslation('arc')
   // Deep-link focus. Two forms: the scene inspector passes `sceneId␁value` (␁ = \u0001) to pin the EXACT event; the
   // coherence panel passes a bare WINDOW id. Split → pre-open the matching window, and (inspector case) highlight the
   // one event whose scene + value match — so clicking the arc row vs the secret row lands on different rows. Both
@@ -332,7 +319,7 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         const sc = sceneById.get(s.sceneId)
         return {
           key: s.sceneId,
-          label: `${s.title}${w > 0 ? ` — ${w} ln` : ''}`,
+          label: w > 0 ? t('detail.heatCell', { title: s.title, count: w }) : s.title,
           weight: w,
           onClick: w > 0 && sc ? () => setPreview({ path: sc.path, title: sc.title, kind: 'scene' }) : undefined,
           group: chKey ? { key: chKey, title: chapterIndex.chapters.get(chKey)?.title ?? chKey } : undefined
@@ -340,24 +327,8 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
       }),
     [orderedScenes, presenceById, chapterIndex, sceneById]
   )
-  // Span endpoints — first & last scene they appear in (reading order), feeding the shared SPAN⇄APPEARS slot.
-  const presence = useMemo(() => orderedScenes.filter((s) => presenceById.has(s.sceneId)), [orderedScenes, presenceById])
-  const firstApp = presence[0]
-  const lastApp = presence[presence.length - 1]
-  const sceneRef = (s: { sceneId: string; title: string } | undefined): ReactNode => {
-    if (!s) return <span className="text-faint">—</span>
-    const sc = sceneById.get(s.sceneId)
-    return (
-      <button onClick={() => sc && setPreview({ path: sc.path, title: sc.title, kind: 'scene' })} title={s.title} className="block max-w-full truncate text-left text-character hover:underline">
-        {s.title}
-      </button>
-    )
-  }
-  const endpoints: DetailEndpoint[] = [
-    { k: 'First appears', v: sceneRef(firstApp) },
-    { k: 'Last appears', v: sceneRef(lastApp) },
-    { k: 'Appears in', v: `${presence.length} scene${presence.length === 1 ? '' : 's'}` }
-  ]
+  // A character is FACT-LIKE: its span (first/last/count) is already visible in the appearance strip, so no
+  // endpoints grid — the strip is the one pinned main view (no RESOLVES⇄APPEARS toggle; threads keep theirs).
 
   const total = arc.windows.reduce((n, w) => n + w.events.length, 0)
   // Resolve a Tension "with" name (often honorific-prefixed, e.g. "Mr See Yi Oh") to a character page.
@@ -381,10 +352,10 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         {w.summary && <p className="text-[12px] leading-relaxed text-foreground/85">{w.summary}</p>}
         {goals.length > 0 && (
           <div>
-            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Wants</div>
+            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">{t('detail.wants')}</div>
             <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-3 gap-y-2 rounded-md border border-border/60 px-3 py-3 text-[11.5px]">
-              <div className="text-[9px] uppercase tracking-wide text-faint">Goal</div>
-              <div className="text-right text-[9px] uppercase tracking-wide text-faint">Status</div>
+              <div className="text-[9px] uppercase tracking-wide text-faint">{t('detail.goal')}</div>
+              <div className="text-right text-[9px] uppercase tracking-wide text-faint">{t('detail.status')}</div>
               {goals.map((g, k) => (
                 <div key={k} className="contents">
                   <span className="text-muted-foreground">{g.goal}</span>
@@ -396,10 +367,10 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         )}
         {conflicts.length > 0 && (
           <div>
-            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Tension</div>
+            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">{t('detail.tension')}</div>
             <div className="grid grid-cols-[1fr_auto] items-start gap-x-3 gap-y-2 rounded-md border border-border/60 px-3 py-3 text-[11.5px]">
-              <div className="text-[9px] uppercase tracking-wide text-faint">Over</div>
-              <div className="text-right text-[9px] uppercase tracking-wide text-faint">With</div>
+              <div className="text-[9px] uppercase tracking-wide text-faint">{t('detail.over')}</div>
+              <div className="text-right text-[9px] uppercase tracking-wide text-faint">{t('detail.with')}</div>
               {conflicts.map((c, k) => (
                 <div key={k} className="contents">
                   <span className="text-muted-foreground">{c.over}</span>
@@ -410,7 +381,7 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
                           return (
                             <span key={j}>
                               {j > 0 && ', '}
-                              {ch ? <button onClick={() => openName(nm)} className="text-character hover:underline" title={`${nm} — open page`}>{nm}</button> : nm}
+                              {ch ? <button onClick={() => openName(nm)} className="text-character hover:underline" title={t('row.openPage', { name: nm })}>{nm}</button> : nm}
                             </span>
                           )
                         })
@@ -423,11 +394,11 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         )}
         {w.events.length > 0 && (
           <div>
-            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Changes</div>
+            <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">{t('detail.changes')}</div>
             <div className="grid grid-cols-[auto_auto_1fr] items-start gap-x-3 gap-y-1.5 rounded-md border border-border/60 px-3 py-2 text-[11.5px]">
-              <div className="text-[9px] uppercase tracking-wide text-faint">Type</div>
-              <div className="text-[9px] uppercase tracking-wide text-faint">Change</div>
-              <div className="text-[9px] uppercase tracking-wide text-faint">Summary</div>
+              <div className="text-[9px] uppercase tracking-wide text-faint">{t('detail.type')}</div>
+              <div className="text-[9px] uppercase tracking-wide text-faint">{t('detail.change')}</div>
+              <div className="text-[9px] uppercase tracking-wide text-faint">{t('detail.summary')}</div>
               {w.events.map((e, k) => (
                 <ArcEventRow key={k} e={e} highlight={!!focusValue && e.sceneId === focusScene && e.value === focusValue} />
               ))}
@@ -447,9 +418,9 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         chapterKey: chKey,
         pos: posOf.get(chKey) ?? 1e9,
         title: chapterIndex.chapters.get(chKey)?.title ?? w.title,
-        summary: w.summary || `${w.events.length} change${w.events.length === 1 ? '' : 's'} this chapter`,
+        summary: w.summary || t('detail.changesThisChapter', { count: w.events.length }),
         detail: windowDetail(w),
-        kind: `${w.events.length} change${w.events.length === 1 ? '' : 's'}`
+        kind: t('detail.changeCount', { count: w.events.length })
       }
     })
   const chapters: FeedChapter[] = orderedKeys.map((k, i) => ({ key: k, title: chapterIndex.chapters.get(k)?.title ?? k, pos: i }))
@@ -461,17 +432,16 @@ export function ArcDetail({ arc, onClose, focus }: { arc: CharacterArc; onClose:
         icon={<span className="size-2 shrink-0 rounded-full bg-character" />}
         title={
           page ? (
-            <button onClick={() => void openPage({ path: page.path, title: page.name, kind: page.kind })} className="inline-flex items-center gap-1 text-character hover:underline" title="Open character page">
+            <button onClick={() => void openPage({ path: page.path, title: page.name, kind: page.kind })} className="inline-flex items-center gap-1 text-character hover:underline" title={t('detail.openCharPage')}>
               {arc.name} <ExternalLink className="size-3 shrink-0" />
             </button>
           ) : (
             arc.name
           )
         }
-        meta={`${total} event${total === 1 ? '' : 's'} · ${arc.windows.length} window${arc.windows.length === 1 ? '' : 's'}`}
-        endpoints={endpoints}
+        meta={`${t('detail.metaEvents', { count: total })} · ${t('detail.metaWindows', { count: arc.windows.length })}`}
         heatmap={<AppearanceHeatStrip cells={heatCells} accentClass="text-character" />}
-        tabs={[{ id: 'feed', label: 'Journey', icon: <Rows3 className="size-3.5" />, count: events.length }]}
+        tabs={[{ id: 'feed', label: t('detail.journey'), icon: <Rows3 className="size-3.5" />, count: events.length }]}
         tab="feed"
         onTab={() => {}}
         chapters={chapters}

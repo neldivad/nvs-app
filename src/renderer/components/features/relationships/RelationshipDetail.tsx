@@ -7,12 +7,12 @@
  */
 import { useMemo, type JSX } from 'react'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { facetVisual } from '@/config/arcVisual'
 import { FloatWindow, type Box } from '@/components/layout/FloatWindow'
 import type { RelationshipEvidence, RelEvidenceEvent } from '@shared/ipc'
 
-const CHANGE_LABEL: Record<string, string> = { gain: 'gains', loss: 'loses', expose: 'exposes' }
 const SPINE_COLS = 'grid-cols-[1fr_1.25rem_1fr]'
 
 /** Defensive de-dup: the engine now emits a clean description, but a legacy/verbose one may still lead with
@@ -27,6 +27,7 @@ function cleanText(t: string): string {
 }
 
 export function RelationshipDetail({ ev, scenes }: { ev: RelationshipEvidence; scenes: Set<string> }): JSX.Element {
+  const { t } = useTranslation('relationships')
   const nodes = useMemo(() => {
     const meta = new Map<string, { title: string; pos: number }>()
     for (const s of ev.coScenes) if (scenes.has(s.sceneId)) meta.set(s.sceneId, { title: s.title, pos: s.pos })
@@ -45,7 +46,8 @@ export function RelationshipDetail({ ev, scenes }: { ev: RelationshipEvidence; s
           sceneId,
           title: m.title,
           pos: m.pos,
-          left: evs.filter((e) => e.owner === null || e.owner === 'a'),
+          left: evs.filter((e) => e.owner === 'a'),
+          center: evs.filter((e) => e.owner === null), // mutual (conflict) — belongs to BOTH → centered on the spine
           right: evs.filter((e) => e.owner === 'b'),
           active: evs.length > 0
         }
@@ -53,7 +55,7 @@ export function RelationshipDetail({ ev, scenes }: { ev: RelationshipEvidence; s
       .sort((x, y) => x.pos - y.pos)
   }, [ev.coScenes, ev.events, scenes])
 
-  if (nodes.length === 0) return <p className="p-4 text-sm text-muted-foreground">No shifts here.</p>
+  if (nodes.length === 0) return <p className="p-4 text-sm text-muted-foreground">{t('detail.noShifts')}</p>
 
   return (
     <div className="space-y-3">
@@ -75,6 +77,13 @@ export function RelationshipDetail({ ev, scenes }: { ev: RelationshipEvidence; s
             <div className="flex flex-col items-start justify-center gap-1 py-1">
               {n.right.map((e, j) => <Leaf key={j} e={e} side="b" />)}
             </div>
+            {/* MUTUAL leaves (conflict, owner=null) belong to BOTH parties → a centered row straddling the
+                spine, not a lodger in A's column. */}
+            {n.center.length > 0 && (
+              <div className="col-span-3 -mt-0.5 flex flex-col items-center gap-1 pb-1">
+                {n.center.map((e, j) => <Leaf key={j} e={e} side="center" />)}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -82,16 +91,17 @@ export function RelationshipDetail({ ev, scenes }: { ev: RelationshipEvidence; s
   )
 }
 
-/** One shift as a leaf hanging off the spine toward its owner's side. */
-function Leaf({ e, side }: { e: RelEvidenceEvent; side: 'a' | 'b' }): JSX.Element {
+/** One shift as a leaf hanging off the spine toward its owner's side — or centered when it's MUTUAL. */
+function Leaf({ e, side }: { e: RelEvidenceEvent; side: 'a' | 'b' | 'center' }): JSX.Element {
+  const { t } = useTranslation('relationships')
   const v = e.facet ? facetVisual(e.facet) : null
   const conflict = e.owner === null
   return (
-    <div className={cn('max-w-64 rounded border px-2 py-1', side === 'a' ? 'text-right' : 'text-left', conflict ? 'border-flag/40 bg-flag/5' : 'border-border/50 bg-panel')}>
-      <div className={cn('mb-0.5 flex items-center gap-1 text-[9px] uppercase leading-tight tracking-wide', side === 'a' && 'flex-row-reverse')}>
+    <div className={cn('max-w-64 rounded border px-2 py-1', side === 'a' ? 'text-right' : side === 'b' ? 'text-left' : 'text-center', conflict ? 'border-flag/40 bg-flag/5' : 'border-border/50 bg-panel')}>
+      <div className={cn('mb-0.5 flex items-center gap-1 text-[9px] uppercase leading-tight tracking-wide', side === 'a' && 'flex-row-reverse', side === 'center' && 'justify-center')}>
         <span className={cn('size-1.5 shrink-0 rounded-full', v?.sw ?? 'bg-flag')} />
         <span className={cn(conflict ? 'text-flag' : v?.text)}>
-          {conflict ? 'conflict · mutual' : `${e.facet}${e.change ? ` · ${CHANGE_LABEL[e.change] ?? e.change}` : ''}`}
+          {conflict ? t('detail.conflictMutual') : `${e.facet}${e.change ? ` · ${t(`detail.change.${e.change}`, { defaultValue: e.change })}` : ''}`}
         </span>
       </div>
       {e.text && <p className="text-[11px] leading-snug text-foreground/85">{cleanText(e.text)}</p>}

@@ -8,18 +8,21 @@ import { useMemo, useState, type JSX } from 'react';
 import { regionAttrs } from '@/config/regions'
 import { Link2, ShieldAlert } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
-import { severityVisual, kindGloss } from '@/config/coherenceVisual'
+import { severityVisual, kindGloss, displayKind } from '@/config/coherenceVisual'
 import { cn } from '@/lib/utils'
 import { SidebarRow, SidebarLabel, SidebarHeader, SidebarScroll } from '@/components/layout/SidebarKit'
 import { CoherenceRunDialog } from '@/components/features/coherence/CoherenceRunDialog'
-import { CONTINUITY_KINDS } from '@shared/config/extraction'
+import { CONTINUITY_KINDS, CRITIQUE_KINDS } from '@shared/config/extraction'
 import type { CoherenceFinding } from '@shared/ipc'
 import { SidebarEmpty } from '@/components/ui/EmptyRailState'
+import { useTranslation } from 'react-i18next'
 
 const ORDER = ['high', 'medium', 'low']
 const CONTINUITY = new Set<string>(CONTINUITY_KINDS) // plot-holes: the story vs itself (their own section)
+const CRITIQUE = new Set<string>(CRITIQUE_KINDS) // tough questions: construction critique (their own section)
 
 export function CoherenceSidebar(): JSX.Element {
+  const { t } = useTranslation('coherence')
   const findings = useWorkspace((s) => s.coherence)
   const selected = useWorkspace((s) => s.selectedFindingId)
   const select = useWorkspace((s) => s.setSelectedFinding)
@@ -34,14 +37,16 @@ export function CoherenceSidebar(): JSX.Element {
     const bySevSort = (a: CoherenceFinding, b: CoherenceFinding): number => ORDER.indexOf(a.severity) - ORDER.indexOf(b.severity)
     const isConfirm = (f: CoherenceFinding): boolean => f.kind === 'confirmation'
     const isCont = (f: CoherenceFinding): boolean => CONTINUITY.has(f.kind)
+    const isCrit = (f: CoherenceFinding): boolean => CRITIQUE.has(f.kind)
     const intentional = all.filter((f) => f.intentional && !isConfirm(f)) // author-ruled: quiet, reachable to unmark
     const active = all.filter((f) => !f.intentional && !isConfirm(f))
-    const character = active.filter((f) => !f.threadId && !isCont(f))
+    const character = active.filter((f) => !f.threadId && !isCont(f) && !isCrit(f))
     const continuity = [...active.filter(isCont)].sort(bySevSort) // plot-holes (their own section)
+    const critique = [...active.filter(isCrit)].sort(bySevSort) // tough questions (their own section)
     const onTrack = all.filter((f) => !f.threadId && isConfirm(f)) // secret-covered deception WORKING (layered truth)
-    const threads = [...active.filter((f) => !!f.threadId && !isCont(f))].sort(bySevSort)
+    const threads = [...active.filter((f) => !!f.threadId && !isCont(f) && !isCrit(f))].sort(bySevSort)
     const bySev = (sev: string): CoherenceFinding[] => character.filter((f) => f.severity === sev)
-    return { character, continuity, intentional, onTrack, threads, bySev }
+    return { character, continuity, critique, intentional, onTrack, threads, bySev }
   }, [findings])
 
   const row = (f: CoherenceFinding): JSX.Element => {
@@ -63,7 +68,9 @@ export function CoherenceSidebar(): JSX.Element {
         trailing={
           <>
             {f.threadId && <Link2 className="size-3 shrink-0 text-faint" />}
-            <span className="shrink-0 text-[9px] uppercase tracking-wide text-faint">{kindGloss(f.kind).label}</span>
+            <span title={kindGloss(displayKind(f.kind, f.declared)).question} className="shrink-0 text-[9px] uppercase tracking-wide text-faint">
+              {kindGloss(displayKind(f.kind, f.declared)).label}
+            </span>
           </>
         }
       />
@@ -74,12 +81,12 @@ export function CoherenceSidebar(): JSX.Element {
     <div {...regionAttrs('coherenceSidebar')} className="flex h-full flex-col bg-panel">
       {/* Mirrors Custody's sidebar trigger: a confirmation pass, then the SAME background coherence run the dock kicks off. */}
       <SidebarHeader
-        title="Coherence"
+        title={t('sidebar.title')}
         count={findings ? groups.character.length : undefined}
         action={
           aiEnabled ? (
             <button
-              title="Check coherence — diff each character’s page against what the story shows"
+              title={t('sidebar.runTitle')}
               onClick={() => setRunOpen(true)}
               className="rounded p-0.5 text-faint transition-colors hover:text-flag"
             >
@@ -90,50 +97,58 @@ export function CoherenceSidebar(): JSX.Element {
       />
       <SidebarScroll className="pb-3">
         {findings == null ? (
-          <p className="px-3 py-2 text-xs text-muted-foreground">Reading…</p>
+          <p className="px-3 py-2 text-xs text-muted-foreground">{t('sidebar.reading')}</p>
         ) : findings.length === 0 ? (
-          <SidebarEmpty>No findings — they appear after you run analysis.</SidebarEmpty>
+          <SidebarEmpty>{t('sidebar.empty')}</SidebarEmpty>
         ) : (
           <>
-            {/* Character coherence — the page-vs-arc diff, by severity */}
+            {/* Page vs story — the page-vs-arc diff (family header, matching "Plot holes" below), by severity */}
+            {groups.character.length > 0 && <SidebarLabel>{t('sidebar.pageVsStory', { count: groups.character.length })}</SidebarLabel>}
             {ORDER.map((sev) => {
               const rows = groups.bySev(sev)
               if (rows.length === 0) return null
               return (
                 <div key={sev}>
-                  <SidebarLabel>{sev}</SidebarLabel>
+                  <SidebarLabel>{t(`sidebar.severity.${sev}`)}</SidebarLabel>
                   {rows.map(row)}
                 </div>
               )
             })}
             {groups.character.length === 0 && (
-              <SidebarEmpty>No character coherence issues.</SidebarEmpty>
+              <SidebarEmpty>{t('sidebar.noCharacterIssues')}</SidebarEmpty>
             )}
             {/* Continuity — plot-holes the story opens against ITSELF (continuity-error / logic-gap / rule-break) */}
             {groups.continuity.length > 0 && (
               <div className="mt-1 border-t border-border/60">
-                <SidebarLabel>Plot holes · {groups.continuity.length}</SidebarLabel>
+                <SidebarLabel>{t('sidebar.plotHoles', { count: groups.continuity.length })}</SidebarLabel>
                 {groups.continuity.map(row)}
+              </div>
+            )}
+            {/* Critique — the opt-in "Tough questions" (story-critique.md): construction, not consistency */}
+            {groups.critique.length > 0 && (
+              <div className="mt-1 border-t border-border/60">
+                <SidebarLabel>{t('sidebar.toughQuestions', { count: groups.critique.length })}</SidebarLabel>
+                {groups.critique.map(row)}
               </div>
             )}
             {/* Deception on track — secret-covered divergence the analysis CONFIRMS is working (✓, calm) */}
             {groups.onTrack.length > 0 && (
               <div className="mt-1 border-t border-border/60">
-                <SidebarLabel>Deception on track ✓ · {groups.onTrack.length}</SidebarLabel>
+                <SidebarLabel>{t('sidebar.onTrack', { count: groups.onTrack.length })}</SidebarLabel>
                 {groups.onTrack.map(row)}
               </div>
             )}
             {/* Author-ruled intentional — quiet ✓ rows (dimmed, still clickable to review/unmark) */}
             {groups.intentional.length > 0 && (
               <div className="mt-1 border-t border-border/60 opacity-60">
-                <SidebarLabel>Intentional ✓ · {groups.intentional.length}</SidebarLabel>
+                <SidebarLabel>{t('sidebar.intentional', { count: groups.intentional.length })}</SidebarLabel>
                 {groups.intentional.map(row)}
               </div>
             )}
             {/* Thread verdicts — judgments about threads (cliffhanger / hole / sequel hook), kept separate */}
             {groups.threads.length > 0 && (
               <div className="mt-1 border-t border-border/60">
-                <SidebarLabel>Thread verdicts · {groups.threads.length}</SidebarLabel>
+                <SidebarLabel>{t('sidebar.threadVerdicts', { count: groups.threads.length })}</SidebarLabel>
                 {groups.threads.map(row)}
               </div>
             )}

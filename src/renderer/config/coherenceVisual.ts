@@ -25,29 +25,50 @@ export const severityWash = (s: string): string => (s === 'high' ? 'bg-flag/[0.0
 export const kindLabel = (k: string): string => k.replace(/_/g, ' ')
 
 /**
- * `kind` → a reader-facing **Category** name + a one-line plain gloss of what it means. The producer's
- * raw kinds (drift/gap/contradiction/hole/sequel_hook/…) are jargon to a first-time author; this is the
- * de-jargon layer the finding card reads from. Unknown kinds fall back to a title-cased label, no gloss.
+ * `kind` → a reader-facing **Category** name + a one-line plain gloss + the HEADLINE QUESTION the finding
+ * card leads with (story-critique.md Slice 0 — every finding is presented as a question the author answers,
+ * the trait title demotes to a subtitle). The producer's raw kinds (drift/gap/contradiction/…) are jargon to
+ * a first-time author; this is the de-jargon layer. Unknown kinds fall back to a title-cased label, no gloss.
+ *
+ * `gap` SPLITS at display time into two pseudo-kinds (one stored token, opposite author actions):
+ *   `gap:page-silent` — the arc established a trait the page never mentions (enrich the page), vs
+ *   `gap:never-shown` — the page promises something no scene dramatizes (plant the beat, or trim).
+ * Use `displayKind(kind, declared)` wherever a finding's kind is shown or filtered.
  */
 export interface KindGloss {
   label: string
   blurb: string
+  question: string
 }
 const KIND: Record<string, KindGloss> = {
-  contradiction: { label: 'Contradiction', blurb: 'The page says one thing; the prose shows another.' },
-  drift: { label: 'Drift', blurb: 'Behaviour is sliding away from how the character is written.' },
-  gap: { label: 'Gap', blurb: 'The profile promises something the prose never delivers.' },
-  hole: { label: 'Plot hole', blurb: 'A thread the prose opens but leaves unresolved.' },
-  sequel_hook: { label: 'Open hook', blurb: 'A setup the prose hasn’t paid off yet.' },
-  confirmation: { label: 'Confirmation', blurb: 'The prose matches what was declared — nothing to fix.' },
+  contradiction: { label: 'Says vs shows', blurb: 'The page says one thing; the scenes show another.', question: 'Your page says one thing — the scenes show another. Which is true?' },
+  drift: { label: 'Slow drift', blurb: 'Behaviour is sliding away from the page, with no single breaking moment.', question: 'This character has been sliding away from their page. On purpose?' },
+  gap: { label: 'Gap', blurb: 'One side is silent — the page or the story.', question: 'One side is silent here. Should it stay that way?' },
+  'gap:page-silent': { label: 'Page is silent', blurb: 'The story established a trait the page never mentions.', question: 'The story proved this — should the page own it?' },
+  'gap:never-shown': { label: 'Never shown', blurb: 'The page promises something no scene dramatizes.', question: 'Where’s the scene that shows this?' },
+  hole: { label: 'Plot hole', blurb: 'A thread the prose opens but leaves unresolved.', question: 'This thread opens and never lands. Where does it resolve?' },
+  sequel_hook: { label: 'Open hook', blurb: 'A setup the prose hasn’t paid off yet.', question: 'This setup hasn’t paid off. Is the payoff coming?' },
+  confirmation: { label: 'On track', blurb: 'The divergence is a planned deception, working as written.', question: 'The deception is landing as planned — keep it up?' },
   // Continuity (plot-holes) — the three categories the craft literature logs (Reedsy / Novel Factory / Wikipedia).
   // The fix is to the STORY or the rule, not a page.
-  'continuity-error': { label: 'Continuity error', blurb: 'An established fact contradicts an earlier one.' },
-  'logic-gap': { label: 'Logic gap', blurb: 'An event the story’s own facts make impossible or unearned.' },
-  'rule-break': { label: 'Rule break', blurb: 'The story breaks a rule it declared about its world.' }
+  'continuity-error': { label: 'Fact flip', blurb: 'An established fact contradicts an earlier one.', question: 'These two scenes can’t both be true — which wins?' },
+  'logic-gap': { label: 'Impossible', blurb: 'An event the story’s own facts make impossible or unearned.', question: 'What made this possible? The story never showed it.' },
+  'rule-break': { label: 'Broken rule', blurb: 'The story breaks a rule it declared about its world.', question: 'Your world says this can’t happen. It just did.' },
+  // Critique ("Tough questions") — the fourth family (story-critique.md): construction, not consistency.
+  // A critique finding's TRAIT is itself the specific question; this gloss question is the kind's generic form.
+  inert: { label: 'Cuttable?', blurb: 'A beat nothing downstream depends on — a setup with no payoff on record.', question: 'If this event vanished, would anything downstream change?' },
+  'weak-close': { label: 'Really closed?', blurb: 'A close that may not settle what the thread promised.', question: 'Did this ending actually settle what was promised?' }
 }
 export const kindGloss = (k: string): KindGloss =>
-  KIND[k] ?? { label: kindLabel(k).replace(/\b\w/g, (c) => c.toUpperCase()), blurb: '' }
+  KIND[k] ?? { label: kindLabel(k).replace(/\b\w/g, (c) => c.toUpperCase()), blurb: '', question: '' }
+
+/** The page-side-is-silent test (shared by the card's "(unstated)" render and the gap split). */
+export const declaredSilent = (declared: string | null | undefined): boolean =>
+  !declared || /^\(?\s*(unstated|not stated|unmentioned|none|n\/?a|silent|[—-])\s*\)?$/i.test(declared.trim())
+
+/** A finding's DISPLAY kind: `gap` forks on which side is silent; every other kind passes through. */
+export const displayKind = (kind: string, declared: string | null | undefined): string =>
+  kind === 'gap' ? (declaredSilent(declared) ? 'gap:page-silent' : 'gap:never-shown') : kind
 
 /** Severity word, title-cased for prose ("Medium"). */
 export const severityLabel = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s)

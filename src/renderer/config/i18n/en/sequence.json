@@ -1,0 +1,15 @@
+{
+  "auto": "Auto",
+  "autoReadingOrder": "Auto — reading order",
+  "noLoadouts": "No loadouts — build one in Timeline ▸ Chart Config.",
+  "loadoutBlurb": "A <term>loadout</term> is one reading of a branching story — it re-scopes which scenes, rows and analysis every chart shows.",
+  "inlineTitle": "Loadout — pick which reading of the story drives every chart",
+  "cornerTitle": "Chart axis — pick a sequence",
+  "axesTitle": "Chart axes",
+  "maxAxesTitle": "Max {{max}} axes — delete one to add another",
+  "newAxis": "New axis",
+  "newAxisName": "Axis {{n}}",
+  "autoVariantOrder": "Auto — the variant's reading order",
+  "renameAxis": "Rename axis",
+  "deleteAxis": "Delete axis"
+}

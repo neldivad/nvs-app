@@ -1,0 +1,13 @@
+{
+  "expandAll": "すべてのフォルダーを展開",
+  "collapseAll": "すべてのフォルダーを折りたたむ",
+  "searchPlaceholder": "フォルダーとシーンを検索…",
+  "empty": "フォルダーやシーンはまだありません。",
+  "sceneCount_one": "{{count}}シーン",
+  "sceneCount_other": "{{count}} シーン",
+  "dragTip": {
+    "placed": "配置済み",
+    "folder": "ビューにドラッグ（フォルダー全体を配置）",
+    "scene": "ビューにドラッグ"
+  }
+}

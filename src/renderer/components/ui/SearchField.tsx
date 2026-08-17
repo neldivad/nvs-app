@@ -10,13 +10,14 @@
  * A clear ✕ appears once there's a query (suppress with `clearable={false}` when a wrapper owns close/clear).
  */
 import { type JSX, type KeyboardEvent, type Ref } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function SearchField({
   value,
   onChange,
-  placeholder = 'Search…',
+  placeholder,
   autoFocus,
   bare,
   clearable = true,
@@ -36,6 +37,7 @@ export function SearchField({
   inputRef?: Ref<HTMLInputElement>
   className?: string
 }): JSX.Element {
+  const { t } = useTranslation('searchField')
   const showClear = clearable && value !== ''
   return (
     <div className={cn('relative flex min-w-0 items-center', className)}>
@@ -46,7 +48,7 @@ export function SearchField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
-        placeholder={placeholder}
+        placeholder={placeholder ?? t('placeholder')}
         className={cn(
           'min-w-0 flex-1 text-xs text-foreground outline-none placeholder:text-faint',
           bare
@@ -57,7 +59,7 @@ export function SearchField({
       {showClear && (
         <button
           onClick={() => onChange('')}
-          title="Clear search"
+          title={t('clear')}
           className={cn('absolute text-faint transition-colors hover:text-foreground', bare ? 'right-0' : 'right-1.5')}
         >
           <X className="size-3" />

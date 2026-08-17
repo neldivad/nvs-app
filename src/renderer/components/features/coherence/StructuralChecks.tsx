@@ -5,6 +5,7 @@
  * not a hidden feature). See internal/renpy-crossref.md (borrow: static second reader; anti-pattern #1).
  */
 import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
 import { checkIntegrity, type IntegritySeverity } from '@/lib/analysis/integrityCheck'
@@ -14,6 +15,7 @@ const DOT: Record<IntegritySeverity, string> = { error: 'bg-flag', warn: 'bg-lor
 const CAP = 12 // render-depth bound — cap the list, honest "+N more" tail
 
 export function StructuralChecks(): JSX.Element {
+  const { t } = useTranslation('structuralChecks')
   const storyTree = useWorkspace((s) => s.storyTree)
   const trees = useWorkspace((s) => s.trees)
   const graph = useWorkspace((s) => s.timelineGraph) // scene cast → orphan-page check
@@ -26,9 +28,9 @@ export function StructuralChecks(): JSX.Element {
 
   if (issues.length === 0) {
     return (
-      <div className="flex items-center gap-1.5 border-b border-border px-4 py-1 text-[11px] text-faint" title="Deterministic structural checks — no duplicate ids or broken timeline edges">
+      <div className="flex items-center gap-1.5 border-b border-border px-4 py-1 text-[11px] text-faint" title={t('checkTitle')}>
         <span className="size-1.5 rounded-full bg-ok" />
-        Structure — no broken references
+        {t('clean')}
       </div>
     )
   }
@@ -39,22 +41,22 @@ export function StructuralChecks(): JSX.Element {
     <div className="border-b border-border bg-panel-soft/30">
       <div className="flex items-center gap-1.5 px-4 py-1 text-[11px] font-medium text-foreground">
         <span className="size-1.5 rounded-full bg-flag" />
-        Structure — {issues.length} issue{issues.length === 1 ? '' : 's'}
-        {errors > 0 && <span className="text-flag">· {errors} to fix</span>}
+        {t('issues', { count: issues.length })}
+        {errors > 0 && <span className="text-flag">{t('toFix', { count: errors })}</span>}
       </div>
       <div className="max-h-32 overflow-auto px-2 pb-1">
         {shown.map((iss, i) => (
           <button
             key={i}
             onClick={() => void openPage({ path: iss.path, title: iss.title, kind: iss.pageKind ?? 'scene' })}
-            title={iss.pageKind ? 'Open the page' : 'Open the scene'}
+            title={iss.pageKind ? t('openPage') : t('openScene')}
             className="flex w-full items-start gap-1.5 rounded px-2 py-0.5 text-left text-[11px] text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
           >
             <span className={cn('mt-1 size-1.5 shrink-0 rounded-full', DOT[iss.severity])} />
             <span className="min-w-0 flex-1">{iss.message}</span>
           </button>
         ))}
-        {issues.length > CAP && <div className="px-2 py-0.5 text-[10px] text-faint">…and {issues.length - CAP} more</div>}
+        {issues.length > CAP && <div className="px-2 py-0.5 text-[10px] text-faint">{t('more', { count: issues.length - CAP })}</div>}
       </div>
     </div>
   )

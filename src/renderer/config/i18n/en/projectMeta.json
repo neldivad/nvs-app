@@ -1,0 +1,88 @@
+{
+  "title": "Project details",
+  "steps": {
+    "details": "Details",
+    "cover": "Cover",
+    "classification": "Classification",
+    "credits": "Credits",
+    "review": "Review"
+  },
+  "nav": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "save": "Save"
+  },
+  "discard": {
+    "title": "Discard changes?",
+    "message": "Your edits to this project won’t be saved.",
+    "confirm": "Discard"
+  },
+  "details": {
+    "kindLabel": "Kind",
+    "kindHint": "Fiction or non-fiction — the top of the shelf. (Shapes the analysis in a later update; today it’s a label.)",
+    "titleLabel": "Title",
+    "titleHint": "The name of your work.",
+    "subtitleLabel": "Subtitle",
+    "subtitleHint": "An optional second line (e.g. “Book One of …”).",
+    "subtitlePlaceholder": "Optional",
+    "taglineLabel": "Tagline",
+    "taglineHint": "A one-line hook — like a movie tagline.",
+    "taglinePlaceholder": "In a kingdom of liars, one truth remains.",
+    "synopsisLabel": "Synopsis",
+    "synopsisHint": "The back-cover blurb — a paragraph or two, not the whole book.",
+    "synopsisPlaceholder": "When the queen falls ill, the court fractures…",
+    "synopsisCount": "{{n}} / {{max}}",
+    "mediumLabel": "Medium",
+    "mediumHint": "What kind of work is this?",
+    "statusLabel": "Status",
+    "statusHint": "Where is it in its life?"
+  },
+  "cover": {
+    "label": "Cover",
+    "hint": "A cover gives the project a face in your library.",
+    "change": "Change cover",
+    "drop": "Drop an image here",
+    "browse": "or click to browse",
+    "choose": "Choose image…",
+    "formats": "JPG, PNG, GIF, or WEBP. Shown on your library shelf and the project’s book card.",
+    "adjust": "Adjust framing"
+  },
+  "classification": {
+    "languageLabel": "Language",
+    "languageHint": "What languages is it written in?",
+    "languagePlaceholder": "Search languages…",
+    "subjectLabel": "Subject",
+    "genreLabel": "Genre",
+    "shelfHint": "The shelf it sits on.",
+    "subjectPlaceholder": "Search subjects…",
+    "genrePlaceholder": "Search genres…",
+    "themesLabel": "Themes",
+    "themesHint": "What it’s really about — this powers discovery more than genre.",
+    "themesPlaceholder": "Search themes…",
+    "warningsLabel": "Content warnings",
+    "warningsHint": "A heads-up for sensitive content.",
+    "warningsPlaceholder": "Search warnings…",
+    "keywordsLabel": "Keywords",
+    "keywordsHint": "Any free-form tags, comma-separated.",
+    "keywordsPlaceholder": "court intrigue, slow burn"
+  },
+  "credits": {
+    "authorLabel": "Author",
+    "authorHint": "The primary writer.",
+    "authorPlaceholder": "Your name",
+    "contributorsLabel": "Contributors",
+    "contributorsHint": "Anyone else — each with their roles (writer, translator, composer…).",
+    "namePlaceholder": "Name",
+    "remove": "Remove",
+    "rolePlaceholder": "Search or type a role…",
+    "add": "Add contributor"
+  },
+  "picker": {
+    "remove": "Remove",
+    "searchCustom": "Search or type your own…",
+    "search": "Search…",
+    "addCustom": "+ Add “{{q}}”",
+    "noMatches": "No matches"
+  }
+}

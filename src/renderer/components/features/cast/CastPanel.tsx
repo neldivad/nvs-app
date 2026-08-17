@@ -27,6 +27,7 @@ import { RailScaleBar } from '@/components/layout/RailScaleBar'
 import { RailHeader, RailTabs } from '@/components/ui/RailHeader'
 import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpList } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
 import type { PageRef, SceneFile } from '@shared/ipc'
 
 type Tab = 'presence' | 'copresence' | 'graph'
@@ -39,6 +40,7 @@ const MAX_CELLS = 6000 // DOM-cell ceiling; rows are capped to fit (the roster s
 
 
 export function CastPanel(): JSX.Element {
+  const { t } = useTranslation('cast')
   const characters = useWorkspace((s) => s.characters)
   const scenes = useWorkspace((s) => s.scenes)
   const graph = useWorkspace((s) => s.timelineGraph)
@@ -175,12 +177,12 @@ export function CastPanel(): JSX.Element {
   return (
     <div {...regionAttrs('castPanel')} className="relative flex min-h-0 flex-1 flex-col">
       <RailHeader data-export-hide="1" className="relative">
-        <h2 className="mr-1 text-sm font-medium text-foreground">Cast</h2>
+        <h2 className="mr-1 text-sm font-medium text-foreground">{t('rail.name')}</h2>
         <RailTabs
           tabs={['presence', 'copresence', 'graph'] as const}
           value={tab}
           onChange={setTab}
-          renderLabel={(t) => (t === 'copresence' ? 'Co-presence' : t === 'graph' ? 'Relationships' : t)}
+          renderLabel={(tabKey) => (tabKey === 'copresence' ? t('tabs.copresence') : tabKey === 'graph' ? t('tabs.graph') : t('tabs.presence'))}
         />
         {/* live hover readout — centered across the FULL header (absolute, not the flex remainder after the tabs);
             pointer-events-none so it never blocks the tabs it overlays. */}
@@ -193,8 +195,8 @@ export function CastPanel(): JSX.Element {
         ) : characters.length - ex.size === 0 ? (
           // The common footgun — everyone toggled off in the roster (easy with a 2-person cast). Distinct from
           // "no data": say WHY it's empty and point at the fix, instead of the misleading "run analysis" hint.
-          <EmptyHint rail="cast" title="All cast hidden">
-            Every name is hidden from the matrices. Click the eye at the top of the roster (left) to show them — or click a name to toggle it back.
+          <EmptyHint rail="cast" title={t('empty.allHidden.title')}>
+            {t('empty.allHidden.body')}
           </EmptyHint>
         ) : tab === 'presence' ? (
           <PresenceView
@@ -227,16 +229,16 @@ export function CastPanel(): JSX.Element {
           onReset: win.range ? () => win.setRange(null) : undefined,
           title: `${sceneCols[lo]?.title ?? '?'} → ${sceneCols[hi]?.title ?? '?'}`
         }}
-        page={paged ? { from: scoped.from, to: scoped.to, total: scoped.total, noun: 'characters', page: scoped.page, pageCount: scoped.pageCount, onPage: setPage } : undefined}
+        page={paged ? { from: scoped.from, to: scoped.to, total: scoped.total, noun: t('charactersNoun'), page: scoped.page, pageCount: scoped.pageCount, onPage: setPage } : undefined}
         metric={{
-          label: 'Volume',
+          label: t('metric.volume'),
           min: 0,
           max: lastRung,
           value: [appLoIdx, appHiIdx],
           onChange: setAppWin,
-          readout: appAll ? 'all' : `${minApp}–${maxAppSel}`,
+          readout: appAll ? t('metric.all') : `${minApp}–${maxAppSel}`,
           onReset: appAll ? undefined : () => setAppWin(null),
-          title: "Quasi-log steps — fine at the low end (where the cast collapses), coarse at the top. Edges set the min/max; drag the band's center to slide."
+          title: t('metric.title')
         }}
       />
 
@@ -250,9 +252,9 @@ export function CastPanel(): JSX.Element {
           // HONEST caption — the PNG must say what it filtered out (window + min-appearance), not pose as the full story.
           file: 'cast-rail',
           caption: () =>
-            `Cast — ${tab === 'copresence' ? 'co-presence' : tab === 'graph' ? 'relationships' : 'presence'}` +
-            (hi - lo + 1 < sceneCols.length ? ` · scenes ${lo + 1}–${hi + 1} of ${sceneCols.length}` : '') +
-            (appAll ? '' : ` · lines ${minApp}–${maxAppSel}`)
+            t('export.caption', { view: tab === 'copresence' ? t('export.copresence') : tab === 'graph' ? t('export.graph') : t('export.presence') }) +
+            (hi - lo + 1 < sceneCols.length ? t('export.scenes', { from: lo + 1, to: hi + 1, total: sceneCols.length }) : '') +
+            (appAll ? '' : t('export.lines', { min: minApp, max: maxAppSel }))
         }}
         help={CastHelp}
       />
@@ -267,28 +269,15 @@ export function CastPanel(): JSX.Element {
 
 // ── Help ────────────────────────────────────────────────────────────────────────
 function CastHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('cast')
   return (
-    <Dialog open={open} onClose={onClose} title="Cast — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="Tabs">
-          <HelpList
-            items={[
-              <><b className="text-foreground/80">Presence</b> — dialog-volume bars per scene over a character × scene heatmap (shaded by lines spoken).</>,
-              <><b className="text-foreground/80">Co-presence</b> — how often two characters share a scene (lower-triangle heatmap).</>,
-              <><b className="text-foreground/80">Relationships</b> — the co-presence as a force-directed graph: nodes = characters (sized by appearances), edges = shared scenes. Drag nodes, scroll to zoom; the <b className="text-foreground/80">scene range</b> limits it to a stretch (e.g. one act).</>
-            ]}
-          />
+        <HelpSection title={t('help.tabs.title')}>
+          <HelpList items={t('help.tabs.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Reading it">
-          <HelpList
-            items={[
-              <>The <b className="text-foreground/80">wrap bands</b> across the top group the scene columns by the story hierarchy — one row per folder level (book · act · chapter …), read straight from your folder tree. A level only appears when it actually subdivides what you're viewing, so nesting deeper folders (e.g. region → chapter) adds bands automatically. The <b className="text-foreground/80">dialogue-volume bars</b> hanging below are colored by chapter, so you can see each chapter's weight at a glance.</>,
-              <>Hover any cell or bar for its value.</>,
-              <>Click a <b className="text-foreground/80">row</b> (character) or <b className="text-foreground/80">column</b> (scene) to read it in place.</>,
-              <>The <b className="text-foreground/80">lines</b> window trims the cast by how many lines each character speaks — the low thumb hides bit-part / rarely-speaking characters, the high thumb hides the most talkative leads (to focus on the mid-tier), and dragging the band's center slides the whole range. It's the same windowed slider as the scene range.</>,
-              <>The <b className="text-foreground/80">sidebar</b> roster picks which characters appear in the matrices — deselect to cut the grid down at scale.</>
-            ]}
-          />
+        <HelpSection title={t('help.reading.title')}>
+          <HelpList items={t('help.reading.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>
@@ -329,6 +318,7 @@ const HeatRowCells = memo(function HeatRowCells({
   povOf?: Map<string, string>
   onEnter: (rowId: string, colId: string, text: string) => void
 }): JSX.Element {
+  const { t } = useTranslation('cast')
   return (
     <>
       {cols.map((s) => {
@@ -341,7 +331,7 @@ const HeatRowCells = memo(function HeatRowCells({
             key={s.sceneId}
             className={cn(COL, 'p-px')}
             // absent cells carry NO hover handler — most of a big grid is empty, and skipping them avoids needless work.
-            onMouseEnter={present ? () => onEnter(charId, s.sceneId, silent ? `${charName} · ${s.title} — present, silent` : `${charName} · ${s.title} — ${charsLabel(n)}`) : undefined}
+            onMouseEnter={present ? () => onEnter(charId, s.sceneId, silent ? t('presence.cellSilent', { name: charName, title: s.title }) : t('presence.cell', { name: charName, title: s.title, value: charsLabel(n) })) : undefined}
           >
             <div
               className={cn(
@@ -386,6 +376,7 @@ function PresenceView({
   onScene: (s: SceneFile) => void
   onHover: (text: string | null) => void
 }): JSX.Element {
+  const { t } = useTranslation('cast')
   const [hot, setHot] = useState<{ row?: string; col?: string }>({})
   const chapterColor = useMemo(() => {
     const m = new Map<string, string>()
@@ -475,11 +466,11 @@ function PresenceView({
         <div className={cn(CORNER, 'flex flex-col items-start justify-end gap-1 pb-0.5')}>
           <button
             onClick={onToggleSort}
-            title={sortByDebut ? 'Sorted by first appearance — click to sort by lines spoken' : 'Sorted by lines spoken — click to sort by first appearance'}
+            title={sortByDebut ? t('presence.sortByDebut') : t('presence.sortByLines')}
             className="flex items-center gap-1 text-[10px] text-faint transition-colors hover:text-foreground"
           >
             {sortByDebut ? <Clock className="size-3" /> : <ArrowDownWideNarrow className="size-3" />}
-            {sortByDebut ? 'First seen' : 'Most lines'}
+            {sortByDebut ? t('presence.firstSeen') : t('presence.mostLines')}
           </button>
           <SequenceSelect />
         </div>
@@ -518,7 +509,7 @@ function PresenceView({
               className={cn(COL, 'flex h-12 items-start px-px')}
               onMouseEnter={() => {
                 setHot({ col: s.sceneId })
-                onHover(`${s.title} — ${charsLabel(vol)}`) // compact ("11.3k chars"), not raw 11304 dialogue lines
+                onHover(t('presence.sceneVol', { title: s.title, value: charsLabel(vol) })) // compact ("11.3k chars"), not raw 11304 dialogue lines
               }}
             >
               <div
@@ -548,6 +539,7 @@ function CoPresence({
   /** Click a co-presence cell (row-char × col-char) → the pair's RelationshipDialog (same as a graph edge). */
   onEdge?: (a: string, b: string) => void
 }): JSX.Element {
+  const { t } = useTranslation('cast')
   // Pair weight = combined VOLUME (characters) the two speak in scenes they SHARE (sum of both their per-scene
   // char-volume, accumulated), NOT the raw count of shared scenes and NOT a ratio — an intense back-and-forth
   // outweighs standing silently in the same room.
@@ -585,7 +577,7 @@ function CoPresence({
               <div
                 key={cc.id}
                 className={cn(COL, 'p-px')}
-                onMouseEnter={() => onHover(`${r.name} + ${cc.name} — ${charsLabel(n, true)}${clickable ? ' · click for the relationship' : ''}`)}
+                onMouseEnter={() => onHover(t('copresence.cell', { a: r.name, b: cc.name, value: charsLabel(n, true) }) + (clickable ? t('copresence.clickRel') : ''))}
               >
                 <div
                   role={clickable ? 'button' : undefined}
@@ -616,9 +608,10 @@ function CoPresence({
 }
 
 function Empty(): JSX.Element {
+  const { t } = useTranslation('cast')
   return (
-    <EmptyHint rail="cast" title="No speaking presence yet">
-      Presence is read from scene dialogue — no speaking cast was found in the visible scene range.
+    <EmptyHint rail="cast" title={t('empty.noPresence.title')}>
+      {t('empty.noPresence.body')}
     </EmptyHint>
   )
 }

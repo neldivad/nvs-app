@@ -5,6 +5,7 @@
  * Lives as a Panel on the timeline canvas, where you author variants.
  */
 import { useState, type JSX } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { Route, ChevronDown, Plus, Check, Pencil, Trash2, Sparkles } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { activeVariant } from '@/lib/timeline/treeVariant'
@@ -21,6 +22,7 @@ export function TimelineTreePicker(): JSX.Element | null {
   const remove = useWorkspace((s) => s.deleteVariant)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
   const setChatDraft = useWorkspace((s) => s.setChatDraft)
+  const { t } = useTranslation('timeline')
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
@@ -35,7 +37,7 @@ export function TimelineTreePicker(): JSX.Element | null {
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        title="Tree variant — the active branch/merge graph (drives the canvas, analysis, and axis)"
+        title={t('variant.pickerTitle')}
         className="flex items-center gap-1.5 rounded-md border border-border bg-panel/90 px-2 py-1 text-[11px] text-foreground shadow-sm transition-colors hover:bg-panel-soft"
       >
         <Route className="size-3.5 shrink-0 text-thread" />
@@ -70,9 +72,9 @@ export function TimelineTreePicker(): JSX.Element | null {
                     <span className="truncate">{v.name}</span>
                     {on && <Check className="size-3.5 shrink-0 text-ok" />}
                   </button>
-                  <button onClick={() => startRename(v.id, v.name)} title="Rename variant" className="shrink-0 text-faint opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"><Pencil className="size-3" /></button>
+                  <button onClick={() => startRename(v.id, v.name)} title={t('variant.rename')} className="shrink-0 text-faint opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"><Pencil className="size-3" /></button>
                   {trees.variants.length > 1 && (
-                    <button onClick={() => void remove(v.id)} title="Delete variant" className="shrink-0 text-faint opacity-0 transition-opacity hover:text-flag group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
+                    <button onClick={() => void remove(v.id)} title={t('variant.delete')} className="shrink-0 text-faint opacity-0 transition-opacity hover:text-flag group-hover:opacity-100"><Trash2 className="size-3.5" /></button>
                   )}
                 </div>
               )
@@ -80,19 +82,19 @@ export function TimelineTreePicker(): JSX.Element | null {
             <button
               onClick={() => { void create(); setOpen(false) }}
               disabled={trees.variants.length >= MAX_TIMELINE_VARIANTS}
-              title={trees.variants.length >= MAX_TIMELINE_VARIANTS ? `Max ${MAX_TIMELINE_VARIANTS} variants — delete one to add another` : 'New variant (copies this one)'}
+              title={trees.variants.length >= MAX_TIMELINE_VARIANTS ? t('variant.maxTitle', { max: MAX_TIMELINE_VARIANTS }) : t('variant.newTitle')}
               className="flex w-full items-center gap-1.5 border-t border-border px-2 py-1.5 text-[11px] text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground disabled:opacity-40 disabled:hover:bg-transparent"
             >
-              <Plus className="size-3.5" /> {trees.variants.length >= MAX_TIMELINE_VARIANTS ? `Max ${MAX_TIMELINE_VARIANTS} variants` : <>New variant <span className="text-faint">(copies this one)</span></>}
+              <Plus className="size-3.5" /> {trees.variants.length >= MAX_TIMELINE_VARIANTS ? t('variant.maxLabel', { max: MAX_TIMELINE_VARIANTS }) : <Trans t={t} i18nKey="variant.newWithHint" components={{ hint: <span className="text-faint" /> }} />}
             </button>
             <AiGate>
               <button
                 onClick={() => { setChatDraft(buildNewTimelinePrompt()); setChatOpen(true); setOpen(false) }}
                 disabled={trees.variants.length >= MAX_TIMELINE_VARIANTS}
-                title={trees.variants.length >= MAX_TIMELINE_VARIANTS ? `Max ${MAX_TIMELINE_VARIANTS} variants — delete one to add another` : 'Build a fresh timeline with AI — opens the chat with a routing prompt (the agent creates the variant + wires it)'}
+                title={trees.variants.length >= MAX_TIMELINE_VARIANTS ? t('variant.maxTitle', { max: MAX_TIMELINE_VARIANTS }) : t('variant.aiTitle')}
                 className="flex w-full items-center gap-1.5 border-t border-border px-2 py-1.5 text-[11px] text-thread transition-colors hover:bg-thread/10 disabled:opacity-40 disabled:hover:bg-transparent"
               >
-                <Sparkles className="size-3.5" /> New timeline with AI
+                <Sparkles className="size-3.5" /> {t('variant.aiNew')}
               </button>
             </AiGate>
           </div>

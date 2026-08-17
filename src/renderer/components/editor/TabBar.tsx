@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { ChevronDown, X } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
@@ -16,6 +17,7 @@ const KIND_ACCENT: Record<string, string> = {
 /** VSCode-style tab strip — lives above the editor toolbar. Scrolls horizontally; a ⌄ overflow menu lists
  *  every open tab (jump / close / close-others / close-all) so a big pile stays manageable. */
 export function TabBar(): JSX.Element | null {
+  const { t } = useTranslation('editor')
   const openTabs = useWorkspace((s) => s.openTabs)
   const activePath = useWorkspace((s) => s.activePage?.path)
   const sceneDirty = useWorkspace((s) => s.sceneDirty)
@@ -68,7 +70,7 @@ export function TabBar(): JSX.Element | null {
       {/* overflow menu — the "see all open tabs" list (replaces a VS Code OPEN EDITORS panel, lighter) */}
       <button
         onClick={() => setMenuOpen((v) => !v)}
-        title="All open tabs"
+        title={t('tab.allOpen')}
         className={cn('flex shrink-0 items-center gap-1 border-l border-border px-2 text-[11px] hover:bg-panel-soft', menuOpen ? 'text-foreground' : 'text-muted-foreground')}
       >
         <ChevronDown className="size-3" /> {openTabs.length}
@@ -97,6 +99,7 @@ function TabMenu({ tabs, activePath, onPick, onClose, onCloseOthers, onCloseAll,
   onCloseAll: () => void
   dismiss: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   return (
     <>
       <div className="fixed inset-0 z-40" onMouseDown={dismiss} />
@@ -104,19 +107,19 @@ function TabMenu({ tabs, activePath, onPick, onClose, onCloseOthers, onCloseAll,
           scroll them out of reach — the actions must be one click away regardless of tab count) */}
       <div className="absolute right-0 top-full z-50 mt-px flex max-h-80 w-64 flex-col rounded-md border border-border bg-panel py-1 text-[12px] shadow-xl">
         <div className="min-h-0 flex-1 overflow-y-auto">
-          {tabs.map((t) => (
-            <div key={t.path} className={cn('group flex items-center gap-2 px-2 py-1 hover:bg-panel-soft', t.path === activePath && 'bg-panel-soft')}>
-              <button onClick={() => onPick(t)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left">
-                <span className={cn('shrink-0 font-mono text-[9px] capitalize', t.path === activePath ? (KIND_ACCENT[t.kind] ?? 'text-faint') : 'text-faint')}>{t.kind[0]}</span>
-                <span className="truncate text-foreground/90">{t.title}</span>
+          {tabs.map((tab) => (
+            <div key={tab.path} className={cn('group flex items-center gap-2 px-2 py-1 hover:bg-panel-soft', tab.path === activePath && 'bg-panel-soft')}>
+              <button onClick={() => onPick(tab)} className="flex min-w-0 flex-1 items-center gap-1.5 text-left">
+                <span className={cn('shrink-0 font-mono text-[9px] capitalize', tab.path === activePath ? (KIND_ACCENT[tab.kind] ?? 'text-faint') : 'text-faint')}>{tab.kind[0]}</span>
+                <span className="truncate text-foreground/90">{tab.title}</span>
               </button>
-              <button onClick={() => onClose(t.path)} title="Close" className="shrink-0 rounded p-0.5 text-faint opacity-0 hover:bg-panel hover:text-foreground group-hover:opacity-100"><X className="size-2.5" /></button>
+              <button onClick={() => onClose(tab.path)} title={t('tab.close')} className="shrink-0 rounded p-0.5 text-faint opacity-0 hover:bg-panel hover:text-foreground group-hover:opacity-100"><X className="size-2.5" /></button>
             </div>
           ))}
         </div>
         <div className="shrink-0 border-t border-border pt-1">
-          <button onClick={onCloseOthers} className="block w-full px-2 py-1 text-left text-[11px] text-muted-foreground hover:bg-panel-soft">Close others</button>
-          <button onClick={onCloseAll} className="block w-full px-2 py-1 text-left text-[11px] text-muted-foreground hover:bg-panel-soft">Close all</button>
+          <button onClick={onCloseOthers} className="block w-full px-2 py-1 text-left text-[11px] text-muted-foreground hover:bg-panel-soft">{t('tab.closeOthers')}</button>
+          <button onClick={onCloseAll} className="block w-full px-2 py-1 text-left text-[11px] text-muted-foreground hover:bg-panel-soft">{t('tab.closeAll')}</button>
         </div>
       </div>
     </>
@@ -150,6 +153,7 @@ function Tab({
   onDrop: () => void
   onDragEnd: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const accent = KIND_ACCENT[tab.kind] ?? 'text-muted-foreground'
   return (
     <button
@@ -176,7 +180,7 @@ function Tab({
       <span
         role="button"
         onClick={onClose}
-        title="Close"
+        title={t('tab.close')}
         className={cn(
           'ml-0.5 flex size-4 items-center justify-center rounded transition-opacity hover:bg-panel-soft',
           dirty ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',

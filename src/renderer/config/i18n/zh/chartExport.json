@@ -1,0 +1,24 @@
+{
+  "title": "导出图表",
+  "cancel": "取消",
+  "saving": "正在保存…",
+  "savePng": "保存 PNG",
+  "renderingPreview": "正在渲染预览…",
+  "previewAlt": "导出预览",
+  "proNote": "Pro 解锁边框和徽章 — 请查看标题栏标签",
+  "byline": {
+    "label": "作者署名",
+    "by": "作者：{{author}}",
+    "hintSet": "在项目结构中设置标题/作者（⌘,）"
+  },
+  "frame": {
+    "label": "Pro 边框",
+    "hintPro": "高级哑光效果 + 边框",
+    "hintFree": "NVS Pro — 更美观的导出主题"
+  },
+  "badge": {
+    "label": "NVS Pro 徽章",
+    "hintPro": "在页脚显示 Pro 标识",
+    "hintFree": "NVS Pro"
+  }
+}

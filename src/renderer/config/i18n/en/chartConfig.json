@@ -1,0 +1,37 @@
+{
+  "example": "Example",
+  "preview": {
+    "title": "Axis preview",
+    "columns": " · {{n}} columns",
+    "defaultReadonly": " — default axis (read-only)",
+    "lightUpHint": "Light up scenes below to build the axis — these become the gantt columns.",
+    "noScenes": "No scenes yet."
+  },
+  "default": {
+    "before": "This is your ",
+    "defaultAxis": "default axis",
+    "middle": " — folder / connection order, read-only. Pick a saved sequence or ",
+    "newSequence": "+ New sequence",
+    "after": " in the sidebar to author a custom route."
+  },
+  "builder": {
+    "hint": "Axis builder · click to light · double-click to append the run · ⌘/Ctrl+Z / +Y undo/redo",
+    "freeOrderTitle": "Free order — append any scene in any order (ignores connections)",
+    "followLinksTitle": "Follow links — extend only along leads_to connections",
+    "freeOrder": "Free order",
+    "followLinks": "Follow links",
+    "path": "path · {{n}}",
+    "help": "Chart Config help",
+    "saved": "Saved",
+    "save": "Save",
+    "saveAsNew": "Save as new"
+  },
+  "noConnections": {
+    "before": "No connections yet. Draw ",
+    "leadsTo": "leads_to",
+    "after": " links on the Canvas (or quick-connect) — connected scenes appear here as a branching rail to trace."
+  },
+  "cardTitle": "Click to light · double-click to append the run to the next fork",
+  "sequenceName": "Sequence {{n}}",
+  "sequenceFallback": "Sequence"
+}

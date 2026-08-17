@@ -1,0 +1,33 @@
+{
+  "title": "NVS Pro",
+  "shareText": "Novel Visual Studioで執筆しています。会話主導のフィクション向けの執筆IDEで、AIによる読解機能もオプションで利用できます。",
+  "active": {
+    "heading": "Proは有効です",
+    "tiedTo": "<email>{{email}}</email>に紐付いています",
+    "body": "NVSを応援していただきありがとうございます。本日から、より美しいチャート書き出しテーマをご利用いただけます。今後もProの便利な機能を追加予定です。あなたの文章とファイルは、いつでも無料かつローカルに保存されます。"
+  },
+  "comingSoon": {
+    "heading": "Proの機能は近日登場します",
+    "body": "執筆、分析、ファイルは今後もずっと無料です。Proでは、将来的にいくつかのオプション機能を追加する予定です（より美しい書き出しなど）。"
+  },
+  "share": {
+    "prompt": "その間、共有して応援してください",
+    "shareX": "Xで共有",
+    "copyLink": "リンクをコピー",
+    "copied": "コピーしました！",
+    "starGithub": "GitHubでスターを付ける",
+    "joinDiscord": "Discordに参加"
+  },
+  "activate": {
+    "prompt": "すでにライセンスをお持ちですか？購入時のメールアドレスを入力してください：",
+    "emailPlaceholder": "you@email.com",
+    "button": "有効化",
+    "haveLicense": "すでにライセンスをお持ちですか？"
+  },
+  "msg": {
+    "activated": "Proが有効になりました ✓",
+    "noPurchase": "そのメールアドレスに紐付くProの購入が見つかりません。",
+    "verifyError": "現在確認できません — もう一度お試しください。"
+  },
+  "devToggle": "dev: Proを切り替え"
+}

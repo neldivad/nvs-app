@@ -1,0 +1,33 @@
+{
+  "title": "Project structure",
+  "tab": {
+    "structure": "Structure",
+    "templates": "Templates",
+    "examples": "Examples"
+  },
+  "ladder": {
+    "title": "Scene — the story ladder",
+    "hint": "The fixed 7-level hierarchy (6 folders + a Scene). Highlighted = levels this project uses. Label a folder from the Scene sidebar → right-click → Label as."
+  },
+  "world": {
+    "title": "World — the bible",
+    "hint": "Each authored page in a tracked category becomes an entity the engine follows. Add or remove categories freely.",
+    "reference": "reference",
+    "tracked": "{{n}} tracked",
+    "removeTitle": "Remove this category",
+    "addCategory": "Add category"
+  },
+  "templates": {
+    "intro": "Reference layouts for different kinds of work — how each tends to organize its world and story. Nothing here changes your project; build yours under **Structure** with **Add category** / **Add level**.",
+    "kind": {
+      "fiction": "Fiction",
+      "nonfiction": "Non-fiction"
+    },
+    "worldLabel": "World",
+    "storyLabel": "Story"
+  },
+  "examples": {
+    "title": "Examples — coming soon.",
+    "body": "Browse how other works organize their world and story, and start from one. (Will draw on the NVS datasets.)"
+  }
+}

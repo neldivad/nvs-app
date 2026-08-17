@@ -1,0 +1,40 @@
+{
+  "placeholder": {
+    "speech": "セリフ…",
+    "thinking": "心の声…",
+    "narration": "ナレーション…",
+    "action": "ト書き…",
+    "transition": "カット…"
+  },
+  "agent": {
+    "label": "AIに執筆を依頼",
+    "description": "このシーンのバックグラウンド編集をキューに追加します（タスクから確認して適用）。"
+  },
+  "speaker": {
+    "openPageBefore": "ページの詳細とフェーズの設定は",
+    "openPageAfter": "ページ",
+    "placeholder": "キャラクター名…",
+    "add": "「{{name}}」を追加",
+    "invalidBefore": "「{{name}}」は使用できません — キューは文字・数字・スペースのみ（または",
+    "invalidOnly": "のみ（または",
+    "invalidAfter": "と入力）",
+    "noSpeaker": "話者なし"
+  },
+  "mood": {
+    "placeholder": "感情、例：怒り…",
+    "neutral": "ニュートラル（指示なし）",
+    "title": "演技／ムード — 話者の後に続く（括弧内）の指示",
+    "add": "+ ムード"
+  },
+  "timing": {
+    "title": "タイミング — ビートの開始 → 終了タイムコード",
+    "label": "タイミング",
+    "start": "開始",
+    "end": "終了",
+    "clear": "消去",
+    "set": "設定",
+    "add": "+ 時間"
+  },
+  "blockType": "ブロックタイプを変更",
+  "find": "シーン内を検索"
+}

@@ -1,0 +1,77 @@
+{
+  "title": "Story",
+  "search": {
+    "placeholder": "Search scenes & folders…"
+  },
+  "action": {
+    "expandAll": "Expand all folders",
+    "collapseAll": "Collapse all folders",
+    "new": "New…"
+  },
+  "placeholder": {
+    "sceneTitle": "Scene title…",
+    "folderName": "Folder name…"
+  },
+  "badge": {
+    "locked": "locked"
+  },
+  "tooltip": {
+    "archivedInside_one": "{{count}} archived scene inside (shown in the Archived bin)",
+    "archivedInside_other": "{{count}} archived scenes inside (shown in the Archived bin)"
+  },
+  "empty": {
+    "relaunch": "Fully quit & relaunch the app to load the story tree — it's a new backend feature. Your scenes are safe on disk; a renderer reload alone can't pick it up.",
+    "hintPrefix": "Empty. Right-click or use",
+    "hintSuffix": "to add a folder or scene."
+  },
+  "archived": {
+    "heading": "Archived"
+  },
+  "folder": {
+    "root": "/ (root)"
+  },
+  "kind": {
+    "folder": "folder",
+    "scene": "scene"
+  },
+  "error": {
+    "dupExists": "A {{kind}} named “{{name}}” already exists here.",
+    "badName": "“{{name}}” isn’t a usable {{kind}} name — try different characters."
+  },
+  "row": {
+    "restore": "Restore",
+    "archive": "Archive",
+    "delete": "Delete"
+  },
+  "menu": {
+    "newScene": "New scene",
+    "newFolder": "New folder",
+    "labelAs": "Label as",
+    "clear": "clear",
+    "exportMd": "Export .md…",
+    "rename": "Rename",
+    "delete": "Delete",
+    "phaseEveryScene": "Phase — every scene inside",
+    "selectedCount": "{{count}} selected",
+    "setPhase": "Set phase",
+    "moveToFolder": "Move to folder…",
+    "bulkDelete": "Delete {{count}}…"
+  },
+  "confirm": {
+    "titleFolder": "Delete folder?",
+    "titleScene": "Delete scene?",
+    "delete": "Delete",
+    "prefix": "Delete",
+    "folderInside": " and everything inside it",
+    "suffix": "? This removes it from disk.",
+    "alsoArchived_one": "⚠ This also deletes {{count}} archived scene still inside it (shown in the Archived bin).",
+    "alsoArchived_other": "⚠ This also deletes {{count}} archived scenes still inside it (shown in the Archived bin)."
+  },
+  "bulkConfirm": {
+    "title_one": "Delete {{count}} item?",
+    "title_other": "Delete {{count}} items?",
+    "prefix": "Delete",
+    "suffix_one": "selected item (folders remove everything inside)? This removes them from disk.",
+    "suffix_other": "selected items (folders remove everything inside)? This removes them from disk."
+  }
+}

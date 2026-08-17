@@ -12,13 +12,14 @@ import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
 import { Fab } from '@/components/ui/Fab'
 import { useWorkspace } from '@/stores/workspace'
+import { useTranslation } from 'react-i18next'
 
 /** The per-scene export menu. Scenes only — world pages stay Markdown (they're prose, not a beat table). */
 const SCENE_EXPORTS = [
-  { format: 'json' as const, best: 'another app · re-import' },
-  { format: 'csv' as const, best: 'spreadsheets' },
-  { format: 'md' as const, best: 'the raw scene file' },
-  { format: 'srt' as const, best: 'subtitles · captions' }
+  { format: 'json' as const },
+  { format: 'csv' as const },
+  { format: 'md' as const },
+  { format: 'srt' as const }
 ]
 
 /** Scroll any scrolled container inside the editor region back to the top. */
@@ -36,6 +37,7 @@ function backToTop(): void {
 // FAB popover and the SceneInspector aside read the same ledger. EditorFab uses only .isScene/.threads/.flags.
 
 export function EditorFab(): JSX.Element {
+  const { t } = useTranslation('editorFab')
   const kind = useWorkspace((s) => s.activePage?.kind ?? 'scene')
   const activePath = useWorkspace((s) => s.activePage?.path)
   const exportSceneStructured = useWorkspace((s) => s.exportSceneStructured)
@@ -60,22 +62,22 @@ export function EditorFab(): JSX.Element {
               ? [
                   {
                     icon: <Download className="size-4" />,
-                    title: 'Export this scene',
+                    title: t('fab.export'),
                     onClick: () => setExportOpen(true)
                   }
                 ]
               : []),
-            { icon: <HelpCircle className="size-4" />, title: 'Page help', onClick: () => setHelp(true) },
-            { icon: <ArrowUp className="size-4" />, title: 'Back to top', onClick: backToTop }
+            { icon: <HelpCircle className="size-4" />, title: t('fab.help'), onClick: () => setHelp(true) },
+            { icon: <ArrowUp className="size-4" />, title: t('fab.backToTop'), onClick: backToTop }
           ]}
         />
-        <Dialog open={help} onClose={() => setHelp(false)} title={kind === 'scene' ? 'Scene help' : 'World page help'} size="detail">
+        <Dialog open={help} onClose={() => setHelp(false)} title={kind === 'scene' ? t('help.sceneTitle') : t('help.worldTitle')} size="detail">
           {kind === 'scene' ? <SceneHelp /> : <WorldHelp kind={kind} />}
         </Dialog>
-        <Dialog open={exportOpen} onClose={() => setExportOpen(false)} title="Export this scene" size="confirm">
+        <Dialog open={exportOpen} onClose={() => setExportOpen(false)} title={t('export.title')} size="confirm">
           <div className="space-y-3">
             <p className="text-[12px] text-muted-foreground">
-              One scene, in the same shape as a full project export — small enough for another app to actually consume.
+              {t('export.lead')}
             </p>
             <div className="flex flex-col gap-1">
               {SCENE_EXPORTS.map((f) => (
@@ -88,7 +90,7 @@ export function EditorFab(): JSX.Element {
                   className="flex items-start gap-3 rounded-md border border-border px-3 py-2 text-left transition-colors hover:bg-panel-soft"
                 >
                   <span className="mt-0.5 font-mono text-[11px] text-thread">.{f.format}</span>
-                  <span className="min-w-0 flex-1 text-[12px] text-muted-foreground"><span className="text-faint">Best for:</span> {f.best}</span>
+                  <span className="min-w-0 flex-1 text-[12px] text-muted-foreground"><span className="text-faint">{t('export.bestFor')}</span> {t(`export.best.${f.format}`)}</span>
                 </button>
               ))}
             </div>
@@ -100,100 +102,37 @@ export function EditorFab(): JSX.Element {
 }
 
 function SceneHelp(): JSX.Element {
+  const { t } = useTranslation('editorFab')
   return (
     <div className="space-y-5">
-      <HelpSection title="Write — the Fountain dialect">
-        <HelpTable
-          rows={[
-            ['plain line', 'Narration'],
-            ['ALL CAPS line', 'Speaker cue — following line(s) are their dialogue'],
-            ['(THINKING) after a cue', 'Inner monologue instead of spoken'],
-            ['> line', 'Action beat (stage direction)'],
-            ['= line', 'Transition (e.g. "Two weeks earlier")'],
-            ['**bold**  *italic*', 'Inline emphasis, any block']
-          ]}
-        />
+      <HelpSection title={t('help.scene.write.title')}>
+        <HelpTable rows={Object.entries(t('help.scene.write.rows', { returnObjects: true }) as Record<string, string>)} />
       </HelpSection>
-      <HelpSection title="Slash palette — type / in a block">
-        <HelpTable
-          rows={[
-            ['/sp', 'Speech'],
-            ['/th', 'Thinking'],
-            ['/na', 'Narration'],
-            ['/ac', 'Action'],
-            ['/tr', 'Transition'],
-            ['@name', 'Convert to speech and set the speaker']
-          ]}
-        />
+      <HelpSection title={t('help.scene.slash.title')}>
+        <HelpTable rows={Object.entries(t('help.scene.slash.rows', { returnObjects: true }) as Record<string, string>)} />
       </HelpSection>
-      <HelpSection title="Properties & the timeline">
-        <HelpList
-          items={[
-            <>
-              Open <b className="text-foreground/80">Properties</b> for the beat (goal · conflict · outcome),
-              cast, and content-phase.
-            </>,
-            <>
-              The first <b className="text-foreground/80">Media</b> image becomes the scene&apos;s cover on the
-              timeline.
-            </>,
-            <>
-              The scene&apos;s <b className="text-foreground/80">phase</b> tints its timeline card; connections
-              there write <span className="font-mono">leads_to</span>.
-            </>
-          ]}
-        />
+      <HelpSection title={t('help.scene.properties.title')}>
+        <HelpList items={t('help.scene.properties.items', { returnObjects: true }) as string[]} />
       </HelpSection>
-      <HelpSection title="Views & shortcuts">
-        <HelpTable
-          rows={[
-            ['Write / Preview / Source', 'Compose · rendered · raw Fountain'],
-            ['Cmd / Ctrl + S', 'Save the open scene'],
-            ['↑ / ↓', 'Move between blocks'],
-            ['Enter', 'New narration block below']
-          ]}
-        />
+      <HelpSection title={t('help.scene.views.title')}>
+        <HelpTable rows={Object.entries(t('help.scene.views.rows', { returnObjects: true }) as Record<string, string>)} />
       </HelpSection>
     </div>
   )
 }
 
 function WorldHelp({ kind }: { kind: string }): JSX.Element {
+  const { t } = useTranslation('editorFab')
   return (
     <div className="space-y-5">
-      <HelpSection title={`${cap(kind)} page — writing`}>
-        <HelpList
-          items={[
-            <>
-              Start a section with <span className="font-mono">##</span> (or type{' '}
-              <span className="font-mono">/</span> for the section palette).
-            </>,
-            <>Write in Markdown; Preview renders the wiki panel; Source is the raw file an agent reads.</>
-          ]}
-        />
+      <HelpSection title={t('help.world.writing.title', { kind: cap(kind) })}>
+        <HelpList items={t('help.world.writing.items', { returnObjects: true }) as string[]} />
       </HelpSection>
-      <HelpSection title="Properties">
-        <HelpList
-          items={[
-            <>
-              <b className="text-foreground/80">Properties</b> edits the page&apos;s fields, media gallery, and
-              phase.
-            </>,
-            <>
-              <b className="text-foreground/80">Phase</b> is editorial maturity (draft → developing → canon →
-              archived); <b className="text-foreground/80">status</b> is in-world state (active, deceased…).
-            </>,
-            <>The first Media image is the page&apos;s avatar used across lists.</>
-          ]}
-        />
+      <HelpSection title={t('help.world.properties.title')}>
+        <HelpList items={t('help.world.properties.items', { returnObjects: true }) as string[]} />
       </HelpSection>
-      <HelpSection title="Shortcuts">
-        <HelpTable
-          rows={[
-            ['Write / Preview / Source', 'Compose · wiki panel · raw Markdown'],
-            ['Cmd / Ctrl + S', 'Save the open page']
-          ]}
-        />
+      <HelpSection title={t('help.world.shortcuts.title')}>
+        <HelpTable rows={Object.entries(t('help.world.shortcuts.rows', { returnObjects: true }) as Record<string, string>)} />
       </HelpSection>
     </div>
   )

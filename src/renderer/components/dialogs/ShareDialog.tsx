@@ -1,7 +1,9 @@
 import { useState, type JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Package, FileArchive, Users, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog } from '@/components/ui/dialog'
+import { HelpMd } from '@/components/ui/help'
 import { DiscordIcon, XIcon, InstagramIcon } from '@/components/ui/BrandIcons'
 import { labelOf, MEDIUMS, STATUSES } from '@shared/config/projectSchema'
 import { cn } from '@/lib/utils'
@@ -12,6 +14,7 @@ import { cn } from '@/lib/utils'
  * community + socials (all stubbed until the publish flow lands). One live action; the rest are dimmed "soon".
  */
 export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('share')
   const info = useWorkspace((s) => s.projectInfo)
   const project = useWorkspace((s) => s.project)
   const exportProject = useWorkspace((s) => s.exportProject)
@@ -31,7 +34,7 @@ export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => v
     .join(' · ')
 
   return (
-    <Dialog region="shareDialog" open={open} onClose={onClose} title="Share" size="panel">
+    <Dialog region="shareDialog" open={open} onClose={onClose} title={t('title')} size="panel">
       <div className="space-y-5">
         {/* slim identity — context without the full book card */}
         <div className="flex items-center gap-3">
@@ -39,31 +42,28 @@ export function ShareDialog({ open, onClose }: { open: boolean; onClose: () => v
             {coverUrl ? <img src={coverUrl} alt="" className="size-full object-cover" draggable={false} /> : <ImageIcon className="size-4 text-faint" />}
           </div>
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-foreground">{info?.title || project?.name || 'Untitled'}</div>
+            <div className="truncate text-sm font-semibold text-foreground">{info?.title || project?.name || t('untitled')}</div>
             {(sub || info?.author) && (
               <div className="truncate text-[11px] text-faint">{[sub, info?.author].filter(Boolean).join('  ·  ')}</div>
             )}
           </div>
         </div>
 
-        <Group title="Export a file">
+        <Group title={t('group.export')}>
           <Tile icon={<Package />} label=".nvsproj" iconClass="text-thread" busy={busy === 'nvsproj'} disabled={busy !== null} onClick={() => void run('nvsproj', exportProject)()} />
           <Tile icon={<FileArchive />} label=".zip" iconClass="text-lore" busy={busy === 'zip'} disabled={busy !== null} onClick={() => void run('zip', exportManuscript)()} />
           {/* Structured JSON/CSV/MD export is SCENE-scoped (the scene editor's Export button) — a whole-project
               dump is too large to be a useful interchange unit, so it's not offered here at project level. */}
         </Group>
 
-        <Group title="Share to">
-          <Tile icon={<Users />} label="Community" iconClass="text-thread" disabled />
+        <Group title={t('group.shareTo')}>
+          <Tile icon={<Users />} label={t('tile.community')} iconClass="text-thread" disabled />
           <Tile icon={<DiscordIcon />} label="Discord" iconClass="text-[#5865F2]" disabled />
           <Tile icon={<XIcon />} label="X" iconClass="text-foreground" disabled />
           <Tile icon={<InstagramIcon />} label="Instagram" iconClass="text-[#E1306C]" disabled />
         </Group>
 
-        <p className="text-[11px] text-faint">
-          A <span className="font-mono">.nvsproj</span> carries the prose <i>and</i> the analysis in one self-contained
-          file. Community &amp; social sharing are coming soon.
-        </p>
+        <p className="text-[11px] text-faint"><HelpMd>{t('footer')}</HelpMd></p>
       </div>
     </Dialog>
   )
@@ -95,11 +95,12 @@ function Tile({
   disabled?: boolean
   busy?: boolean
 }): JSX.Element {
+  const { t } = useTranslation('share')
   return (
     <button
       onClick={onClick}
       disabled={disabled || busy}
-      title={disabled ? 'Coming soon' : undefined}
+      title={disabled ? t('comingSoon') : undefined}
       className={cn(
         'flex w-19 flex-col items-center gap-1.5 rounded-lg p-1 text-center transition-colors',
         disabled ? 'cursor-default opacity-40' : 'hover:bg-panel-soft'

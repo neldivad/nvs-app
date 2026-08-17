@@ -1,6 +1,7 @@
 import { useMemo, useState, type JSX } from 'react';
+import { Trans, useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
-import { ChevronDown, ChevronRight, Plus, Trash2, Archive, ArchiveRestore } from 'lucide-react'
+import { ChevronDown, ChevronRight, Plus, Trash2, Archive, ArchiveRestore, Key } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { SidebarHeader, DetailedRow } from '@/components/layout/SidebarKit'
 import { entityVisual } from '@/config/entityVisual'
@@ -30,6 +31,7 @@ export function WorldNavigator(): JSX.Element {
   const renameWorldPage = useWorkspace((s) => s.renameWorldPage)
   const exportScene = useWorkspace((s) => s.exportScene)
   const worldCats = useWorkspace((s) => s.structure.world)
+  const { t } = useTranslation('worldNav')
 
   // The rail's sections/create-options come from the project STRUCTURE (bounded enum, world domain), not a hardcoded
   // list — custom categories appear, creation is constrained to them. Falls back to the core defaults pre-load.
@@ -99,7 +101,7 @@ export function WorldNavigator(): JSX.Element {
     try {
       const page = await createWorldPage(kind, trimmed)
       if (page) setCreating(null)
-      else setError(`Couldn't create "${trimmed}". Fully quit & relaunch the app if this keeps happening; the name may also be taken.`)
+      else setError(t('createError', { name: trimmed }))
     } finally {
       setBusy(false)
     }
@@ -114,9 +116,9 @@ export function WorldNavigator(): JSX.Element {
       onContextMenu={(e) => { e.preventDefault(); setCreateMenu({ x: e.clientX, y: e.clientY }) }}
     >
       <SidebarHeader
-        title="World"
+        title={t('title')}
         count={worldPages.length}
-        search={{ results: searchResults, onSelect: onSearchSelect, placeholder: 'Search world pages…' }}
+        search={{ results: searchResults, onSelect: onSearchSelect, placeholder: t('searchPlaceholder') }}
       />
       {groups.map(({ kind, label, Icon }) => {
         const items = worldPages.filter((p) => p.kind === kind && p.phase !== 'archived')
@@ -144,15 +146,15 @@ export function WorldNavigator(): JSX.Element {
               </button>
               {kind !== 'custody' ? (
                 <button
-                  title={`New ${label.replace(/s$/, '').toLowerCase()}`}
+                  title={t('newCategory', { name: label.replace(/s$/, '').toLowerCase() })}
                   onClick={() => beginCreate(kind)}
                   className="rounded p-0.5 text-faint opacity-0 transition-opacity hover:bg-panel-soft hover:text-foreground group-hover/section:opacity-100"
                 >
                   <Plus className="size-3" />
                 </button>
               ) : (
-                <span title="Custody topics anchor to existing entities — create them from the Custody rail" className="p-0.5 text-[9px] text-faint/50 opacity-0 group-hover/section:opacity-100">
-                  via 🔑
+                <span title={t('custodyHint')} className="inline-flex items-center gap-0.5 p-0.5 text-[9px] text-faint/50 opacity-0 group-hover/section:opacity-100">
+                  <Trans t={t} i18nKey="custodyBadge" components={{ key: <Key className="inline size-2.5" /> }} />
                 </span>
               )}
             </div>
@@ -181,7 +183,7 @@ export function WorldNavigator(): JSX.Element {
                   />
                 ))}
                 {items.length === 0 && creating !== kind && (
-                  <p className="py-1 pl-7 pr-3 text-[11px] text-faint/70">None yet.</p>
+                  <p className="py-1 pl-7 pr-3 text-[11px] text-faint/70">{t('emptyCategory')}</p>
                 )}
               </>
             )}
@@ -200,7 +202,7 @@ export function WorldNavigator(): JSX.Element {
               <ChevronDown className="size-3 shrink-0 text-faint" />
             )}
             <Archive className="size-3 shrink-0 text-faint" />
-            <span className="flex-1 text-[10px] uppercase tracking-wide text-faint">Archived</span>
+            <span className="flex-1 text-[10px] uppercase tracking-wide text-faint">{t('archived')}</span>
             <span className="font-mono text-[9px] text-faint/50">{archived.length}</span>
           </button>
           {!collapsed.has('archived') &&
@@ -229,7 +231,7 @@ export function WorldNavigator(): JSX.Element {
         <ContextMenuShell x={catMenu.x} y={catMenu.y} onClose={() => setCatMenu(null)}>
           <PhaseSection
             current=""
-            label={`Phase — every ${catMenu.label.toLowerCase()} page`}
+            label={t('categoryPhase', { name: catMenu.label.toLowerCase() })}
             onSet={(p) => {
               const paths = worldPages.filter((w) => w.kind === catMenu.kind && w.phase !== 'archived').map((w) => w.path)
               void setPagePhaseBulk(paths, p)
@@ -240,17 +242,17 @@ export function WorldNavigator(): JSX.Element {
       )}
       {menu && (
         <ContextMenuShell x={menu.x} y={menu.y} onClose={() => setMenu(null)}>
-          <MenuItem label="Rename" onClick={() => { setRenaming(menu.page.path); setMenu(null) }} />
-          <MenuItem label="Export .md…" onClick={() => { const p = menu.page.path; setMenu(null); void exportScene(p) }} />
+          <MenuItem label={t('menu.rename')} onClick={() => { setRenaming(menu.page.path); setMenu(null) }} />
+          <MenuItem label={t('menu.exportMd')} onClick={() => { const p = menu.page.path; setMenu(null); void exportScene(p) }} />
           <PhaseSection current={menu.page.phase ?? 'draft'} onSet={(p) => { void setPagePhase(menu.page.path, p); setMenu(null) }} />
           <MenuSeparator />
-          <MenuItem label="Delete" danger onClick={() => { setToDelete(menu.page); setMenu(null) }} />
+          <MenuItem label={t('menu.delete')} danger onClick={() => { setToDelete(menu.page); setMenu(null) }} />
         </ContextMenuShell>
       )}
 
       {createMenu && (
         <ContextMenuShell x={createMenu.x} y={createMenu.y} onClose={() => setCreateMenu(null)}>
-          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">New page</div>
+          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('createMenu.heading')}</div>
           {groups.filter((g) => g.kind !== 'custody').map(({ kind, label, Icon }) => (
             <button
               key={kind}
@@ -266,14 +268,16 @@ export function WorldNavigator(): JSX.Element {
 
       <ConfirmDialog
         open={toDelete != null}
-        title="Delete page?"
+        title={t('delete.title')}
         danger
-        confirmLabel="Delete"
+        confirmLabel={t('delete.confirm')}
         message={
-          <>
-            Delete <span className="text-foreground">{toDelete?.name}</span>? This removes the file from disk.
-            To set it aside instead, set its phase to <span className="text-foreground">Archived</span> in Properties.
-          </>
+          <Trans
+            t={t}
+            i18nKey="delete.message"
+            values={{ name: toDelete?.name ?? '' }}
+            components={{ hl: <span className="text-foreground" /> }}
+          />
         }
         onCancel={() => setToDelete(null)}
         onConfirm={() => {
@@ -294,6 +298,7 @@ function NewPageInput({
   onSubmit: (name: string) => void
   onCancel: () => void
 }): JSX.Element {
+  const { t } = useTranslation('worldNav')
   const [value, setValue] = useState('')
   return (
     <div className="py-1 pl-7 pr-3">
@@ -301,7 +306,7 @@ function NewPageInput({
         autoFocus
         disabled={busy}
         value={value}
-        placeholder="Name, then Enter"
+        placeholder={t('namePlaceholder')}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') onSubmit(value)
@@ -343,6 +348,7 @@ function WorldRow({
   onSubmitRename: (name: string) => void
   onCancelRename: () => void
 }): JSX.Element {
+  const { t } = useTranslation('worldNav')
   if (renaming) return <WorldRenameInput initial={label} onSubmit={onSubmitRename} onCancel={onCancelRename} />
   return (
     <DetailedRow
@@ -356,14 +362,14 @@ function WorldRow({
       actions={
         <>
           <button
-            title={archived ? 'Restore' : 'Archive'}
+            title={archived ? t('row.restore') : t('row.archive')}
             onClick={onArchive}
             className="rounded p-0.5 text-faint opacity-0 transition-opacity hover:text-foreground group-hover/row:opacity-100"
           >
             {archived ? <ArchiveRestore className="size-3" /> : <Archive className="size-3" />}
           </button>
           <button
-            title="Delete"
+            title={t('row.delete')}
             onClick={onDelete}
             className="mr-2 rounded p-0.5 text-faint opacity-0 transition-opacity hover:text-flag group-hover/row:opacity-100"
           >

@@ -1,4 +1,5 @@
 import { JSX, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, ExternalLink, Loader2 } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog } from '@/components/ui/dialog'
@@ -56,6 +57,7 @@ export function ScenePreview({
   frontmatter: Record<string, unknown>
   body: string
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const blocks = parseFountain(body)
   const [inspector, setInspector] = useState<string | null>(null)
 
@@ -64,7 +66,7 @@ export function ScenePreview({
       <div data-page-export className="nvs-manuscript mx-auto max-w-[var(--measure)] px-6 py-8">
         <div className="mb-8 border-b border-border pb-5">
           <h1 className="text-lg font-semibold text-foreground">
-            {fmStr(frontmatter, 'title') || 'Untitled'}
+            {fmStr(frontmatter, 'title') || t('preview.untitled')}
           </h1>
           {fmStr(frontmatter, 'location') && (
             <p className="mt-0.5 font-mono text-xs text-faint">
@@ -201,6 +203,7 @@ function SpeakerInspector({
   name: string
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const worldPages = useWorkspace((s) => s.worldPages)
   const openPage = useWorkspace((s) => s.openPage)
   const createWorldPage = useWorkspace((s) => s.createWorldPage)
@@ -229,11 +232,10 @@ function SpeakerInspector({
         <div className="space-y-3 py-2">
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">
-              <span className="font-mono">"{name}"</span> is a speaker in your scenes, but has no
-              character page yet.
+              <span className="font-mono">"{name}"</span> {t('preview.speakerIsA')}
             </p>
             <p className="text-xs text-faint">
-              Creating one adds <span className="font-mono">content/world/characters/{slugify(name)}.md</span>
+              {t('preview.speakerCreates')} <span className="font-mono">content/world/characters/{slugify(name)}.md</span>
             </p>
           </div>
           <Button
@@ -251,7 +253,7 @@ function SpeakerInspector({
             }}
           >
             {creating ? <Loader2 className="size-3.5 animate-spin" /> : null}
-            Create character page
+            {t('preview.createCharacter')}
           </Button>
         </div>
       ) : (
@@ -288,7 +290,7 @@ function SpeakerInspector({
 
           <div className="flex justify-between pt-2">
             <Button variant="ghost" size="sm" onClick={onClose}>
-              Close
+              {t('preview.close')}
             </Button>
             <Button
               size="sm"
@@ -298,7 +300,7 @@ function SpeakerInspector({
               }}
             >
               <ExternalLink className="size-3" />
-              Open character page
+              {t('preview.openCharacter')}
             </Button>
           </div>
         </div>
@@ -318,6 +320,7 @@ export function WikiPreview({
   body: string
   kind: string
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const accentClass =
     kind === 'character' ? 'text-character' : kind === 'lore' ? 'text-lore' : 'text-lore'
   const fields = infoBoxFields(kind)
@@ -335,7 +338,7 @@ export function WikiPreview({
         <div className="mb-6">
           <div className="flex items-center gap-2">
             <h1 className={cn('text-xl font-semibold', accentClass)}>
-              {fmStr(frontmatter, 'name') || fmStr(frontmatter, 'title') || 'Untitled'}
+              {fmStr(frontmatter, 'name') || fmStr(frontmatter, 'title') || t('preview.untitled')}
             </h1>
             <PhaseBadge phase={fmStr(frontmatter, 'phase')} />
           </div>
@@ -372,6 +375,7 @@ export function WikiPreview({
 
 /** Backlinks — other world pages whose body links to this one. */
 function MentionedBy({ pageId }: { pageId: string }): JSX.Element | null {
+  const { t } = useTranslation('editor')
   const openPage = useWorkspace((s) => s.openPage)
   const [pages, setPages] = useState<WorldPage[]>([])
   useEffect(() => {
@@ -393,7 +397,7 @@ function MentionedBy({ pageId }: { pageId: string }): JSX.Element | null {
   const shown = pages.slice(0, CAP)
   return (
     <div className="mt-8 border-t border-border pt-4">
-      <p className="mb-2 text-[10px] uppercase tracking-wide text-faint">Mentioned by · {pages.length}</p>
+      <p className="mb-2 text-[10px] uppercase tracking-wide text-faint">{t('preview.mentionedBy')} · {pages.length}</p>
       <div className="flex flex-wrap gap-1.5">
         {shown.map((p) => {
           const Icon = entityVisual(p.kind).Icon
@@ -409,7 +413,7 @@ function MentionedBy({ pageId }: { pageId: string }): JSX.Element | null {
           )
         })}
         {pages.length > CAP && (
-          <span className="px-1 py-1 text-xs text-faint">+{pages.length - CAP} more</span>
+          <span className="px-1 py-1 text-xs text-faint">{t('preview.more', { count: pages.length - CAP })}</span>
         )}
       </div>
     </div>
@@ -521,6 +525,7 @@ function WikiInline({ text }: { text: string }): JSX.Element {
  *     link that opens that object's DETAIL FLOAT as the learn-more surface (where "Suggest page" lives).
  *  3. nothing → a broken (red) link — a real authoring error worth flagging. */
 function WikiLink({ label, id }: { label: string; id: string }): JSX.Element {
+  const { t } = useTranslation('editor')
   const worldPages = useWorkspace((s) => s.worldPages)
   const openPage = useWorkspace((s) => s.openPage)
   const entityTracks = useWorkspace((s) => s.entityTracks)
@@ -561,7 +566,7 @@ function WikiLink({ label, id }: { label: string; id: string }): JSX.Element {
     return (
       <button
         onClick={openDiscovered}
-        title={`${label} — no page yet · learn more`}
+        title={t('preview.linkLearnMore', { label })}
         className="text-muted-foreground underline decoration-dashed decoration-faint underline-offset-2 transition hover:text-foreground hover:decoration-solid"
       >
         {label}
@@ -570,7 +575,7 @@ function WikiLink({ label, id }: { label: string; id: string }): JSX.Element {
   }
 
   return (
-    <span title={`No page or discovered concept with id "${id}"`} className="text-flag underline decoration-dotted underline-offset-2">
+    <span title={t('preview.linkNoId', { id })} className="text-flag underline decoration-dotted underline-offset-2">
       {label}
     </span>
   )
@@ -597,6 +602,7 @@ function PhaseBadge({ phase }: { phase: string }): JSX.Element | null {
 
 /** Hero image carousel for a world page. images[0] is the avatar; prev/next when >1. */
 function Gallery({ images }: { images: string[] }): JSX.Element {
+  const { t } = useTranslation('editor')
   const [i, setI] = useState(0)
   const [zoomed, setZoomed] = useState(false)
   const n = images.length
@@ -607,7 +613,7 @@ function Gallery({ images }: { images: string[] }): JSX.Element {
       <div className="relative overflow-hidden rounded-lg border border-border bg-panel-soft">
         <button
           onClick={() => setZoomed(true)}
-          title="View full image"
+          title={t('tooltip.viewFullImage')}
           className="block w-full cursor-zoom-in"
         >
           <img src={`nvs-asset://${images[idx]}`} alt="" className="max-h-80 w-full object-cover" />

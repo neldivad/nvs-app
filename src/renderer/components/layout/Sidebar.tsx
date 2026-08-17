@@ -1,4 +1,5 @@
 import { FolderOpen, Sparkles, RotateCw } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { useWorkspace } from '@/stores/workspace'
 import { AiGate } from '@/config/aiFeatures'
@@ -25,6 +26,7 @@ import { SidebarEmpty } from '@/components/ui/EmptyRailState'
  * it's the works library (the persistent way back to any work).
  */
 export function Sidebar(): JSX.Element {
+  const { t } = useTranslation('sidebar')
   const works = useWorkspace((s) => s.works)
   const setDetailWork = useWorkspace((s) => s.setDetailWork)
   const project = useWorkspace((s) => s.project)
@@ -46,11 +48,11 @@ export function Sidebar(): JSX.Element {
   return (
     <div {...regionAttrs('sidebar')} className="flex h-full flex-col bg-panel">
       <SidebarHeader
-        title="Library"
+        title={t('library.title')}
         action={
           <button
             onClick={() => void openExternal()}
-            title="Open elsewhere…"
+            title={t('library.openElsewhere')}
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             <FolderOpen className="size-3.5" />
@@ -59,7 +61,7 @@ export function Sidebar(): JSX.Element {
       />
       <SidebarScroll>
         {works.length === 0 ? (
-          <SidebarEmpty>No works yet.</SidebarEmpty>
+          <SidebarEmpty>{t('library.empty')}</SidebarEmpty>
         ) : (
           works.map((w) => (
             <SidebarRow
@@ -67,7 +69,7 @@ export function Sidebar(): JSX.Element {
               selected={project?.root === w.path}
               onClick={() => setDetailWork(w)}
               label={w.title || w.name}
-              sub={`${w.scenes} scenes · ${w.worldPages} world`}
+              sub={t('library.workSub', { scenes: w.scenes, world: w.worldPages })}
             />
           ))
         )}
@@ -79,6 +81,7 @@ export function Sidebar(): JSX.Element {
 /** Timeline sidebar: the active tree-variant picker (constant across Canvas · Cells · Chart Config) + the
  *  "build with AI" trigger, above the tab-specific content — the scene palette, or the saved-sequence list. */
 function TimelineSidebar(): JSX.Element {
+  const { t } = useTranslation('sidebar')
   const timelineTab = useWorkspace((s) => s.timelineTab)
   const trees = useWorkspace((s) => s.trees)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
@@ -97,7 +100,7 @@ function TimelineSidebar(): JSX.Element {
         <TimelineTreePicker />
         <button
           onClick={() => void reloadTimeline()}
-          title="Reload from disk"
+          title={t('timeline.reload')}
           className="ml-auto flex size-6 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
         >
           <RotateCw className="size-3.5" />
@@ -105,7 +108,7 @@ function TimelineSidebar(): JSX.Element {
         <AiGate>
           <button
             onClick={buildWithAi}
-            title="Opens chat and build timeline with AI"
+            title={t('timeline.buildWithAi')}
             className="flex shrink-0 items-center gap-1 rounded-md border border-thread/40 bg-thread/10 px-2 py-1 text-[11px] text-thread transition-colors hover:bg-thread/20"
           >
             <Sparkles className="size-3.5" />

@@ -101,6 +101,24 @@ export type CoherenceResult = { entries: CoherenceEntry[] } | { skip: string }
 
 const norm = (s: string): string => s.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
 
+/**
+ * A hot thread's context line, now WITH its ordered prior beats (thread-resolve-contradiction.md): a `close`/
+ * `advance` re-narrated without the earlier `advance` in view can assert its negation ("finds X" → "without
+ * finding X"). Surfacing the beats lets the reader describe the OUTCOME relative to them. Bounded: the most
+ * recent 5 beats, each ≤140 chars, so this stays a small addition to the working set.
+ */
+function threadContextLine(
+  t: { id: string; description: string; resolutionCondition: string | null },
+  beats: { action: string; description: string }[]
+): string {
+  const head = `${t.id} — ${t.description}${t.resolutionCondition ? ` [closes when: ${t.resolutionCondition}]` : ''}`
+  const trail = beats
+    .slice(-5)
+    .map((b) => `    · ${b.action}: ${b.description.slice(0, 140)}`)
+    .join('\n')
+  return trail ? `${head}\n${trail}` : head
+}
+
 export async function readScene(unitId: string, signal: AbortSignal, depth: AnalysisDepth = 'full'): Promise<ReadResult> {
   const active = getAnalysis()
   if (!active) return { skip: 'no AI connected' }
@@ -119,8 +137,14 @@ export async function readScene(unitId: string, signal: AbortSignal, depth: Anal
   const openList = engine.openThreadsAsOf(unitId)
   const hotList = openList.filter((t) => t.lastPos >= sofar.hotCutoffPos)
   const dormantList = openList.filter((t) => t.lastPos < sofar.hotCutoffPos)
-  const openThreads = hotList.map((t) => `${t.id} — ${t.description}${t.resolutionCondition ? ` [closes when: ${t.resolutionCondition}]` : ""}`)
-  const dormantThreads = dormantList.map((t) => `${t.id} "${t.title ?? t.description.slice(0, 40)}"`)
+  // Prior beats of the HOT threads (open/advance/reopen before this scene), so a close/advance can't negate an
+  // earlier beat (thread-resolve-contradiction.md). Dormant threads stay a bare id+title index (token budget).
+  const beatsByThread = engine.threadBeatsBefore(hotList.map((t) => t.id), unitId)
+  const openThreads = hotList.map((t) => threadContextLine(t, beatsByThread[t.id] ?? []))
+  // Dormant threads keep their CLOSE-GATE (not just id+title) so a long-arc payoff can still be recognized —
+  // the millennium-mystery miss (thread-resolve-contradiction.md §context-limit): without the gate the reader
+  // can't tell a late scene pays off an old thread. One short sentence each; description stays dropped.
+  const dormantThreads = dormantList.map((t) => `${t.id} "${t.title ?? t.description.slice(0, 40)}"${t.resolutionCondition ? ` [closes when: ${t.resolutionCondition}]` : ''}`)
   // Anchor a re-read to this scene's previous extraction so the model reuses the same handles (anti-drift):
   // for an open, show the bare handle (the ref) it should reuse; for advance/close, the full thread id.
   const priorReading = engine.scenePriorThreads(unitId).map((p) => {
@@ -209,8 +233,13 @@ export async function readSceneBatch(sceneIds: string[], signal: AbortSignal, de
   const openList = engine.openThreadsAsOf(first)
   const hotList = openList.filter((t) => t.lastPos >= sofar.hotCutoffPos)
   const dormantList = openList.filter((t) => t.lastPos < sofar.hotCutoffPos)
-  const openThreads = hotList.map((t) => `${t.id} — ${t.description}${t.resolutionCondition ? ` [closes when: ${t.resolutionCondition}]` : ""}`)
-  const dormantThreads = dormantList.map((t) => `${t.id} "${t.title ?? t.description.slice(0, 40)}"`)
+  // Prior beats as-of the batch's first scene (same fix as readScene; see thread-resolve-contradiction.md).
+  const beatsByThread = engine.threadBeatsBefore(hotList.map((t) => t.id), first)
+  const openThreads = hotList.map((t) => threadContextLine(t, beatsByThread[t.id] ?? []))
+  // Dormant threads keep their CLOSE-GATE (not just id+title) so a long-arc payoff can still be recognized —
+  // the millennium-mystery miss (thread-resolve-contradiction.md §context-limit): without the gate the reader
+  // can't tell a late scene pays off an old thread. One short sentence each; description stays dropped.
+  const dormantThreads = dormantList.map((t) => `${t.id} "${t.title ?? t.description.slice(0, 40)}"${t.resolutionCondition ? ` [closes when: ${t.resolutionCondition}]` : ''}`)
   const thingCategories = skim
     ? []
     : engine
@@ -497,8 +526,15 @@ export async function readCoherence(signal: AbortSignal): Promise<CoherenceResul
       // secret citation: confirmations only, and only ids that exist on the entity's page (never invented)
       const citation = typeof f.secret === 'string' ? f.secret.trim().replace(/^\[|\]$/g, '').toLowerCase() : null
       const secret = f.kind === 'confirmation' && citation && declaredIds.get(f.entity_id)?.has(citation) ? citation : null
+      // VALIDATE citations against the anchors we actually offered (mirror of continuityReader): an invented or
+      // mangled id would pass the old nonempty check here, then be silently DROPPED by writeTier's canonicalizer —
+      // leaving evidence [] and the finding piled on the as-of checkpoint. Only offered window ids count as a real
+      // citation; anything else falls through to prose recovery, which grounds in those same anchors.
+      const anchors = anchorsByEntity.get(f.entity_id) ?? []
+      const anchorIds = new Set(anchors.map((a) => a.id))
       const cited = Array.isArray(f.evidence_unit_ids) ? f.evidence_unit_ids.filter((s) => typeof s === 'string' && s) : []
-      const evidence = cited.length ? cited : recoverEvidence(`${f.observed ?? ''}\n${f.suggestion ?? ''}`, anchorsByEntity.get(f.entity_id) ?? [])
+      const valid = cited.filter((id) => anchorIds.has(id))
+      const evidence = valid.length ? valid : recoverEvidence(`${f.observed ?? ''}\n${f.suggestion ?? ''}\n${cited.join('\n')}`, anchors)
       bucket.push({
         trait: f.trait ?? '',
         declared: f.declared ?? '(unstated)',

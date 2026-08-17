@@ -1,0 +1,19 @@
+{
+  "editor": "Editor",
+  "world": "World",
+  "custody": "Custody",
+  "corkboard": "Corkboard",
+  "timeline": "Timeline",
+  "cast": "Cast",
+  "relationships": "Relations",
+  "threads": "Threads",
+  "coherence": "Coherence",
+  "library": "Library",
+  "disabledNoProject": "{{label}} (open a project first)",
+  "disabledSoon": "{{label}} (soon)",
+  "action": {
+    "structure": "Project structure ({{shortcut}})",
+    "info": "Project info",
+    "share": "Share project"
+  }
+}

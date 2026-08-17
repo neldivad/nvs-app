@@ -9,6 +9,7 @@
  * so this works for any image export that hands us a dataUrl. PDF/manuscript exports stay plain by design.
  */
 import { type JSX, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -102,6 +103,7 @@ function Toggle({ checked, onChange, disabled, label, hint }: { checked: boolean
 }
 
 export function ChartExportDialog({ dataUrl, name, onClose }: { dataUrl: string | null; name: string; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('chartExport')
   const pro = useWorkspace((s) => s.pro)
   const info = useWorkspace((s) => s.projectInfo)
   const saveImage = useWorkspace((s) => s.saveImage)
@@ -113,7 +115,7 @@ export function ChartExportDialog({ dataUrl, name, onClose }: { dataUrl: string 
 
   const title = info?.title?.trim() ?? ''
   const author = info?.author?.trim() ?? ''
-  const bylineText = [title, author ? `by ${author}` : ''].filter(Boolean).join(' — ') || null
+  const bylineText = [title, author ? t('byline.by', { author }) : ''].filter(Boolean).join(' — ') || null
 
   useEffect(() => {
     if (!dataUrl) return
@@ -146,33 +148,33 @@ export function ChartExportDialog({ dataUrl, name, onClose }: { dataUrl: string 
     <Dialog
       open={!!dataUrl}
       onClose={onClose}
-      title="Export chart"
+      title={t('title')}
       size="detail"
       bodyClassName="flex min-h-0 flex-col gap-3 p-4"
       footer={
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>{t('cancel')}</Button>
           <Button size="sm" disabled={!preview || saving} onClick={() => void save()}>
-            <Download className="mr-1 size-3.5" /> {saving ? 'Saving…' : 'Save PNG'}
+            <Download className="mr-1 size-3.5" /> {saving ? t('saving') : t('savePng')}
           </Button>
         </DialogFooter>
       }
     >
       <div className="flex min-h-0 items-center justify-center overflow-hidden rounded-md border border-border bg-canvas p-2">
         {preview ? (
-          <img src={preview} alt="export preview" className="max-h-[52vh] max-w-full rounded-sm object-contain" />
+          <img src={preview} alt={t('previewAlt')} className="max-h-[52vh] max-w-full rounded-sm object-contain" />
         ) : (
-          <div className="p-12 text-xs text-faint">Rendering preview…</div>
+          <div className="p-12 text-xs text-faint">{t('renderingPreview')}</div>
         )}
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
-        <Toggle checked={frame} onChange={setFrame} disabled={!pro} label="Pro frame" hint={pro ? 'The premium matte + frame' : 'NVS Pro — the prettier export theme'} />
-        <Toggle checked={badge} onChange={setBadge} disabled={!pro} label="NVS Pro badge" hint={pro ? 'Show the Pro mark in the footer' : 'NVS Pro'} />
-        <Toggle checked={withByline} onChange={setWithByline} disabled={!bylineText} label="Author byline" hint={bylineText ? `“${bylineText}”` : 'Set the title/author in Project Structure (⌘,)'} />
+        <Toggle checked={frame} onChange={setFrame} disabled={!pro} label={t('frame.label')} hint={pro ? t('frame.hintPro') : t('frame.hintFree')} />
+        <Toggle checked={badge} onChange={setBadge} disabled={!pro} label={t('badge.label')} hint={pro ? t('badge.hintPro') : t('badge.hintFree')} />
+        <Toggle checked={withByline} onChange={setWithByline} disabled={!bylineText} label={t('byline.label')} hint={bylineText ? `“${bylineText}”` : t('byline.hintSet')} />
         {!pro && (
           <span className="ml-auto inline-flex items-center gap-1 text-[11px] text-faint">
-            <Sparkles className="size-3 text-amber-500/70" /> Pro unlocks the frame & badge — see the header chip
+            <Sparkles className="size-3 text-amber-500/70" /> {t('proNote')}
           </span>
         )}
       </div>

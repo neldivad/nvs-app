@@ -59,7 +59,8 @@ import { EmptyRailState } from '@/components/ui/EmptyRailState'
 import { RailHeader, RailTabs } from '@/components/ui/RailHeader'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { HelpSection, HelpTable } from '@/components/ui/help'
+import { HelpSection, HelpTable, HelpMd } from '@/components/ui/help'
+import { useTranslation } from 'react-i18next'
 import { DEFAULT_TIMELINE_VIEW } from '@shared/ipc'
 import type { StoryNode, TimelineNode, TimelineGraph, TimelineLayers } from '@shared/ipc'
 
@@ -84,6 +85,7 @@ export interface SceneData extends Record<string, unknown> {
 }
 
 const SceneNodeView = memo(function SceneNodeView({ data, selected }: NodeProps): JSX.Element {
+  const { t } = useTranslation('timeline')
   const d = data as SceneData
   // Resolve the implicit phase the same way every other surface does (missing scene phase = canon) so the
   // timeline rail agrees with the sidebar spine / Properties / the analysis gate — no phase-default drift.
@@ -104,7 +106,7 @@ const SceneNodeView = memo(function SceneNodeView({ data, selected }: NodeProps)
         className="size-3! -right-1.5! z-20! rounded-full! border-2! border-canvas! bg-faint! transition-colors hover:bg-thread!"
       />
       <div
-        title={phase === 'archived' ? 'Archived — still bridges the timeline (ancestry flows through) but is excluded from analysis' : undefined}
+        title={phase === 'archived' ? t('node.archivedTooltip') : undefined}
         className={cn(
           'relative overflow-hidden rounded-lg border bg-panel text-left shadow-sm',
           selected ? 'border-thread' : 'border-border',
@@ -160,7 +162,7 @@ const SceneNodeView = memo(function SceneNodeView({ data, selected }: NodeProps)
             {/* phase is cued by the left rail (phase layer) — no redundant status dot on the right */}
           </div>
           {d.subPath && <div className="truncate pl-4.5 text-[10px] text-faint">{d.subPath}</div>}
-          {d.missing && <div className="pl-4.5 text-[10px] text-flag">missing — scene deleted?</div>}
+          {d.missing && <div className="pl-4.5 text-[10px] text-flag">{t('node.missingSceneDeleted')}</div>}
         </div>
       </div>
     </div>
@@ -179,6 +181,7 @@ interface FolderData extends Record<string, unknown> {
 }
 
 const FolderGroupView = memo(function FolderGroupView({ data, selected }: NodeProps): JSX.Element {
+  const { t } = useTranslation('timeline')
   const d = data as FolderData
   const toggle = useWorkspace((s) => s.toggleFolderCollapse)
   const remove = useWorkspace((s) => s.removeTimelineFolder)
@@ -197,17 +200,17 @@ const FolderGroupView = memo(function FolderGroupView({ data, selected }: NodePr
         className="flex cursor-pointer items-center gap-1.5 px-2.5"
         style={{ height: FOLDER_HEADER_H }}
         onClick={() => void toggle(d.folderRel)}
-        title={d.collapsed ? 'Expand' : 'Collapse'}
+        title={d.collapsed ? t('folder.expand') : t('folder.collapse')}
       >
         <span className="shrink-0 text-muted-foreground">
           {d.collapsed ? <ChevronRight className="size-3.5" /> : <ChevronDown className="size-3.5" />}
         </span>
         <span className="flex-1 truncate text-[12px] font-medium text-foreground/90">{d.title}</span>
-        <span className="shrink-0 text-[10px] text-faint">{d.missing ? 'missing' : d.count}</span>
+        <span className="shrink-0 text-[10px] text-faint">{d.missing ? t('folder.missing') : d.count}</span>
         {d.root && (
           <button
             className="nodrag text-faint hover:text-flag"
-            title="Remove folder from timeline"
+            title={t('folder.removeFromTimeline')}
             onClick={(e) => {
               e.stopPropagation()
               void remove(d.folderRel)
@@ -289,7 +292,8 @@ function buildGraph(
   folderIndex: Map<string, StoryNode>,
   collapsedRels: Set<string>,
   overlay: TimelineGraph,
-  layers: TimelineLayers
+  layers: TimelineLayers,
+  t: (key: string) => string
 ): BuiltGraph {
   const nodes: Node[] = []
   const sceneIds = new Set<string>()
@@ -314,7 +318,7 @@ function buildGraph(
       revealPublic,
       revealSetup,
       revealTip: reveals.length
-        ? reveals.map((r) => `${r.kind === 'public' ? '★ reveals' : '○ plants'}: ${r.label}`).join('\n') || undefined
+        ? reveals.map((r) => `${r.kind === 'public' ? t('reveal.reveals') : t('reveal.plants')}: ${r.label}`).join('\n') || undefined
         : undefined
     }
   }
@@ -465,11 +469,11 @@ function buildEdges(
 
 // ── layer control (ArcGIS-style table of contents; toggles persist in view.layers) ──
 
-const LAYER_DEFS: { key: keyof TimelineLayers; label: string; hint: string }[] = [
-  { key: 'phase', label: 'Phase', hint: 'Tint nodes by content-phase' },
-  { key: 'presence', label: 'Presence', hint: 'Show who appears in each scene' },
-  { key: 'threads', label: 'Threads', hint: 'Show thread events per scene' },
-  { key: 'revelations', label: 'Revelations', hint: 'Where secrets are planted (○) and go public (★)' }
+const LAYER_DEFS: { key: keyof TimelineLayers }[] = [
+  { key: 'phase' },
+  { key: 'presence' },
+  { key: 'threads' },
+  { key: 'revelations' }
 ]
 
 function LayerControl({
@@ -479,6 +483,7 @@ function LayerControl({
   layers: TimelineLayers
   onToggle: (layer: keyof TimelineLayers, on: boolean) => void
 }): JSX.Element {
+  const { t } = useTranslation('timeline')
   const [open, setOpen] = useState(true)
   const activeCount = Object.values(layers).filter(Boolean).length
   const storyTree = useWorkspace((s) => s.storyTree)
@@ -507,7 +512,7 @@ function LayerControl({
         className="flex w-full items-center gap-1.5 rounded px-1.5 py-1 text-muted-foreground transition-colors hover:bg-panel-soft"
       >
         <Layers className="size-3" />
-        <span className="flex-1 text-left font-semibold uppercase tracking-wide">Layers</span>
+        <span className="flex-1 text-left font-semibold uppercase tracking-wide">{t('layers.title')}</span>
         {!open && activeCount > 0 && <span className="text-[9px] text-faint">{activeCount}</span>}
         {open ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
       </button>
@@ -518,7 +523,7 @@ function LayerControl({
             return (
               <button
                 key={l.key}
-                title={l.hint}
+                title={t(`layers.${l.key}.hint`)}
                 onClick={() => onToggle(l.key, !on)}
                 className={cn(
                   'flex w-full items-center gap-2 rounded px-1.5 py-1 text-left transition-colors hover:bg-panel-soft',
@@ -533,19 +538,19 @@ function LayerControl({
                 >
                   {on && <span className="size-1.5 rounded-full bg-white" />}
                 </span>
-                {l.label}
+                {t(`layers.${l.key}.label`)}
               </button>
             )
           })}
           {collapseLevels.length > 1 && (
             <div className="mt-1 border-t border-border/60 pt-1">
-              <div className="px-1.5 pb-1 text-[9px] font-semibold uppercase tracking-wide text-faint">Collapse to</div>
+              <div className="px-1.5 pb-1 text-[9px] font-semibold uppercase tracking-wide text-faint">{t('layers.collapseTo')}</div>
               <div className="flex flex-wrap gap-1 px-1 pb-0.5">
                 {collapseLevels.map((lv) => (
                   <button
                     key={lv.depth}
                     onClick={() => collapseToDepth(lv.depth)}
-                    title={`Collapse everything at/below ${lv.label}`}
+                    title={t('layers.collapseToLevel', { level: lv.label })}
                     className="rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
                   >
                     {lv.label}
@@ -553,10 +558,10 @@ function LayerControl({
                 ))}
                 <button
                   onClick={() => collapseToDepth(Infinity)}
-                  title="Expand everything (show all scenes)"
+                  title={t('layers.expandAll')}
                   className="rounded border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
                 >
-                  Scenes
+                  {t('layers.scenes')}
                 </button>
               </div>
             </div>
@@ -573,117 +578,60 @@ function LayerControl({
 // single `paneHelpOpen` flag, so — unlike a one-view rail — F8 must show the help for the ACTIVE tab, not always
 // the Canvas. Mounted once at the outer TimelinePanel (below), so it's live on every tab. Content per `tab`.
 function TimelineHelp({ tab, open, onClose }: { tab: 'canvas' | 'cells' | 'config'; open: boolean; onClose: () => void }): JSX.Element {
-  const NAVIGATE: [string, string][] = [
-    ['Scroll', 'Zoom in / out'],
-    ['Drag the background', 'Pan around'],
-    ['+ / − / ⤢ (bottom-left)', 'Zoom in · out · fit the whole flow'],
-    ['Minimap (bottom-right)', 'Overview + jump around a large flow']
-  ]
-  const title = tab === 'cells' ? 'Timeline · Cells' : tab === 'config' ? 'Timeline · Chart Config' : 'Timeline · Canvas'
+  const { t } = useTranslation('timeline')
+  const NAVIGATE = Object.entries(t('help.navigate.rows', { returnObjects: true }) as Record<string, string>)
+  const title = tab === 'cells' ? t('help.cells.title') : tab === 'config' ? t('help.config.title') : t('help.canvas.title')
   return (
     <Dialog open={open} onClose={onClose} title={title} size="detail">
       <div className="space-y-5">
         {tab === 'canvas' ? (
           <>
-            <HelpSection title="Build the canvas">
-              <HelpTable
-                rows={[
-                  ['Drag a scene', 'Place it as a standalone card'],
-                  ['Drag a folder', 'Place it as a group (drops collapsed; click the header to expand)'],
-                  ['Drag a folder card', 'Moves the group — its scenes follow'],
-                  ['Right dot → left dot', 'Draw a reading-order link (writes leads_to)']
-                ]}
-              />
+            <HelpSection title={t('help.canvas.build.title')}>
+              <HelpTable rows={Object.entries(t('help.canvas.build.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Select & route">
-              <HelpTable
-                rows={[
-                  ['⇧ drag', 'Draw a selection box — any scene the box touches is picked up'],
-                  ['C', 'Connect the selected scenes in reading order'],
-                  ['X', 'Disconnect the selected scenes (cut every edge in/out of them)'],
-                  ['⇧C', 'Quick-connect — chain the scenes on the timeline in reading order'],
-                  ['⇧X', 'Reset — clear all connectors on this variant']
-                ]}
-              />
+            <HelpSection title={t('help.canvas.selectRoute.title')}>
+              <HelpTable rows={Object.entries(t('help.canvas.selectRoute.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Edit & delete">
-              <HelpTable
-                rows={[
-                  ['Click a scene', 'Open the read view (cover + prose)'],
-                  ['Backspace / Delete', 'Remove the selected node or edge'],
-                  ['Scene inside a folder', 'Removed via the folder, not individually']
-                ]}
-              />
+            <HelpSection title={t('help.canvas.editDelete.title')}>
+              <HelpTable rows={Object.entries(t('help.canvas.editDelete.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Layers">
-              <HelpTable
-                rows={[
-                  ['Phase', 'Tints each card by content-phase'],
-                  ['Presence', 'Cast count per scene'],
-                  ['Threads', 'Thread events per scene'],
-                  ['Revelations', '★ a secret goes public here · ○ first planted here (from custody)']
-                ]}
-              />
+            <HelpSection title={t('help.canvas.layers.title')}>
+              <HelpTable rows={Object.entries(t('help.canvas.layers.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Why folders don't auto-wire">
+            <HelpSection title={t('help.canvas.noAutowire.title')}>
               <p className="text-[12px] leading-relaxed text-muted-foreground">
-                A folder shows its scenes but does <i>not</i> auto-connect them. The order in the Scene navigator
-                can be mis-sorted, and auto-wiring would bake in a wrong sequence — so connections stay deliberate:
-                draw them by hand, or use <b className="text-foreground/80">Quick-connect</b> when the reading order
-                is correct.
+                <HelpMd>{t('help.canvas.noAutowire.body')}</HelpMd>
               </p>
             </HelpSection>
           </>
         ) : tab === 'cells' ? (
           <>
-            <HelpSection title="The cell flow">
+            <HelpSection title={t('help.cells.cellFlow.title')}>
               <p className="text-[12px] leading-relaxed text-muted-foreground">
-                A read-only mirror of the Canvas branch graph, snapped to a VN-flowchart grid: the main
-                sequence runs down the center spine, with branches flanking it. Edit the topology on the
-                <b className="text-foreground/80"> Canvas</b> tab — this view is for reading the shape.
+                <HelpMd>{t('help.cells.cellFlow.body')}</HelpMd>
               </p>
             </HelpSection>
-            <HelpSection title="Navigate">
+            <HelpSection title={t('help.navigate.title')}>
               <HelpTable rows={NAVIGATE} />
             </HelpSection>
-            <HelpSection title="Read the flow">
-              <HelpTable
-                rows={[
-                  ['Click a scene', 'Open the read view (cover + prose)'],
-                  ['Branch / merge badge', 'Marks where a route splits (branch) or converges (merge)']
-                ]}
-              />
+            <HelpSection title={t('help.cells.readFlow.title')}>
+              <HelpTable rows={Object.entries(t('help.cells.readFlow.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
           </>
         ) : (
           <>
-            <HelpSection title="What Chart Config does">
+            <HelpSection title={t('help.config.what.title')}>
               <p className="text-[12px] leading-relaxed text-muted-foreground">
-                Author a <b className="text-foreground/80">chart axis</b> — a linear route through the connected
-                scenes that becomes a Gantt's X-axis. Create, pick, and rename axes in the sidebar; the preview
-                on top is the real Gantt of the route you're lighting.
+                <HelpMd>{t('help.config.what.body')}</HelpMd>
               </p>
             </HelpSection>
-            <HelpSection title="Build the path">
-              <HelpTable
-                rows={[
-                  ['Click a scene', 'Light it — auto-routes from the current tail (skill-tree style)'],
-                  ['Double-click a scene', 'Append the whole straight run up to the next fork'],
-                  ['Click the tail', 'Step back one'],
-                  ['Click an earlier lit scene', 'Truncate the path back to it']
-                ]}
-              />
+            <HelpSection title={t('help.config.buildPath.title')}>
+              <HelpTable rows={Object.entries(t('help.config.buildPath.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Save & undo">
-              <HelpTable
-                rows={[
-                  ['Save (top-right)', 'Every chart re-axes to this sequence'],
-                  ['⌘/Ctrl+Z · ⌘/Ctrl+Y', 'Undo / redo the path build'],
-                  ['⌘/Ctrl+S', 'Save the sequence']
-                ]}
-              />
+            <HelpSection title={t('help.config.saveUndo.title')}>
+              <HelpTable rows={Object.entries(t('help.config.saveUndo.rows', { returnObjects: true }) as Record<string, string>)} />
             </HelpSection>
-            <HelpSection title="Navigate">
+            <HelpSection title={t('help.navigate.title')}>
               <HelpTable rows={NAVIGATE} />
             </HelpSection>
           </>
@@ -708,12 +656,13 @@ function ConfirmDialog({
   onConfirm: () => void
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('timeline')
   return (
     <Dialog open={open} onClose={onClose} title={title} size="confirm">
       <p className="text-[13px] text-muted-foreground">{message}</p>
       <div className="mt-4 flex justify-end gap-2">
         <Button variant="ghost" size="sm" onClick={onClose}>
-          Cancel
+          {t('confirm.cancel')}
         </Button>
         <Button
           autoFocus
@@ -734,6 +683,7 @@ function ConfirmDialog({
 // ── canvas ──────────────────────────────────────────────────────────────────
 
 function Canvas(): JSX.Element {
+  const { t } = useTranslation('timeline')
   const timeline = useWorkspace((s) => s.timeline) // project-wide layers/view only (nodes/collapsed live per-variant)
   const trees = useWorkspace((s) => s.trees)
   // T3b: the canvas draws + (via link/unlink) edits the ACTIVE TREE VARIANT — it owns BOTH the adjacency (edges) AND
@@ -773,7 +723,7 @@ function Canvas(): JSX.Element {
   const onExportGraph = useCallback(async () => {
     const ns = getNodes()
     if (ns.length === 0) {
-      pushNotification({ id: 'export', kind: 'warning', title: 'Nothing to export', body: 'Place scenes on the canvas first.' })
+      pushNotification({ id: 'export', kind: 'warning', title: t('export.nothingTitle'), body: t('export.nothingBody') })
       return
     }
     const viewport = document.querySelector<HTMLElement>('.react-flow__viewport')
@@ -796,11 +746,11 @@ function Canvas(): JSX.Element {
       setExportShot(dataUrl) // → the photo-mode dialog (preview + Pro frame/badge/byline toggles), which saves
     } catch (e) {
       console.error('[nvs] timeline export failed', e)
-      pushNotification({ id: 'export', kind: 'warning', title: 'Export failed', body: 'Could not render the graph image.' })
+      pushNotification({ id: 'export', kind: 'warning', title: t('export.failedTitle'), body: t('export.failedBody') })
     } finally {
       setExporting(false)
     }
-  }, [getNodes, getNodesBounds, pushNotification])
+  }, [getNodes, getNodesBounds, pushNotification, t])
 
   const layers = timeline.view?.layers ?? DEFAULT_TIMELINE_VIEW.layers
   const index = useMemo(() => buildIndex(storyTree), [storyTree])
@@ -809,8 +759,8 @@ function Canvas(): JSX.Element {
   // Scenes + collapsible folder groups, derived from the active variant's canvas + the story tree + overlay layers.
   const collapsedRels = useMemo(() => new Set(variant?.collapsed ?? []), [variant])
   const graph = useMemo(
-    () => buildGraph(canvasNodes, index, folderIndex, collapsedRels, overlay, layers),
-    [canvasNodes, index, folderIndex, collapsedRels, overlay, layers]
+    () => buildGraph(canvasNodes, index, folderIndex, collapsedRels, overlay, layers, t),
+    [canvasNodes, index, folderIndex, collapsedRels, overlay, layers, t]
   )
   // Derived (not stored): scenes currently owned by a placed folder — the inspector
   // can't individually remove these (remove the folder instead). Enforces "a scene is placed once".
@@ -945,14 +895,14 @@ function Canvas(): JSX.Element {
             actions={[
               {
                 icon: exporting ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />,
-                title: 'Export graph as a PNG image',
+                title: t('export.title'),
                 onClick: () => void onExportGraph()
               },
-              { icon: <Link2 className="size-4" />, title: 'Connect selected scenes in reading order  (C)', onClick: () => void connectSelectedScenes() },
-              { icon: <Unlink className="size-4" />, title: 'Disconnect selected scenes — cut every edge in or out of them  (X)', onClick: () => void disconnectSelectedScenes() },
-              { icon: <Zap className="size-4" />, title: 'Quick-connect the scenes on the timeline in reading order  (⇧C)', onClick: () => setConfirm('quick') },
-              { icon: <Eraser className="size-4" />, title: 'Reset all connectors on this variant  (⇧X)', onClick: () => setConfirm('reset'), danger: true },
-              { icon: <HelpCircle className="size-4" />, title: 'How the timeline works', onClick: () => setHelp(true) }
+              { icon: <Link2 className="size-4" />, title: t('fab.connect'), onClick: () => void connectSelectedScenes() },
+              { icon: <Unlink className="size-4" />, title: t('fab.disconnect'), onClick: () => void disconnectSelectedScenes() },
+              { icon: <Zap className="size-4" />, title: t('fab.quickConnect'), onClick: () => setConfirm('quick') },
+              { icon: <Eraser className="size-4" />, title: t('fab.reset'), onClick: () => setConfirm('reset'), danger: true },
+              { icon: <HelpCircle className="size-4" />, title: t('fab.help'), onClick: () => setHelp(true) }
             ]}
           />
         </Panel>
@@ -962,10 +912,10 @@ function Canvas(): JSX.Element {
         {sceneCount >= 2 && looseCount > 0 && (
           <Panel position="top-center">
             <CanvasWarning
-              message={<><span className="font-medium text-warn">{looseCount}</span> {looseCount === 1 ? 'scene' : 'scenes'} not on the route</>}
+              message={<><span className="font-medium text-warn">{looseCount}</span> {t('loose.label', { count: looseCount })}</>}
               actions={[
-                { label: 'Quick connect', primary: true, onClick: () => setConfirm('quick'), title: 'Chain every scene in reading order (this variant)' },
-                { label: 'How to connect', onClick: () => setHelp(true), title: 'How to connect the timeline' }
+                { label: t('loose.quickConnect'), primary: true, onClick: () => setConfirm('quick'), title: t('loose.quickConnectTitle') },
+                { label: t('loose.howToConnect'), onClick: () => setHelp(true), title: t('loose.howToConnectTitle') }
               ]}
             />
           </Panel>
@@ -987,8 +937,8 @@ function Canvas(): JSX.Element {
           missing={!index.get(inspect)}
           footer={
             claimedScenes.has(inspect) ? (
-              <span className="text-[10px] text-faint" title="This scene belongs to a folder on the canvas">
-                in folder — remove the folder
+              <span className="text-[10px] text-faint" title={t('inspector.inFolderTitle')}>
+                {t('inspector.inFolder')}
               </span>
             ) : (
               <Button
@@ -1001,7 +951,7 @@ function Canvas(): JSX.Element {
                 }}
               >
                 <Trash2 className="size-3" />
-                Remove
+                {t('inspector.remove')}
               </Button>
             )
           }
@@ -1013,17 +963,17 @@ function Canvas(): JSX.Element {
           (setHelp → paneHelpOpen) still opens it; on the Canvas tab that's the Canvas help. */}
       <ConfirmDialog
         open={confirm === 'reset'}
-        title="Reset all connectors?"
-        message="This clears leads_to on every scene in the work — all timeline connections are removed. This can't be undone."
-        confirmLabel="Reset connectors"
+        title={t('reset.title')}
+        message={t('reset.message')}
+        confirmLabel={t('reset.confirm')}
         onConfirm={() => void resetConnectors()}
         onClose={() => setConfirm(null)}
       />
       <ConfirmDialog
         open={confirm === 'quick'}
-        title="Quick-connect in reading order?"
-        message="This chains the scenes on the timeline in reading order (.order), overwriting their leads_to — any existing branches/merges on those scenes are replaced. Scenes not on the timeline are untouched."
-        confirmLabel="Connect in order"
+        title={t('quick.title')}
+        message={t('quick.message')}
+        confirmLabel={t('quick.confirm')}
         onConfirm={() => void quickConnectSorted()}
         onClose={() => setConfirm(null)}
       />
@@ -1035,6 +985,7 @@ function Canvas(): JSX.Element {
 // ── pane ──────────────────────────────────────────────────────────────────────
 
 export function TimelinePanel(): JSX.Element {
+  const { t } = useTranslation('timeline')
   const [bench, setBench] = useState(false)
   const tab = useWorkspace((s) => s.timelineTab) // in the store so the Sidebar can swap to the sequence list
   const setTab = useWorkspace((s) => s.setTimelineTab)
@@ -1055,7 +1006,7 @@ export function TimelinePanel(): JSX.Element {
           tabs={['canvas', 'cells', 'config'] as const}
           value={tab}
           onChange={setTab}
-          renderLabel={(t) => (t === 'config' ? 'Chart Config' : t === 'cells' ? 'Cells' : 'Canvas')}
+          renderLabel={(tabKey) => (tabKey === 'config' ? t('tabs.config') : tabKey === 'cells' ? t('tabs.cells') : t('tabs.canvas'))}
         />
       </RailHeader>
       <div className="relative min-h-0 flex-1">
@@ -1066,7 +1017,7 @@ export function TimelinePanel(): JSX.Element {
                 onClick={() => setBench((b) => !b)}
                 className="absolute right-3 bottom-3 z-20 rounded border border-border bg-panel/95 px-2 py-1 text-[11px] text-muted-foreground shadow-md hover:bg-panel-soft"
               >
-                {bench ? 'Exit bench' : 'Perf bench'}
+                {bench ? t('bench.exit') : t('bench.enter')}
               </button>
             )}
             <ReactFlowProvider>{bench ? <BenchCanvas /> : <Canvas />}</ReactFlowProvider>

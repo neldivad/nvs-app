@@ -11,6 +11,7 @@
  * Sort (oldest/latest) is owned by the panel (the ⚔-aligned toggle).
  */
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { facetVisual } from '@/config/arcVisual'
 import { useWorkspace } from '@/stores/workspace'
@@ -57,6 +58,7 @@ export function RelationshipSpine({
   /** Lens D (layer `irony`): sceneId → the two knowledge-asymmetry tones per side. */
   irony?: Map<string, IronySceneSides>
 }): JSX.Element {
+  const { t } = useTranslation('relationships')
   const m = useMemo(() => relationshipMetrics(ev.events), [ev])
   const L = useWorkspace((s) => s.ganttLayers)
   const storyTree = useWorkspace((s) => s.storyTree) // ancestor breadcrumb over the chapter shells
@@ -213,7 +215,7 @@ export function RelationshipSpine({
         }}
         onClick={has ? () => setDetail(c.sceneId) : undefined}
         className={cn('relative grid min-h-6.5 grid-cols-[1fr_10rem_1fr] items-center gap-1 rounded px-1', has && 'cursor-pointer hover:bg-panel-soft/40')}
-        title={has ? 'Click for the shift detail' : undefined}
+        title={has ? t('spine.clickDetail') : undefined}
       >
         {/* lens D: one JOINED strip per side (blue then red blocks), centered on the row — the unknowing
             fighter's edge. Click → the custody page. */}
@@ -226,7 +228,7 @@ export function RelationshipSpine({
         <button
           onClick={(e) => { e.stopPropagation(); setScenePreview(c) }}
           className="z-10 truncate rounded border border-border bg-panel px-1.5 py-0.5 text-center text-[11px] text-foreground/85 hover:border-character hover:text-foreground"
-          title={`${c.title} — open scene`}
+          title={t('spine.openScene', { title: c.title })}
         >
           {c.title}
         </button>
@@ -267,19 +269,19 @@ export function RelationshipSpine({
       {/* Warmth axis annotation — centered, so the Layers float (top-right) never hides it. */}
       {L.warmth && rows.length > 0 && (
         <div className="text-center text-[10px] font-medium uppercase tracking-wide text-faint">
-          <span style={{ color: WARM }}>◀ Warm</span> · familiarity · <span style={{ color: COLD }}>Cold ▶</span>
+          <span style={{ color: WARM }}>◀ {t('spine.warm')}</span> · {t('spine.familiarity')} · <span style={{ color: COLD }}>{t('spine.cold')} ▶</span>
         </div>
       )}
 
       {/* Lens D legend — 1 block = 1 secret, on the unknowing side. */}
       {L.irony && irony && (
         <div className="flex items-center justify-center gap-3 text-[10px] text-faint">
-          <span className="flex items-center gap-1"><span className="size-1.25 rounded-[1px] bg-thread/60" /> audience advantage</span>
-          <span className="flex items-center gap-1"><span className="size-1.25 rounded-[1px] bg-flag/50" /> opponent advantage</span>
+          <span className="flex items-center gap-1"><span className="size-1.25 rounded-[1px] bg-thread/60" /> {t('spine.audienceAdvantage')}</span>
+          <span className="flex items-center gap-1"><span className="size-1.25 rounded-[1px] bg-flag/50" /> {t('spine.opponentAdvantage')}</span>
         </div>
       )}
       {L.irony && !irony && (
-        <p className="text-center text-[10px] text-faint">no knowledge asymmetry between this pair — no custody topic puts the reader or either fighter ahead</p>
+        <p className="text-center text-[10px] text-faint">{t('spine.noAsymmetry')}</p>
       )}
 
       <div ref={spineRef} data-part="spine" className="relative">
@@ -300,7 +302,7 @@ export function RelationshipSpine({
 
         <div className="relative">
           {rows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">No scenes in range.</p>
+            <p className="py-6 text-center text-sm text-muted-foreground">{t('spine.noScenesInRange')}</p>
           ) : L.chapters && !preview ? (
             <div className="space-y-2">
               {groups.map((grp, i) => (
@@ -330,8 +332,9 @@ export function RelationshipSpine({
 /** A collapsed run of scenes where neither of the pair speaks/shifts — a couple of faint nodes signal time
  *  passing, with no distracting count (the number lives in the tooltip). */
 function Ghost({ count }: { count: number }): JSX.Element {
+  const { t } = useTranslation('relationships')
   return (
-    <div className="flex flex-col items-center gap-1 py-1" aria-hidden title={`${count} scene${count === 1 ? '' : 's'} apart`}>
+    <div className="flex flex-col items-center gap-1 py-1" aria-hidden title={t('spine.scenesApart', { count })}>
       {Array.from({ length: Math.min(count, 3) }).map((_, i) => (
         <span key={i} className="size-1 rounded-full bg-faint/30" />
       ))}

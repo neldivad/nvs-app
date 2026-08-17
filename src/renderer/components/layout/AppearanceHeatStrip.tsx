@@ -10,6 +10,8 @@
  * height = its total weight; clicking it peeks its heaviest scene.
  */
 import { useMemo, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { cn } from '@/lib/utils'
 
 const MAX_BARS = 120
@@ -39,13 +41,14 @@ function merge(cells: HeatCell[], keyOf: (c: HeatCell) => string, labelOf: (chun
 
 /** `accentClass` is a text-color class (e.g. `text-thread`), so the bars can use `bg-current`. */
 export function AppearanceHeatStrip({ cells, accentClass = 'text-thread', className }: { cells: HeatCell[]; accentClass?: string; className?: string }): JSX.Element {
+  const { t } = useTranslation('appearanceHeatStrip')
   const bars = useMemo<HeatCell[]>(() => {
     if (cells.length <= MAX_BARS) return cells
     // Level 1 — one bar per folder (the scene's `group`).
     let out = merge(
       cells,
       (c) => c.group?.key ?? c.key,
-      (chunk) => ({ key: chunk[0].group?.title ?? chunk[0].key, label: labelFor(chunk[0].group?.title ?? chunk[0].key, chunk) })
+      (chunk) => ({ key: chunk[0].group?.title ?? chunk[0].key, label: labelFor(chunk[0].group?.title ?? chunk[0].key, chunk, t) })
     )
     // Level 2 — still too many folders → merge CONSECUTIVE folders into equal chunks (broader hierarchy).
     if (out.length > MAX_BARS) {
@@ -57,14 +60,14 @@ export function AppearanceHeatStrip({ cells, accentClass = 'text-thread', classN
       )
     }
     return out
-  }, [cells])
+  }, [cells, t])
   const max = Math.max(1, ...bars.map((c) => c.weight))
 
   return (
     <div className={className}>
       <div className={cn('flex h-9 items-end gap-px overflow-hidden rounded-md border border-border/60 bg-panel px-1 pt-1', accentClass)}>
         {bars.length === 0 ? (
-          <span className="m-auto text-[10px] text-faint">No appearances.</span>
+          <span className="m-auto text-[10px] text-faint">{t('noAppearances')}</span>
         ) : (
           bars.map((c) => (
             <button
@@ -92,7 +95,7 @@ export function AppearanceHeatStrip({ cells, accentClass = 'text-thread', classN
   )
 }
 
-function labelFor(title: string, chunk: HeatCell[]): string {
+function labelFor(title: string, chunk: HeatCell[], t: TFunction): string {
   const live = chunk.filter((c) => c.weight > 0).length
-  return live ? `${title} — ${live} appearance${live === 1 ? '' : 's'}` : title
+  return live ? `${title} — ${t('appearances', { count: live })}` : title
 }

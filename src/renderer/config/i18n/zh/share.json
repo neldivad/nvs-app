@@ -1,0 +1,13 @@
+{
+  "title": "分享",
+  "untitled": "无标题",
+  "group": {
+    "export": "导出文件",
+    "shareTo": "分享到"
+  },
+  "tile": {
+    "community": "社区"
+  },
+  "comingSoon": "即将推出",
+  "footer": "`.nvsproj` 文件将正文 _和_ 分析保存在一个独立文件中。社区与社交分享功能即将推出。"
+}

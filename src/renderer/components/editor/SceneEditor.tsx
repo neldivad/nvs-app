@@ -1,4 +1,5 @@
 import { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
@@ -51,6 +52,7 @@ function findScroller(root: HTMLElement | null): HTMLElement | null {
 }
 
 export function SceneEditor(): JSX.Element {
+  const { t } = useTranslation('editor')
   const activePage = useWorkspace((s) => s.activePage)
   const viewMode = useWorkspace((s) => s.viewMode)
   const sceneDirty = useWorkspace((s) => s.sceneDirty)
@@ -445,7 +447,7 @@ export function SceneEditor(): JSX.Element {
       {activePage == null && (
         <div className="flex flex-1 items-center justify-center">
           <p className="text-sm text-muted-foreground">
-            Pick a page from the sidebar to start writing.
+            {t('empty.pick')}
           </p>
         </div>
       )}
@@ -453,7 +455,7 @@ export function SceneEditor(): JSX.Element {
         <PageShell
           title={String(frontmatter.title ?? frontmatter.name ?? activePage.title)}
           kind={activePage.kind}
-          badges={sceneDirty ? <span className="size-1.5 shrink-0 rounded-full bg-thread" title="unsaved" /> : undefined}
+          badges={sceneDirty ? <span className="size-1.5 shrink-0 rounded-full bg-thread" title={t('tooltip.unsaved')} /> : undefined}
           tabs={PAGE_TABS[pageKindGroup(activePage.kind)]}
           tab={viewMode}
           onTab={(m: string) => void setViewMode(m as typeof viewMode)}
@@ -462,7 +464,7 @@ export function SceneEditor(): JSX.Element {
               {isWorld && viewMode !== 'source' && (
                 <button
                   onClick={toggleOutline}
-                  title={outlineOpen ? 'Hide outline' : 'Show outline'}
+                  title={outlineOpen ? t('tooltip.hideOutline') : t('tooltip.showOutline')}
                   className={cn(
                     'flex size-7 items-center justify-center rounded-md transition-colors',
                     outlineOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
@@ -474,7 +476,7 @@ export function SceneEditor(): JSX.Element {
               {!isWorld && viewMode !== 'source' && (
                 <button
                   onClick={toggleInspector}
-                  title={inspectorOpen ? 'Hide scene inspector' : 'Show scene inspector — summary, cast, threads, flags, reveals'}
+                  title={inspectorOpen ? t('tooltip.hideInspector') : t('tooltip.showInspector')}
                   className={cn(
                     'relative flex size-7 items-center justify-center rounded-md transition-colors',
                     inspectorOpen ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft'
@@ -489,21 +491,21 @@ export function SceneEditor(): JSX.Element {
               {/* Compact header actions — smaller than Button `sm` so they read as secondary chrome, not primary CTAs. */}
               <Button size="sm" variant="ghost" className="h-6 gap-1 px-1.5 text-[11px]" onClick={() => setPropsOpen(true)}>
                 <SlidersHorizontal className="size-3" />
-                Properties
+                {t('action.properties')}
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 className="h-6 gap-1 px-1.5 text-[11px]"
-                title="Print / Save as PDF (paper preview)"
+                title={t('tooltip.print')}
                 onClick={() => setPrintOpen(true)}
               >
                 <Printer className="size-3" />
-                Print
+                {t('action.print')}
               </Button>
               <Button size="sm" variant="ghost" className="h-6 gap-1 px-1.5 text-[11px]" disabled={!sceneDirty} onClick={() => void saveScene()}>
                 <Save className="size-3" />
-                Save
+                {t('action.save')}
               </Button>
             </>
           }
@@ -515,7 +517,7 @@ export function SceneEditor(): JSX.Element {
                 const icon = iss.level === 'warn' ? <AlertTriangle className="size-3 shrink-0" /> : <Info className="size-3 shrink-0" />
                 const cls = cn('flex items-center gap-1 text-left text-[11px]', iss.level === 'warn' ? 'text-flag' : 'text-muted-foreground')
                 return line ? (
-                  <button key={i} onClick={() => jumpToLine(Number(line))} title={`Go to line ${line} in Source`} className={cn(cls, 'cursor-pointer hover:underline')}>
+                  <button key={i} onClick={() => jumpToLine(Number(line))} title={t('tooltip.goToLine', { line })} className={cn(cls, 'cursor-pointer hover:underline')}>
                     {icon}{iss.message}
                   </button>
                 ) : (
@@ -565,7 +567,7 @@ export function SceneEditor(): JSX.Element {
                 <div className="relative min-h-0 flex-1" onKeyDown={cmFind.onKeyDown}>
                   {cmFind.open && (
                     <>
-                      <FindBar ref={cmFind.inputRef} query={cmFind.query} count={cmFind.count} active={cmFind.active} onQueryChange={cmFind.onQueryChange} onNext={() => cmFind.step(1)} onPrev={() => cmFind.step(-1)} onClose={cmFind.close} placeholder="Find in page" />
+                      <FindBar ref={cmFind.inputRef} query={cmFind.query} count={cmFind.count} active={cmFind.active} onQueryChange={cmFind.onQueryChange} onNext={() => cmFind.step(1)} onPrev={() => cmFind.step(-1)} onClose={cmFind.close} placeholder={t('find.placeholder')} />
                       <SearchMinimap markers={cmFind.markers} onJump={cmFind.goto} />
                     </>
                   )}
@@ -593,14 +595,14 @@ export function SceneEditor(): JSX.Element {
 
           <ConfirmDialog
             open={!!staleTask}
-            title="Replace the whole page?"
+            title={t('confirm.replaceTitle')}
             message={
               <>
-                This replaces all of <span className="text-foreground">{staleTask?.pageTitle}</span> with the AI&apos;s version (one Ctrl/Cmd+Z undoes it).
-                {staleTask && body.trim() !== staleTask.baseText.trim() && <> You&apos;ve also edited the page since this ran — those edits will be lost.</>}
+                {t('confirm.replaceLead')} <span className="text-foreground">{staleTask?.pageTitle}</span> {t('confirm.replaceTrail')}
+                {staleTask && body.trim() !== staleTask.baseText.trim() && <> {t('confirm.replaceEdited')}</>}
               </>
             }
-            confirmLabel="Replace"
+            confirmLabel={t('confirm.replace')}
             danger
             onConfirm={() => {
               // Re-arm the apply effect, bypassing the stale gate — it lands through the editable surface.
@@ -650,45 +652,43 @@ function EmptyPageHint({
   kind: string
   onOpenProperties: () => void
 }): JSX.Element {
+  const { t } = useTranslation('editor')
   const scene = kind === 'scene'
   return (
     <div className="pointer-events-none absolute inset-0 flex items-start justify-center pt-24">
       <div className="pointer-events-auto max-w-sm space-y-3 text-center">
         <p className="text-sm text-muted-foreground">
-          {scene ? 'This scene is empty.' : `This ${kind} page is empty.`}
+          {scene ? t('empty.scene') : t('empty.page', { kind })}
         </p>
         {scene ? (
           <ul className="space-y-1 text-[13px] text-faint">
-            <li>Just start typing for narration</li>
+            <li>{t('empty.sceneHint.typing')}</li>
             <li>
-              Type <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">/</kbd> for a
-              block — speech, thinking, action, transition
+              {t('empty.sceneHint.blockPre')} <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">/</kbd> {t('empty.sceneHint.blockPost')}
             </li>
             <li>
-              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">@name</kbd> sets a
-              speaker
+              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">@name</kbd> {t('empty.sceneHint.speaker')}
             </li>
             <li>
-              Open <span className="text-foreground/80">Properties</span> for the cast & beat (goal · conflict ·
-              outcome)
+              {t('empty.sceneHint.propertiesPre')} <span className="text-foreground/80">{t('action.properties')}</span> {t('empty.sceneHint.propertiesPost')}
             </li>
           </ul>
         ) : (
           <ul className="space-y-1 text-[13px] text-faint">
             <li>
-              Open <span className="text-foreground/80">Properties</span> to set the page's details and phase
+              {t('empty.worldHint.propertiesPre')} <span className="text-foreground/80">{t('action.properties')}</span> {t('empty.worldHint.propertiesPost')}
             </li>
             <li>
-              Write in Markdown — start a section with{' '}
-              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">##</kbd> (or type{' '}
-              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">/</kbd>)
+              {t('empty.worldHint.markdownPre')}{' '}
+              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">##</kbd> {t('empty.worldHint.markdownMid')}{' '}
+              <kbd className="rounded border border-border bg-panel px-1 font-mono text-[11px]">/</kbd>{t('empty.worldHint.markdownPost')}
             </li>
-            <li>Switch to Preview to see the wiki panel</li>
+            <li>{t('empty.worldHint.preview')}</li>
           </ul>
         )}
         <Button size="sm" variant="ghost" onClick={onOpenProperties}>
           <SlidersHorizontal className="size-3.5" />
-          Open Properties
+          {t('action.openProperties')}
         </Button>
       </div>
     </div>

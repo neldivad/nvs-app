@@ -11,6 +11,7 @@ import { CHANNELS, type NvsApi } from '@shared/ipc'
  */
 const api: NvsApi = {
   ping: () => ipcRenderer.invoke(CHANNELS.ping),
+  checkForUpdate: () => ipcRenderer.invoke(CHANNELS.checkForUpdate),
   minimizeWindow: () => ipcRenderer.invoke(CHANNELS.minimizeWindow),
   toggleMaximizeWindow: () => ipcRenderer.invoke(CHANNELS.toggleMaximizeWindow),
   closeWindow: () => ipcRenderer.invoke(CHANNELS.closeWindow),
@@ -100,6 +101,8 @@ const api: NvsApi = {
   importImages: (pageId, kind) => ipcRenderer.invoke(CHANNELS.importImages, pageId, kind),
   importImagePaths: (pageId, kind, paths) =>
     ipcRenderer.invoke(CHANNELS.importImagePaths, pageId, kind, paths),
+  importImageBytes: (pageId, kind, baseName, bytes) =>
+    ipcRenderer.invoke(CHANNELS.importImageBytes, pageId, kind, baseName, bytes),
   getPathForFile: (file) => webUtils.getPathForFile(file),
   ingestWork: () => ipcRenderer.invoke(CHANNELS.ingestWork),
   resetAnalysis: () => ipcRenderer.invoke(CHANNELS.resetAnalysis),
@@ -136,7 +139,7 @@ const api: NvsApi = {
   listIngestBundles: () => ipcRenderer.invoke(CHANNELS.listIngestBundles),
   startIngestRun: (forceScenes, depth) => ipcRenderer.invoke(CHANNELS.startIngestRun, forceScenes, depth),
   planIngestPreview: (depth) => ipcRenderer.invoke(CHANNELS.planIngestPreview, depth),
-  startCoherenceRun: () => ipcRenderer.invoke(CHANNELS.startCoherenceRun),
+  startCoherenceRun: (opts) => ipcRenderer.invoke(CHANNELS.startCoherenceRun, opts),
   cancelIngestRun: () => ipcRenderer.invoke(CHANNELS.cancelIngestRun),
   listIngestSessions: () => ipcRenderer.invoke(CHANNELS.listIngestSessions),
   revertIngestSession: (id) => ipcRenderer.invoke(CHANNELS.revertIngestSession, id),

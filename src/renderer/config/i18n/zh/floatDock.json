@@ -1,0 +1,15 @@
+{
+  "composition": {
+    "title": "创作模式",
+    "label": "构成"
+  },
+  "settings": {
+    "title": "设置",
+    "label": "设置"
+  },
+  "theme": {
+    "toggle": "切换主题",
+    "light": "浅色主题",
+    "dark": "深色主题"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "search": {
+    "placeholder": "搜索作品…"
+  },
+  "button": {
+    "new": "新建",
+    "openFolder": "从任意位置打开项目文件夹",
+    "import": "导入共享的 .nvsproj 捆绑包",
+    "showMore": "显示更多（{{n}}）",
+    "continue": "继续"
+  },
+  "section": {
+    "continue": "继续写作",
+    "elsewhere": "已在其他位置打开",
+    "results": "结果 · {{n}}",
+    "allWorks": "全部作品 · {{n}}"
+  },
+  "kind": {
+    "all": "全部",
+    "originals": "原作",
+    "forks": "分支"
+  },
+  "sort": {
+    "edited": "最后编辑时间",
+    "name": "名称"
+  },
+  "empty": {
+    "library": {
+      "before": "你的作品库中还没有作品 — 创建一个，或导入一个 ",
+      "after": " 中选择更强的模型。"
+    },
+    "noMatch": "没有符合搜索条件的{{noun}}。",
+    "none": "没有{{noun}}。",
+    "noun": {
+      "works": "作品",
+      "originals": "原作",
+      "forks": "分支"
+    }
+  },
+  "menu": {
+    "open": "打开",
+    "details": "详情…",
+    "fork": "创建分支",
+    "renameFolder": "将文件夹重命名为“{{title}}”",
+    "delete": "删除…"
+  },
+  "confirmDelete": {
+    "title": "删除项目？",
+    "body": "将移至系统废纸篓——正文和分析内容会一并移动。如果改变主意，可以从废纸篓中恢复。",
+    "cancel": "取消",
+    "confirm": "移至废纸篓"
+  },
+  "card": {
+    "forkedFrom": "分支自 {{name}}",
+    "from": "来自 {{name}}",
+    "stats": "{{scenes}} 个场景 · {{world}} 个世界",
+    "actions": "项目操作"
+  }
+}

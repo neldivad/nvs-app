@@ -7,6 +7,7 @@
  * and never gets cut off by a scroll container. See internal/chart-sequence.md.
  */
 import { useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import { ChevronDown, Route, Check } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
@@ -16,6 +17,7 @@ import { cn } from '@/lib/utils'
 const MENU_W = 208 // w-52
 
 export function SequenceSelect({ variant = 'corner' }: { variant?: 'corner' | 'inline' }): JSX.Element {
+  const { t } = useTranslation('sequence')
   const trees = useWorkspace((s) => s.trees)
   const { sequences, activeId } = variantSequences(trees)
   const setActive = useWorkspace((s) => s.setActiveChartSequence)
@@ -77,7 +79,7 @@ export function SequenceSelect({ variant = 'corner' }: { variant?: 'corner' | 'i
         className="z-[60] max-h-[60vh] overflow-y-auto rounded-md border border-border bg-panel shadow-lg"
       >
         <button onClick={() => pick(undefined)} className="type-body-sm flex w-full items-center gap-2 px-2.5 py-1.5 text-left hover:bg-panel-soft">
-          <span className="flex-1 truncate">Auto — reading order</span>
+          <span className="flex-1 truncate">{t('autoReadingOrder')}</span>
           {!activeId && <Check className="size-3.5 text-ok" />}
         </button>
         {sequences.map((s) => (
@@ -87,11 +89,11 @@ export function SequenceSelect({ variant = 'corner' }: { variant?: 'corner' | 'i
             {activeId === s.id && <Check className="size-3.5 text-ok" />}
           </button>
         ))}
-        {sequences.length === 0 && <div className="type-caption px-2.5 py-1.5 text-faint">No loadouts — build one in Timeline ▸ Chart Config.</div>}
+        {sequences.length === 0 && <div className="type-caption px-2.5 py-1.5 text-faint">{t('noLoadouts')}</div>}
         {/* Contextual help — a loadout re-scopes the WHOLE table (scenes/rows/analysis), not just columns; say so
             right where it's picked so the switch isn't a surprise (the inline half of the onboarding). */}
         <div className="type-micro border-t border-border px-2.5 py-1.5 leading-snug text-faint">
-          A <span className="text-muted-foreground">loadout</span> is one reading of a branching story — it re-scopes which scenes, rows and analysis every chart shows.
+          <Trans t={t} i18nKey="loadoutBlurb" components={{ term: <span className="text-muted-foreground" /> }} />
         </div>
       </div>,
       document.body
@@ -102,11 +104,11 @@ export function SequenceSelect({ variant = 'corner' }: { variant?: 'corner' | 'i
       <div ref={triggerRef} className="relative">
         <button
           onClick={() => setOpen((o) => !o)}
-          title="Loadout — pick which reading of the story drives every chart"
+          title={t('inlineTitle')}
           className="type-caption flex items-center gap-1 rounded-md border border-border bg-panel/60 px-2 py-1 text-muted-foreground transition-colors hover:bg-panel-soft hover:text-foreground"
         >
           <Route className={cn('size-3.5 shrink-0', active ? 'text-thread' : 'text-faint')} />
-          <span className="max-w-28 truncate">{active?.name ?? 'Auto'}</span>
+          <span className="max-w-28 truncate">{active?.name ?? t('auto')}</span>
           <ChevronDown className="size-3 shrink-0 text-faint" />
         </button>
         {menu}
@@ -120,11 +122,11 @@ export function SequenceSelect({ variant = 'corner' }: { variant?: 'corner' | 'i
       <span className="pointer-events-none absolute left-0 top-0 size-2.5 bg-gradient-to-br from-thread to-lore [clip-path:polygon(0_0,100%_0,0_100%)]" />
       <button
         onClick={() => setOpen((o) => !o)}
-        title="Chart axis — pick a sequence"
+        title={t('cornerTitle')}
         className="flex h-full w-full items-center gap-1 rounded-sm px-2 text-left transition-colors hover:bg-panel-soft"
       >
         <Route className={cn('size-3.5 shrink-0', active ? 'text-thread' : 'text-faint')} />
-        <span className="type-caption truncate">{active?.name ?? 'Auto'}</span>
+        <span className="type-caption truncate">{active?.name ?? t('auto')}</span>
         <ChevronDown className="ml-auto size-3 shrink-0 text-faint" />
       </button>
       {menu}

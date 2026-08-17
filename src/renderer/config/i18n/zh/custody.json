@@ -1,0 +1,262 @@
+{
+  "title": "保管",
+  "railCaption": "持有 — 作者创作的持有/揭示图表",
+  "delete": "删除",
+  "save": "保存",
+  "unsaved": "未保存",
+  "all": "全部",
+  "saveFailed": "保存失败 — 页面可能已被移动或删除",
+  "help": {
+    "title": "归属 — 工作原理",
+    "shows": {
+      "title": "展示内容",
+      "items": [
+        "每个主题页的 **归属区块**，均按 **原文完整呈现** — 这是你对某个项目或一条信息去向的声明。本图表永远不进行 AI 解读。",
+        "**项目**是接力棒（同一时间只有一位持有者 — 角色获得它时，是从上一位持有者那里接过来的）。**信息**是传染物（知识会传播；观众是一条通道；淡色区域表示神秘感/悬念）。",
+        "用途：**了解观众的体验** — 读者何时得知什么，以及悬念窗口会持续多久。"
+      ]
+    },
+    "flow": {
+      "title": "构建方式（流程）",
+      "rows": [
+        {
+          "k": "1 · 写作",
+          "v": "先写场景和世界观页面 — 归属是修订阶段（第 2/3 稿）的工具，锚定于已有内容。"
+        },
+        {
+          "k": "2 · 运行分析",
+          "v": "提取会观察持有/知晓事件。未分页的对象会显示在“来自分析”下。"
+        },
+        {
+          "k": "3 · 创建页面",
+          "v": "可以根据分析建议创建（根据观察到的事件起草时间线 — 数据，而非 AI），也可以点击 + 按钮（锚定到已有角色/项目）。无法创建无归属主题。"
+        },
+        {
+          "k": "4 · 策展",
+          "v": "编辑时间线 — 添加、更正、删除行。页面属于你；图表逐字镜像页面内容。"
+        },
+        {
+          "k": "5 · 迭代",
+          "v": "重新运行不会触碰你的页面。分析会持续观察，并且很快会标记偏差 — 角色在计划之外获知了信息。"
+        }
+      ]
+    },
+    "grammar": {
+      "title": "语法 — 三个动词，含义取决于主题类型",
+      "rows": [
+        {
+          "k": "获得 · 谁：[x]",
+          "v": "项目：谁替换持有者（每次交接记录一行；多个 who = 共同持有） · 信息：x 现在知道它"
+        },
+        {
+          "k": "失去 · 谁：[x]",
+          "v": "没有 who 的项目：被摧毁/消失 · 信息：x 忘记了它（失忆）"
+        },
+        {
+          "k": "失去 · 谁：[public]",
+          "v": "全局事件 — 摧毁或大规模失忆：世界中的所有人都失去它；观众仍记得"
+        },
+        {
+          "k": "公开",
+          "v": "世界中的所有人都知道 — 信息洪流线"
+        },
+        {
+          "k": "场景：开始",
+          "v": "在第一页之前就为真（例如：克劳狄斯一直都知道）"
+        },
+        {
+          "k": "获得 · 谁：[audience]",
+          "v": "声明读者何时得知它 — 如果没有这一项，观众行会回退到第一个检查点"
+        },
+        {
+          "k": "旧页面",
+          "v": "v1 动词（held-by · known-by · forgotten-by）以及 `since` 仍可解析 — 保存时会将它们重写为 v2"
+        }
+      ]
+    },
+    "observed": {
+      "title": "观察层 — 实时差异",
+      "items": [
+        "你的记录是 **计划**；分析是 **见证者**。ANALYSIS 幽灵通道（⟡ 虚线标记）显示分析在某些场景中观察到的、但该主题 **没有声明检查点** 的事件 — 一次计划外揭示、一次你标注时间不同的交接，或一次可以忽略的误读。",
+        "**无声就是成功状态**：当你的账本涵盖见证者看到的一切时，该通道就会消失。",
+        "**点击幽灵** → 记录选项卡会打开，并根据观察到的事件起草快速添加行 — 检查后按 ⏎ 接受，或者直接忽略这声低语。在“图层”下关闭该通道。"
+      ]
+    },
+    "where": {
+      "title": "所在位置",
+      "items": [
+        "归属是 **由作者编写的 T3** — 与 Coherence 一样处于解读层级，但方向相反：Coherence 是 **AI 展示的内容**；归属是 **你声明的内容**。两者之间的差异，就是发现结果所在之处。"
+      ]
+    }
+  },
+  "lanes": {
+    "reader": "读者",
+    "audience": "受众",
+    "public": "公开",
+    "analysis": "分析",
+    "unresolved": "未解决"
+  },
+  "marks": {
+    "takes": "在此取得",
+    "learns": "在此得知",
+    "lostHere": "在此失去",
+    "destroyedAll": "已摧毁 — 所有人都失去了",
+    "globalAmnesia": "全局失忆 — 所有人都忘记了",
+    "goneForEveryone": "所有人都失去了",
+    "losesHere": "在此失去它",
+    "forgetsHere": "在此忘记它",
+    "publicEveryone": "公开 — 所有人都知道",
+    "public": "公开",
+    "clickToDraft": "点击 → 在记录中起草此检查点"
+  },
+  "zones": {
+    "mystery": "谜团区域 — 有人知道受众尚未知晓的事情",
+    "suspense": "悬念区域 — 受众知道他们尚未知晓的事情"
+  },
+  "sidebar": {
+    "aiSuggestTip": "AI 建议 — 值得创建的主题 + 排队等待记录起草",
+    "newTopicTip": "新持有主题 — 将其锚定到世界页面，或创建一个独立页面",
+    "topics": "主题",
+    "topicSub_one": "{{kind}} · {{count}} 个检查点",
+    "topicSub_other": "{{kind}} · {{count}} 个检查点",
+    "deleteTopicTip": "删除此主题页面",
+    "emptyTopics": {
+      "before": "还没有主题页面。持有页面是你的图表 — 其",
+      "timeline": "时间线",
+      "mid": "会完全按照你的写法绘制。点击",
+      "after": "以添加一个——将其锚定到世界页面，或创建一个独立主题。"
+    },
+    "emptyStart": {
+      "before": "Custody 是一款",
+      "bold": "修订阶段",
+      "after": "工具——它声明物品和信息如何在你已撰写的场景之间流转。锚定到世界页面后，图表会根据分析自动填充，但你也可以随时创建独立主题。"
+    },
+    "newTopicHeading": "新建流转主题",
+    "searchPlaceholder": "输入主题名称，或搜索以进行锚定…",
+    "anchorTo": "锚定到现有页面：",
+    "moreHint": "+{{count}} 个——继续输入（分类也会匹配：“地点”、“背景设定”…）",
+    "newTopicNamed": "新建主题“{{name}}”",
+    "standaloneSuffix": "——独立主题",
+    "andInfo": {
+      "before": "…并添加一个世界",
+      "link": "信息页面",
+      "after": "也可以"
+    },
+    "deleteTopicTitle": "删除主题页面",
+    "deleteMsg": {
+      "before": "删除",
+      "after": "？页面文件（{{file}}）将被移除——其图表也会消失；场景和世界页面不受影响。"
+    },
+    "itemAnalysisCat": "物品 · 分析",
+    "declaredSecretCat": "已声明的秘密",
+    "reason": {
+      "seedFrom_one": "有 {{count}} 个持有事件可用于填充",
+      "seedFrom_other": "有 {{count}} 个持有事件可用于填充",
+      "features_one": "出现在 {{count}} 个场景中——未观察到交接",
+      "features_other": "出现在 {{count}} 个场景中——未观察到交接",
+      "notTracked": "尚未追踪",
+      "scenesTouch_one": "{{count}} 个场景涉及它",
+      "scenesTouch_other": "{{count}} 个场景涉及它",
+      "declaredOn": "已在 {{owner}} 的页面上声明"
+    }
+  },
+  "panel": {
+    "observedUndeclared": "已观察到，未声明——",
+    "emptyChart": "还没有检查点——请在记录选项卡中添加记录（或将 AI 填充任务加入队列）。",
+    "extractionBanner": "提取结果——创建页面以拥有此图表",
+    "inferredHolder": "片段 = 推断出的持有者",
+    "inferredKnowledge": "█ 推断出的知识",
+    "selectPrompt": "选择一个主题——或从分析结果中选择一个尚未分页的对象。",
+    "emptySecret": "还没有知识事件提及此秘密——运行分析后，流向会显示在这里（“创建页面”也可以据此为你起草记录）。",
+    "emptyItem": "还没有此物品的流转事件——请运行分析。",
+    "holdersNoun": "持有者",
+    "rangeLabel": "范围",
+    "rangeTip": "按活动情况裁剪流向——向上拖动低端滑块，以隐藏活动很少的持有者/知情者。"
+  },
+  "history": {
+    "aiApply": "AI 应用——{{name}}",
+    "recordsEdit": "记录编辑",
+    "proseEdit": "正文编辑"
+  },
+  "ai": {
+    "dialogTitle": "AI 建议——流转",
+    "createTopicPage": "创建主题页面",
+    "queueJob": "将任务加入队列",
+    "reRun": "重新运行",
+    "accept": "接受",
+    "grammarErrTip": "草稿存在语法错误——请重新运行，而不是接受有问题的块",
+    "undoRestore": "撤销——恢复之前的文本",
+    "tabRecommend": "推荐主题",
+    "tabPopulate": "自动填充记录",
+    "moreSuggestions": "再加 {{count}} 个——或通过侧边栏 + 搜索直接定位",
+    "allHaveTopic": "每个符合条件的世界页面都已有主题。",
+    "noTopicsYet": "还没有主题——请先从“推荐”标签页创建一个。",
+    "creatingA": "创建主题会生成一个页面，用于追踪",
+    "who": "谁",
+    "holds": "持有",
+    "knows": "知道",
+    "learns": "学会",
+    "it": "它",
+    "sceneByScene": "，按场景逐一绘制成图表。",
+    "pageLabel": "页面 · ",
+    "startsWithLabel": "起始于 · ",
+    "draftedFrom_one": "根据分析发现的内容起草了 {{count}} 个检查点——可由你编辑",
+    "draftedFrom_other": "根据分析发现的内容起草了 {{count}} 个检查点——可由你编辑",
+    "noCheckpoints": "没有检查点——请手动添加，或稍后将自动填充任务加入队列",
+    "hasDeclared_one": "有 {{count}} 个已声明的检查点。",
+    "hasDeclared_other": "有 {{count}} 个已声明的检查点。",
+    "jobReads1": "任务会阅读此页面的正文，并起草缺失的检查点——谁",
+    "jobReads2": "持有它，以及在哪个场景。你可以在此处审核结果；接受前不会写入任何内容。",
+    "whatNoticed": "分析发现的内容",
+    "moreFindings": "另有 {{count}} 个",
+    "drafting": "起草中…",
+    "failedPrefix": "失败——",
+    "unknownError": "未知错误",
+    "ifAccept": "接受后，图表将变为",
+    "appliedTag": "· 已应用 ✓",
+    "emptyDraft": "草稿中没有可读取的检查点。",
+    "readingDraft": "正在读取草稿…",
+    "rawDraft": "原始草稿",
+    "pickPre": "选择",
+    "aSuggestion": "建议",
+    "aTopic": "主题",
+    "pickPost": "——左侧的选项；此窗格会在你确认前显示将要发生的更改。"
+  },
+  "who": {
+    "holderPh": "持有者…",
+    "whoPh": "谁…"
+  },
+  "quickAdd": {
+    "verbGain": "获得 / 学会它",
+    "verbLost": "被摧毁 / 忘记",
+    "verbPublic": "世界中的所有人都知道",
+    "audienceOpt": "受众 — 读者",
+    "publicOpt": "公开 — 世界中的所有人",
+    "placeholder": "快速添加：获取 @{{slot}} @audience #scene …原因  ⏎",
+    "holderSlot": "持有者",
+    "whoSlot": "谁",
+    "slotVerb": "!verb — 输入 !（跳过时默认为获取）",
+    "noSuchPage": " — 没有此页面",
+    "slotWhoReq": "@who — 输入 @",
+    "slotWhoOpt": "@who（可选）",
+    "noSuchScene": " — 没有此场景",
+    "slotScene": "#scene — 输入 #",
+    "readyNote": "⏎ 添加检查点",
+    "noteOptional": "备注（可选）· ⏎ 添加",
+    "noteType": "备注 — 直接输入"
+  },
+  "records": {
+    "inLabel": "位于",
+    "notePh": "备注 — 原因",
+    "deleteCheckpoint": "删除检查点",
+    "checkpointBtn": "检查点",
+    "askAiTip": "根据此页面的正文草拟缺失的检查点 — 在写入任何内容前，你可以先查看它将绘制的图表",
+    "askAi": "询问 AI"
+  },
+  "preview": {
+    "checkpoints": "检查点"
+  },
+  "write": {
+    "fenceBroken": "代码围栏已损坏 — {{error}}（请修复，或在记录选项卡中编辑记录）"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "state": {
+    "willRead": "will read",
+    "fresh": "up to date",
+    "draft": "draft",
+    "offVariant": "off timeline",
+    "read": "read",
+    "notRun": "not run"
+  },
+  "empty": "No scenes to preview yet.",
+  "moreScenes_one": "+{{count}} more scene",
+  "moreScenes_other": "+{{count}} more scenes"
+}

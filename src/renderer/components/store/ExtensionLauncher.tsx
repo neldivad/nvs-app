@@ -6,6 +6,7 @@
  * contribute a persistent effect while enabled), so they never appear here.
  */
 import { useCallback, useEffect, useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Blocks, Play, Square, Loader2, TriangleAlert, ExternalLink } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
@@ -13,17 +14,19 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { ExtensionInfo, ExtensionStatus } from '@shared/ipc'
 
-// State → a small visual (label + dot color). Unknown/idle = never started this session.
-const STATE_VIS: Record<ExtensionStatus['state'], { label: string; dot: string; text: string }> = {
-  starting: { label: 'Starting…', dot: 'bg-warn animate-pulse', text: 'text-warn' },
-  running: { label: 'Running', dot: 'bg-thread animate-pulse', text: 'text-thread' },
-  done: { label: 'Done', dot: 'bg-ok', text: 'text-ok' },
-  stopped: { label: 'Stopped', dot: 'bg-faint', text: 'text-faint' },
-  crashed: { label: 'Crashed', dot: 'bg-flag', text: 'text-flag' },
-  unresponsive: { label: 'Unresponsive', dot: 'bg-flag', text: 'text-flag' }
+// State → a small visual (dot color + text tint). The label is resolved from the `runState` catalog at render.
+// Unknown/idle = never started this session.
+const STATE_VIS: Record<ExtensionStatus['state'], { dot: string; text: string }> = {
+  starting: { dot: 'bg-warn animate-pulse', text: 'text-warn' },
+  running: { dot: 'bg-thread animate-pulse', text: 'text-thread' },
+  done: { dot: 'bg-ok', text: 'text-ok' },
+  stopped: { dot: 'bg-faint', text: 'text-faint' },
+  crashed: { dot: 'bg-flag', text: 'text-flag' },
+  unresponsive: { dot: 'bg-flag', text: 'text-flag' }
 }
 
 export function ExtensionLauncher(): JSX.Element | null {
+  const { t } = useTranslation('extensions')
   const open = useWorkspace((s) => s.extensionRunOpen)
   const setOpen = useWorkspace((s) => s.setExtensionRunOpen)
   const setDiscoverOpen = useWorkspace((s) => s.setDiscoverOpen)
@@ -49,7 +52,7 @@ export function ExtensionLauncher(): JSX.Element | null {
       const st = await window.nvs.startExtension(e.id)
       setRun(e.id, e.name, st)
     } catch (err) {
-      setRun(e.id, e.name, { id: e.id, state: 'crashed', startedAt: Date.now(), error: err instanceof Error ? err.message : 'failed to start' })
+      setRun(e.id, e.name, { id: e.id, state: 'crashed', startedAt: Date.now(), error: err instanceof Error ? err.message : t('launcher.failedToStart') })
     } finally {
       setBusy(null)
     }
@@ -73,20 +76,20 @@ export function ExtensionLauncher(): JSX.Element | null {
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      title="Extension tools"
+      title={t('launcher.title')}
       size="panel"
       footer={
-        <DialogFooter aside={<span className="text-[12px] text-faint">Run an installed extension; it works in its own process.</span>}>
-          <Button variant="ghost" size="sm" onClick={goStore}><ExternalLink className="size-3.5" /> Get more in Store</Button>
+        <DialogFooter aside={<span className="text-[12px] text-faint">{t('launcher.footerNote')}</span>}>
+          <Button variant="ghost" size="sm" onClick={goStore}><ExternalLink className="size-3.5" /> {t('launcher.getMore')}</Button>
         </DialogFooter>
       }
     >
       {runnable.length === 0 ? (
         <div className="flex flex-col items-center gap-3 px-6 py-10 text-center">
           <Blocks className="size-8 text-faint" />
-          <p className="text-sm text-muted-foreground">No runnable extensions installed.</p>
-          <p className="max-w-xs text-xs text-faint">Active extensions — tools that do a thing on demand — show up here once installed. Ambient ones (like a font) just apply while enabled.</p>
-          <Button variant="outline" size="sm" onClick={goStore}><ExternalLink className="size-3.5" /> Browse the Store</Button>
+          <p className="text-sm text-muted-foreground">{t('launcher.emptyTitle')}</p>
+          <p className="max-w-xs text-xs text-faint">{t('launcher.emptyHint')}</p>
+          <Button variant="outline" size="sm" onClick={goStore}><ExternalLink className="size-3.5" /> {t('launcher.browseStore')}</Button>
         </div>
       ) : (
         <div className="flex flex-col divide-y divide-border">
@@ -103,27 +106,27 @@ export function ExtensionLauncher(): JSX.Element | null {
                   <div className="flex items-center gap-2">
                     <span className="truncate text-sm text-foreground">{e.name}</span>
                     <span className="shrink-0 rounded bg-panel-soft px-1 text-[9px] uppercase tracking-wide text-faint">{e.kind}</span>
-                    {vis && (
+                    {vis && st && (
                       <span className={cn('inline-flex shrink-0 items-center gap-1 text-[10px]', vis.text)}>
-                        <span className={cn('size-1.5 rounded-full', vis.dot)} /> {vis.label}
+                        <span className={cn('size-1.5 rounded-full', vis.dot)} /> {t(`runState.${st.state}`)}
                       </span>
                     )}
                   </div>
                   {(e.description || blocked || disabled) && (
                     <p className={cn('truncate text-xs', blocked ? 'text-flag' : 'text-faint')}>
                       {blocked ? (
-                        <span className="inline-flex items-center gap-1"><TriangleAlert className="size-3" /> {e.check.ok === false ? e.check.reasons[0] ?? "won't run in this app" : ''}</span>
-                      ) : disabled ? 'Disabled — enable it in the Store to run' : e.description}
+                        <span className="inline-flex items-center gap-1"><TriangleAlert className="size-3" /> {e.check.ok === false ? e.check.reasons[0] ?? t('launcher.wontRun') : ''}</span>
+                      ) : disabled ? t('launcher.disabledHint') : e.description}
                     </p>
                   )}
                 </div>
                 {live ? (
                   <Button variant="outline" size="sm" disabled={busy === e.id} onClick={() => void stop(e)}>
-                    {busy === e.id ? <Loader2 className="size-3.5 animate-spin" /> : <Square className="size-3.5 fill-current" />} Stop
+                    {busy === e.id ? <Loader2 className="size-3.5 animate-spin" /> : <Square className="size-3.5 fill-current" />} {t('launcher.stop')}
                   </Button>
                 ) : (
                   <Button size="sm" disabled={busy === e.id || blocked || disabled} onClick={() => void run(e)}>
-                    {busy === e.id ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5 fill-current" />} Run
+                    {busy === e.id ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5 fill-current" />} {t('launcher.run')}
                   </Button>
                 )}
               </div>

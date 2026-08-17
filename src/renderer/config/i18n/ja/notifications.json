@@ -1,0 +1,20 @@
+{
+  "title": "通知",
+  "clearAll": "すべてクリア",
+  "empty": "すべて確認済みです。",
+  "outdated_one": "{{count}}件のシーンが古くなっています",
+  "outdated_other": "{{count}}件のシーンが古くなっています",
+  "outdatedBody": "最後に分析へ読み込んでから、一部のシーンが変更されています。",
+  "openAnalysis": "分析を開く",
+  "copy": "コピー",
+  "copied": "コピーしました",
+  "copyAria": "通知をコピー",
+  "dismiss": "破棄",
+  "dismissAria": "通知を閉じる",
+  "open": "開く",
+  "update": {
+    "title": "アップデートがあります — {{version}}",
+    "body": "現在のバージョンは{{current}}です。新しいバージョンをダウンロードして更新してください。",
+    "action": "ダウンロード"
+  }
+}

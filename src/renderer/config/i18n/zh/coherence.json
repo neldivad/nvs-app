@@ -1,0 +1,117 @@
+{
+  "help": {
+    "title": "一致性 — 工作原理",
+    "flags": {
+      "title": "标记内容",
+      "items": [
+        "每条发现都会将**页面所述**（角色或线程声明的档案）与**场景所展现的内容**进行比较——在章节检查点读取。",
+        "这是分析代理的解读，而非作者定论——它是一列待检查的位置，绝不是你必须遵从的判决。"
+      ]
+    },
+    "questions": {
+      "title": "每个标签背后的问题"
+    },
+    "reading": {
+      "title": "阅读一条发现",
+      "rows": {
+        "category": "类型标签 — 页面与正文不符 · 逐渐偏移 · 页面未记载 · 场景未呈现 · 事实冲突 · 缺乏铺垫 · 违反设定",
+        "severity": "分流颜色 — 高 · 中 · 低（决定优先权重）",
+        "Subject": "涉及的对象 — 角色、线程或整个故事",
+        "Where": "问题实际发生的章节（根据证据得出）",
+        "Analyzed through": "本次运行读取到的位置 — 每条发现都相同，因此不是问题所在的位置",
+        "page says / scenes show": "声明的档案与正文 — 标记的核心"
+      }
+    },
+    "acting": {
+      "title": "采取行动",
+      "items": [
+        "**打开 … 的页面** — 编辑不同步的档案（发现所指向的修复位置）。",
+        "**在场景中核实** — 打开它所依据的场景，亲自阅读正文后再进行任何修改。",
+        "**检查线程** — 跳转到发现所涉及的线程。",
+        "琥珀色的 **建议** 是助手的解读——特意与事实分开。它只是建议，决定权在你。"
+      ]
+    },
+    "confirmation": {
+      "title": "确认",
+      "items": [
+        "**确认**发现表示一致性已*确认*——无需修复；它们会沉到列表底部。"
+      ]
+    }
+  },
+  "rail": {
+    "name": "连贯性",
+    "caption": "一致性 — 发现"
+  },
+  "loading": "正在加载…",
+  "filter": {
+    "highlight": "高亮",
+    "clear": "清除"
+  },
+  "scale": {
+    "characters": "角色",
+    "rangeLabel": "范围",
+    "all": "全部",
+    "rangeTitle": "按发现数量筛选行 — 向上拖动低端滑块，隐藏仅轻微标记的角色，聚焦标记最多的角色。"
+  },
+  "row": {
+    "noKind": "{{name}} — 无 {{kind}}",
+    "openPage": "{{name}} — {{kind}} · 打开页面"
+  },
+  "review": {
+    "wholeStory": "故事全文",
+    "subjectKind": {
+      "character": "角色",
+      "item": "物品",
+      "faction": "阵营",
+      "lore": "设定",
+      "location": "地点",
+      "thread": "线索",
+      "story": "故事"
+    },
+    "ownersPage": "{{owner}} 的页面",
+    "pageSays": "页面内容",
+    "noMention": "未提及此内容",
+    "scenesShow": "场景显示",
+    "earlier": "先前确立的事实",
+    "later": "后来的场景显示",
+    "suggestion": "建议 — 助手的解读，由你决定",
+    "intentional": "有意为之",
+    "markIntentional": "标记为有意为之",
+    "intentionalTitleOn": "已判定为有意为之 — 点击以恢复标记",
+    "intentionalTitleOff": "这是设计如此（欺骗/反转）？将其判定为有意为之，让重新运行时不再提示",
+    "related": "相关",
+    "openOwnersPage": "打开 {{name}} 的页面",
+    "inspectThread": "检查线索",
+    "chapterEvidenceTitle": "按章节阅读 — 选择匹配的场景",
+    "noScenes": "未找到场景",
+    "openScene": "打开“{{title}}”",
+    "setsUp": "故事埋下的铺垫",
+    "comesOf": "后来的下文"
+  },
+  "detail": {
+    "fallbackName": "连贯性",
+    "unplaced": "未放置",
+    "findingCount_one": "{{count}} 条发现",
+    "findingCount_other": "{{count}} 条发现",
+    "tabFindings": "发现",
+    "tabFinding": "发现"
+  },
+  "sidebar": {
+    "title": "连贯性",
+    "runTitle": "检查一致性 — 将每个角色的页面与故事呈现的内容进行差异对比",
+    "reading": "正在阅读…",
+    "empty": "未发现问题 — 运行分析后会显示。",
+    "severity": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "noCharacterIssues": "没有角色一致性问题。",
+    "plotHoles": "情节漏洞 · {{count}}",
+    "onTrack": "欺骗进展顺利 ✓ · {{count}}",
+    "intentional": "有意为之 ✓ · {{count}}",
+    "threadVerdicts": "线索结论 · {{count}}",
+    "pageVsStory": "设定页 vs 正文 · {{count}}",
+    "toughQuestions": "尖锐问题 · {{count}}"
+  }
+}

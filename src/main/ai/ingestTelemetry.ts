@@ -27,7 +27,7 @@ export interface IngestTelemetryEvent {
   /** What happened. Step kinds (`scene`…`coherence`) report the WORK; `boot`/`plan-turn` report the plan
    *  TRANSPORT beneath it. Both matter: a slow scene is a different bug depending on whether its plan-turn
    *  was warm or paid a reboot, and that distinction is what a run's diagnosis turns on. */
-  kind: 'scene' | 'window' | 'entity-window' | 'profile' | 'digest' | 'coherence' | 'continuity' | 'boot' | 'plan-turn'
+  kind: 'scene' | 'window' | 'entity-window' | 'profile' | 'digest' | 'coherence' | 'continuity' | 'critique' | 'boot' | 'plan-turn'
   /** the unit/entity this step targeted (absent for `boot`) */
   targetId?: string
   /** wall time for the step (read ms, or boot ms for `kind: 'boot'`) */

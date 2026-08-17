@@ -1,4 +1,5 @@
 import { useRef, useState, type JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Search } from 'lucide-react'
 import { SearchField } from '@/components/ui/SearchField'
 import { cn } from '@/lib/utils'
@@ -36,7 +37,8 @@ export interface SearchPopoverProps {
   className?: string
 }
 
-export function SearchPopover({ results, onSelect, placeholder = 'Search…', title, footer, limit = 50, className }: SearchPopoverProps): JSX.Element {
+export function SearchPopover({ results, onSelect, placeholder, title, footer, limit = 50, className }: SearchPopoverProps): JSX.Element {
+  const { t } = useTranslation('searchPopover')
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [pos, setPos] = useState<{ top: number; right: number } | null>(null)
@@ -60,7 +62,7 @@ export function SearchPopover({ results, onSelect, placeholder = 'Search…', ti
       <button
         ref={btnRef}
         onClick={() => (open ? close() : openPop())}
-        title="Search"
+        title={t('search')}
         className={cn('shrink-0 text-faint transition-colors hover:text-foreground', open && 'text-foreground', className)}
       >
         <Search className="size-3" />
@@ -72,11 +74,11 @@ export function SearchPopover({ results, onSelect, placeholder = 'Search…', ti
           <div style={{ top: pos.top, right: pos.right }} className="fixed z-50 w-64 overflow-hidden rounded-md border border-border bg-panel shadow-lg">
             {title && <div className="px-3 pb-0.5 pt-2 text-[10px] font-semibold uppercase tracking-wide text-faint">{title}</div>}
             <div className="px-2 pb-1 pt-2">
-              <SearchField autoFocus value={query} onChange={setQuery} onKeyDown={(e) => e.key === 'Escape' && close()} placeholder={placeholder} />
+              <SearchField autoFocus value={query} onChange={setQuery} onKeyDown={(e) => e.key === 'Escape' && close()} placeholder={placeholder ?? t('placeholder')} />
             </div>
             <div className="max-h-72 overflow-y-auto pb-1">
               {shown.length === 0 ? (
-                <div className="px-3 py-2 text-[11px] text-faint/70">{query.trim() ? 'No matches.' : 'Type to search…'}</div>
+                <div className="px-3 py-2 text-[11px] text-faint/70">{query.trim() ? t('noMatches') : t('typeToSearch')}</div>
               ) : (
                 shown.map((it) => (
                   <button
@@ -94,7 +96,7 @@ export function SearchPopover({ results, onSelect, placeholder = 'Search…', ti
                   </button>
                 ))
               )}
-              {items.length > limit && <div className="px-3 py-0.5 text-[10px] text-faint">+{items.length - limit} more — keep typing…</div>}
+              {items.length > limit && <div className="px-3 py-0.5 text-[10px] text-faint">{t('more', { n: items.length - limit })}</div>}
             </div>
             {footer?.(query, close)}
           </div>

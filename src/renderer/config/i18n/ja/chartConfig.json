@@ -1,0 +1,37 @@
+{
+  "example": "例",
+  "preview": {
+    "title": "軸のプレビュー",
+    "columns": " · {{n}} 列",
+    "defaultReadonly": " — デフォルトの軸（読み取り専用）",
+    "lightUpHint": "下のシーンを点灯させて軸を作成します — これらがガント列になります。",
+    "noScenes": "シーンはまだありません。"
+  },
+  "default": {
+    "before": "これはあなたの",
+    "defaultAxis": "デフォルトの軸",
+    "middle": " — フォルダー／接続順（読み取り専用）。保存済みのシーケンスを選択するか、サイドバーの",
+    "newSequence": "+ 新しいシーケンス",
+    "after": "からカスタムルートを作成します。"
+  },
+  "builder": {
+    "hint": "軸ビルダー · クリックで点灯 · ダブルクリックで実行を追加 · ⌘/Ctrl+Z / +Y で元に戻す／やり直す",
+    "freeOrderTitle": "自由順 — 任意のシーンを任意の順序で追加（接続を無視）",
+    "followLinksTitle": "リンクをたどる — leads_to 接続に沿ってのみ拡張",
+    "freeOrder": "自由順",
+    "followLinks": "リンクをたどる",
+    "path": "パス · {{n}}",
+    "help": "チャート設定のヘルプ",
+    "saved": "保存済み",
+    "save": "保存",
+    "saveAsNew": "新規として保存"
+  },
+  "noConnections": {
+    "before": "接続はまだありません。Canvas 上で",
+    "leadsTo": "leads_to",
+    "after": "リンクを描画（またはクイック接続）すると、接続されたシーンがここに分岐レールとして表示され、たどれるようになります。"
+  },
+  "cardTitle": "クリックで点灯 · ダブルクリックで次の分岐に実行を追加",
+  "sequenceName": "シーケンス {{n}}",
+  "sequenceFallback": "シーケンス"
+}

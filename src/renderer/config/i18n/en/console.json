@@ -1,0 +1,220 @@
+{
+  "tab": {
+    "analysis": "Analysis",
+    "database": "Database",
+    "agent": "Agent"
+  },
+  "header": {
+    "help": "How the console works"
+  },
+  "empty": {
+    "noProject": "Open a work to use the console."
+  },
+  "nonfiction": {
+    "title": "Deterministic views only",
+    "body": "For non-fiction, NVS reads your transcript directly — <b>Cast</b> shows who speaks and how much (by character volume), and <b>Timeline</b> shows the flow. AI analysis is off for now; custom extraction will arrive as a skill you can run on demand."
+  },
+  "health": {
+    "updating": "Updating…",
+    "noAi": "No AI connected — steps will be skipped until you add one."
+  },
+  "statusDetail": {
+    "upToDate": "{{n}} up to date",
+    "outdated": "{{n}} outdated",
+    "notRead": "{{n}} not read",
+    "draft": "{{n}} draft"
+  },
+  "run": {
+    "stop": "Stop",
+    "stopTip": "Stop after the current scene",
+    "moreActions": "More analysis actions",
+    "tip": {
+      "viewing": "Viewing a past version — return to current to update",
+      "cycle": "Timeline has a leads_to cycle — fix it so the analysis can walk the graph",
+      "dirty": "Read changed scenes into the analysis",
+      "graph": "The timeline graph changed since the last run — re-run to update",
+      "skim_one": "{{count}} scene read fast — run an Expert pass to build character arcs & profiles",
+      "skim_other": "{{count}} scenes read fast — run an Expert pass to build character arcs & profiles",
+      "upToDate": "Everything is up to date"
+    },
+    "label": {
+      "update": "Update analysis ({{n}})",
+      "graph": "Update analysis · graph changed",
+      "expert": "Expert pass ({{n}})",
+      "upToDate": "Up to date"
+    }
+  },
+  "coherence": {
+    "tipViewing": "Viewing a past version — return to current to check",
+    "tipNone": "No characters with both a page and an arc yet",
+    "tipReady": "Diff each character’s page against what the story shows",
+    "check": "Check coherence",
+    "checkCount": "Check coherence ({{n}})"
+  },
+  "readiness": {
+    "tip": "Ask the AI to preflight-check the project before an analysis run",
+    "label": "Readiness check"
+  },
+  "rebuild": {
+    "tip": "Rebuild analysis from your files",
+    "button": "Rebuild from files…",
+    "confirmTitle": "Rebuild analysis from your files?",
+    "confirmBody": "Rebuilds the analysis cleanly from your scenes when it's drifted out of sync with your story. <b>Your writing is never touched.</b>",
+    "confirmLabel": "Rebuild",
+    "table": {
+      "whenLabel": "When",
+      "whenBody": "threads, arcs or coherence look wrong — usually after renaming or restructuring chapters",
+      "whatLabel": "What it does",
+      "whatBody": "clears the derived analysis (threads, arcs, coherence, version history) and re-reads your files",
+      "writingLabel": "Your writing",
+      "writingBody": "never touched — only the analysis is rebuilt",
+      "safetyLabel": "Safety",
+      "safetyBody": "the current analysis is backed up to a .nvs.bak-… folder first, so nothing is lost",
+      "afterLabel": "After",
+      "afterBody": "re-run the AI passes to refill threads/arcs/coherence"
+    }
+  },
+  "reanalyze": {
+    "confirmTitle_one": "Re-analyze {{count}} scene?",
+    "confirmTitle_other": "Re-analyze {{count}} scenes?",
+    "confirmBody_one": "This re-reads {{count}} scene even though they're up to date — about {{count}} AI call via <b>{{conn}}</b> (handy after switching models). The database is snapshotted first.",
+    "confirmBody_other": "This re-reads {{count}} scenes even though they're up to date — about {{count}} AI calls via <b>{{conn}}</b> (handy after switching models). The database is snapshotted first.",
+    "yourConnection": "your connection",
+    "confirmLabel": "Re-analyze",
+    "selectedTip": "Re-read the selected scenes even though they're up to date (e.g. on a faster model)",
+    "selected": "Re-analyze {{n}} selected"
+  },
+  "timetravel": {
+    "viewing": "Viewing a past version (read-only) — {{time}}",
+    "restore": "Restore this version",
+    "return": "Return to current"
+  },
+  "recent": {
+    "title": "Recent updates",
+    "behind": "· coherence behind current analysis",
+    "historyTip": "See what each past run analyzed, by chapter",
+    "history": "History",
+    "empty": "Past updates will appear here once you run one.",
+    "current": "current",
+    "prunedTip": "Older versions are pruned to save space — this one can no longer be previewed or restored",
+    "pruned": "pruned",
+    "restoreTip": "Make this the current version (reversible — your current version stays in the list)",
+    "restore": "Restore",
+    "targets_one": "{{count}} target",
+    "targets_other": "{{count}} targets",
+    "rows": "{{n}} rows"
+  },
+  "provenance": {
+    "viewedTip": "What this version covered",
+    "noneTip": "No provenance recorded",
+    "versionCurrentTip": "Current version (live)",
+    "versionPrunedTip": "Snapshot pruned — too old to preview (only the newest versions are kept)",
+    "versionViewTip": "View this version (read-only)",
+    "scene_one": "{{count}} scene",
+    "scene_other": "{{count}} scenes",
+    "arc_one": "{{count}} arc",
+    "arc_other": "{{count}} arcs",
+    "coherence": "{{n}} coherence",
+    "more": "+{{n}} more"
+  },
+  "coherenceRow": {
+    "behind": "Coherence is behind — re-check this version",
+    "notChecked": "Coherence — not checked yet",
+    "tip": "Coherence check (based on this analysis version)",
+    "findings_one": "Coherence · {{count}} finding",
+    "findings_other": "Coherence · {{count}} findings"
+  },
+  "scenes": {
+    "all": "All scenes ({{n}})",
+    "empty": "No scenes yet — write one, and it'll show up here.",
+    "clear": "Clear",
+    "selectAll": "Select all",
+    "draft": "Draft",
+    "showMore": "Show 200 more — {{n}} not shown"
+  },
+  "queue": {
+    "updating": "Updating — {{settled}} of {{total}}",
+    "lastRun": "Last run",
+    "phaseTip": "{{label}}: {{settled}} of {{total}}",
+    "phaseTipFailed": "{{label}}: {{settled}} of {{total}} · {{failed}} failed",
+    "earlier": "+{{n}} earlier",
+    "queued": "+{{n}} queued"
+  },
+  "phase": {
+    "scene": "Scenes",
+    "window": "Arcs",
+    "profile": "Profiles",
+    "digest": "Digests",
+    "coherence": "Coherence"
+  },
+  "time": {
+    "justNow": "just now",
+    "minAgo": "{{m}} min ago",
+    "hAgo": "{{h}} h ago"
+  },
+  "db": {
+    "filter": "Filter loaded rows…",
+    "ofRows_one": "of {{count}} row",
+    "ofRows_other": "of {{count}} rows",
+    "reread": "Re-read tables",
+    "healthTip": "Check DB health — the agent audits duplicates, residue, orphans & staleness (read-only; you confirm any fix)",
+    "none": "No database yet — run analysis to build it.",
+    "empty": "Empty table.",
+    "loading": "Loading…",
+    "loadMore": "Load {{n}} more"
+  },
+  "copy": {
+    "copy": "Copy",
+    "copied": "Copied",
+    "url": "URL",
+    "json": "Copy JSON"
+  },
+  "status": {
+    "active": "Active",
+    "ready": "Ready",
+    "needs-key": "Needs key"
+  },
+  "agent": {
+    "connections": "Connections (key)",
+    "plan": "Plan (Claude Code)"
+  },
+  "connections": {
+    "intro": "Provider keys — only one is active at a time (like saved cards). The active connection drives <span>both chat (right-hand panel) and analysis passes</span>.",
+    "add": "Add connection",
+    "use": "Use",
+    "deactivate": "Deactivate",
+    "changeModel": "Change model",
+    "setKey": "Set / replace key",
+    "remove": "Remove",
+    "customModelId": "custom model id",
+    "save": "Save",
+    "current": "current: {{dots}}",
+    "replaceKey": "replace key…",
+    "saveKey": "Save key",
+    "custom": "Custom…",
+    "model": "Model",
+    "label": "Label",
+    "cancel": "Cancel",
+    "keyless": "No API key — runs on your Claude Code login. Log in once with <code>claude</code> if you haven't.",
+    "aboutLogin": "About the Claude Code login",
+    "getKey": "Get a {{provider}} key",
+    "pricing": "pricing"
+  },
+  "notice": {
+    "keySaved": "Key saved — set it active and test it in chat.",
+    "modelSet": "Model set to {{model}}."
+  },
+  "mcp": {
+    "title": "In-app MCP server",
+    "running": "Running",
+    "stopped": "Stopped",
+    "recheck": "Re-check",
+    "error": "Error: {{error}}",
+    "intro": "An agent (Claude Code / Desktop) connects to the running app and calls these as live tools — the same engine contract the UI uses. Keyless: the model runs in the agent, not here.",
+    "connectOne": "Connect — one command (Claude Code)",
+    "orConfig": "…or add to your agent's MCP config",
+    "capture": "The tools include <code>captureView</code> — an agent can screenshot the app to <b>see</b> your rails (a tangled timeline, the coherence gantt), not just read the data.",
+    "fullGuide": "Full guide — Store → Use with Claude (setup + examples) →",
+    "tools": "Tools exposed"
+  }
+}

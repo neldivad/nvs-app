@@ -26,6 +26,7 @@ import { RailChrome } from '@/components/layout/RailChrome'
 import { RailScaleBar } from '@/components/layout/RailScaleBar'
 import { SequenceSelect } from '@/components/layout/SequenceSelect'
 import { RelationshipSpine, type IronySceneSides, type SceneAxisCol } from '@/components/features/relationships/RelationshipSpine'
+import { useTranslation, Trans } from 'react-i18next'
 import type { CustodyTopic, RelationshipEvidence, WorldPage } from '@shared/ipc'
 
 /**
@@ -85,6 +86,7 @@ export function useSceneAxis(aId: string | null | undefined, bId: string | null 
 }
 
 export function RelationshipPanel(): JSX.Element {
+  const { t } = useTranslation('relationships')
   const characters = useWorkspace((s) => s.characters)
   const aId = useWorkspace((s) => s.relA)
   const bId = useWorkspace((s) => s.relB)
@@ -191,14 +193,14 @@ export function RelationshipPanel(): JSX.Element {
 
         <div className="min-h-0 flex-1 select-text overflow-auto p-5">
           {characters.length < 2 ? (
-            <EmptyRailState rail="relationships" action={<p className="text-[11px] text-faint">First: add at least two characters in <span className="font-mono">world/characters</span>.</p>} />
+            <EmptyRailState rail="relationships" action={<p className="text-[11px] text-faint"><Trans t={t} i18nKey="panel.addTwo" components={{ path: <span className="font-mono" /> }} /></p>} />
           ) : !valid ? (
             <EmptyRailState rail="relationships" />
           ) : !ev || loading ? (
             <div className="flex items-center justify-center py-10 text-muted-foreground"><Loader2 className="size-4 animate-spin" /></div>
           ) : ev.events.length === 0 && ev.coScenes.length === 0 ? (
-            <EmptyHint rail="relationships" title="No shared scenes">
-              {aChar?.name} and {bChar?.name} never appear in the same scene — no relationship recorded. Pick a different pair from the rosters.
+            <EmptyHint rail="relationships" title={t('panel.noSharedScenes.title')}>
+              {t('panel.noSharedScenes.body', { a: aChar?.name, b: bChar?.name })}
             </EmptyHint>
           ) : (
             <RelationshipSpine ev={ev} sceneAxis={sceneAxis} latest={latest} range={range} irony={irony} />
@@ -240,7 +242,7 @@ export function RelationshipPanel(): JSX.Element {
       {/* Right roster ("Target"). Width = 28.2% of the pane so it matches the left sidebar's 22%-of-group
           default (22/78) — the two rosters read as a symmetric pair framing the arena. */}
       <div className="flex w-[28.2%] shrink-0 flex-col border-l border-border bg-panel">
-        <SidebarHeader title="Target" search={{ results: targetResults, onSelect: setRelB, placeholder: 'Search characters…' }} />
+        <SidebarHeader title={t('panel.target')} search={{ results: targetResults, onSelect: setRelB, placeholder: t('panel.searchCharacters') }} />
         <div className="min-h-0 flex-1">
           <Roster chars={rightChars} selected={bId} disabled={aId} onPick={setRelB} metric={rightMetric} />
         </div>
@@ -254,37 +256,18 @@ export function RelationshipPanel(): JSX.Element {
 /** "How it works" — the rail's help dialog, injected into RailChrome (same shell + primitives as every other
  *  rail's help). Content mirrors the matchup model in this file's header. */
 function RelationshipHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('relationships')
   return (
-    <Dialog open={open} onClose={onClose} title="Relationships — how it works" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="The matchup">
-          <HelpList
-            items={[
-              <>Two rosters frame the arena. The <b className="text-foreground/80">left sidebar</b> (the "Fighter") ranks characters by total lines spoken — leads float up. Pick one, and the <b className="text-foreground/80">right roster</b> (the "Target") re-ranks by how much each character <em>shares scenes</em> with that fighter: their closest partners rise, tinted and counted.</>,
-              <>The <b className="text-foreground/80">duo header</b> shows both portraits — click either to open its character page. Between them, the <b className="text-foreground/80">⚔</b> carries a sort toggle that flips the spine between oldest- and newest-first.</>,
-              <>The <b className="text-foreground/80">spine</b> below runs every scene the pair shares, in reading order. If they never appear together it says so — pick a different pair.</>
-            ]}
-          />
+        <HelpSection title={t('help.matchup.title')}>
+          <HelpList items={t('help.matchup.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Layers">
-          <HelpList
-            items={[
-              <><b className="text-foreground/80">Presence</b> — back-to-back dialogue bars per scene (A ◀ cell ▶ B): who carries each shared scene.</>,
-              <><b className="text-foreground/80">Chapters</b> — band the spine by chapter (folder), read from your story tree.</>,
-              <><b className="text-foreground/80">Warmth</b> — replace the spine with the pair's warmth trajectory, on a Warm↔Cold axis.</>,
-              <><b className="text-foreground/80">Events</b> — relationship shift markers flanking each scene; click one for the detail.</>,
-              <><b className="text-foreground/80">Irony</b> — dramatic-irony bands from custody topics: where the reader knows what a fighter doesn't, the band sits on the <em>unknowing</em> side. Summoned, not ambient — off by default.</>
-            ]}
-          />
+        <HelpSection title={t('help.layers.title')}>
+          <HelpList items={t('help.layers.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Reading it">
-          <HelpList
-            items={[
-              <>A roster row's <b className="text-foreground/80">tint and trailing number</b> are its metric — total lines for the left, lines-shared-with-the-fighter for the right. The selected row keeps its tint and gains a glow.</>,
-              <>The rail spans the <b className="text-foreground/80">active timeline's</b> scenes in its reading order — the same set every other rail shows, not the whole universe.</>,
-              <>The declared bond (how the author describes the relationship) isn't shown here — it lives on each character's page, a click away via the portraits.</>
-            ]}
-          />
+        <HelpSection title={t('help.reading.title')}>
+          <HelpList items={t('help.reading.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>
@@ -306,6 +289,7 @@ function DuoHeader({
   latest: boolean
   setLatest: (v: boolean) => void
 }): JSX.Element {
+  const { t } = useTranslation('relationships')
   // Equal flex-1 sides keep the ⚔ cluster dead-CENTER regardless of name length; each name grows OUTWARD from the
   // center and truncates within its half — so the icons never shift when the pair changes.
   return (
@@ -315,7 +299,7 @@ function DuoHeader({
         <Swords className="size-5 text-character" />
         <button
           onClick={() => setLatest(!latest)}
-          title={latest ? 'Newest scenes first — click for oldest' : 'Oldest scenes first — click for newest'}
+          title={latest ? t('panel.newestFirst') : t('panel.oldestFirst')}
           className="text-muted-foreground hover:text-foreground"
         >
           {latest ? <ArrowUpWideNarrow className="size-4" /> : <ArrowDownWideNarrow className="size-4" />}
@@ -377,12 +361,13 @@ export function Roster({
 }
 
 function Portrait({ char, align, onOpen }: { char: WorldPage | undefined; align: 'left' | 'right'; onOpen: () => void }): JSX.Element {
+  const { t } = useTranslation('relationships')
   return (
     <button
       onClick={onOpen}
       disabled={!char}
       className={cn('group flex min-w-0 max-w-full items-center gap-3 rounded-md px-1 py-0.5 hover:bg-panel-soft/60', align === 'right' ? 'flex-row-reverse text-right' : '')}
-      title={char ? `Open ${char.name}` : undefined}
+      title={char ? t('panel.openChar', { name: char.name }) : undefined}
     >
       <Avatar char={char} big />
       <span className="min-w-0 truncate text-sm font-medium text-foreground/90 group-hover:text-foreground">{char?.name ?? '—'}</span>

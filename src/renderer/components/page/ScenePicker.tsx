@@ -5,6 +5,7 @@
  * `#scene` triggers and frontmatter fields later).
  */
 import { useEffect, useMemo, useRef, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { cn } from '@/lib/utils'
 import { useSceneAxis } from '@/lib/timeline/sceneAxis'
@@ -21,6 +22,7 @@ export function ScenePicker({
   allowStart?: boolean // offer the 'start' pseudo-scene (true before page one)
   className?: string
 }): JSX.Element {
+  const { t } = useTranslation('scenePicker')
   const scenes = useWorkspace((s) => s.scenes)
   const graph = useWorkspace((s) => s.timelineGraph)
   const storyTree = useWorkspace((s) => s.storyTree)
@@ -50,7 +52,7 @@ export function ScenePicker({
   }, [storyTree, colOf, ordered])
 
   const current =
-    value === 'start' ? 'start — before page one' : (ordered.find((sc) => sc.sceneId === value)?.title ?? (value ? `⚠ ${value}` : 'scene…'))
+    value === 'start' ? t('startShort') : (ordered.find((sc) => sc.sceneId === value)?.title ?? (value ? `⚠ ${value}` : t('placeholder')))
   const cell = (sc: { sceneId: string; title: string }): JSX.Element => {
     const vol = (counts.get(sc.sceneId) ?? 0) / maxCount
     return (
@@ -87,7 +89,7 @@ export function ScenePicker({
               }}
               className={cn('mb-2 w-full rounded border px-2 py-1 text-left text-[10px]', value === 'start' ? 'border-lore text-lore' : 'border-border text-muted-foreground hover:bg-panel-soft')}
             >
-              start — true before page one
+              {t('startFull')}
             </button>
           )}
           {bands.map((b, bi) => (
@@ -96,8 +98,8 @@ export function ScenePicker({
               <div className="flex flex-wrap gap-1">{b.cells.map(cell)}</div>
             </div>
           ))}
-          {bands.length === 0 && <p className="p-2 text-[11px] text-faint">No scenes yet.</p>}
-          <p className="mt-1 border-t border-border pt-1 text-[9px] text-faint">cell shade = dialogue volume · hover for the title</p>
+          {bands.length === 0 && <p className="p-2 text-[11px] text-faint">{t('empty')}</p>}
+          <p className="mt-1 border-t border-border pt-1 text-[9px] text-faint">{t('legend')}</p>
         </div>
       )}
     </div>

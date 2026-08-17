@@ -1,0 +1,99 @@
+{
+  "empty": {
+    "noProject": "打开一项工作以与代理聊天。",
+    "transcript": "询问代理有关当前打开的工作的问题——它可以读取场景并撰写分析。试试“分析第一幕”，或者打开一个页面后试试“查找此页面中的线索”。",
+    "noPages": "没有页面",
+    "noChats": "没有聊天记录",
+    "noChatsYet": "还没有聊天记录"
+  },
+  "context": {
+    "prefix": "上下文： ",
+    "page": "@ {{title}}",
+    "wholeProject": "整个项目"
+  },
+  "button": {
+    "clear": "清除",
+    "sendAnyway": "仍然发送",
+    "copy": "复制",
+    "copied": "已复制",
+    "delete": "删除",
+    "deleteN": "删除 {{count}} 项",
+    "all": "全部",
+    "untitled": "无标题"
+  },
+  "placeholder": {
+    "composer": "询问代理…  （Shift+Enter 换行）",
+    "attach": "附加场景或页面…",
+    "searchChats": "搜索聊天记录…"
+  },
+  "tooltip": {
+    "weakModel": "此模型可能难以处理多步骤任务",
+    "newChat": "新建聊天",
+    "deleteChat": "删除聊天",
+    "remove": "移除",
+    "stop": "停止",
+    "sendTooBig": "内容过大——请精简内容或使用“仍然发送”",
+    "send": "发送",
+    "copyMarkdown": "复制为 Markdown",
+    "attachPage": "附加页面作为上下文",
+    "analysisPrompts": "分析提示",
+    "openPage": "打开此页面",
+    "select": "选择"
+  },
+  "tokens": {
+    "count": "约 {{tokens}} 个令牌",
+    "tooBig": "约 {{tokens}} 个令牌——内容过大，无法发送；这会挤占上下文窗口或消耗大量用量。请精简内容，或一次分析一个章节/页面。"
+  },
+  "weakModel": {
+    "struggle": "{{model}} 可能难以处理此任务",
+    "explain": "小型/快速模型在处理多步骤工具调用时往往会陷入循环或执行失误，例如查找场景、批量排队编辑。对于复杂的代理任务：",
+    "driveFromClaude": "使用 Claude 操作 NVS",
+    "pluginHint": "——使用插件（Store → 与 Claude 一起使用）。",
+    "orPick": "或者在 ",
+    "settingsAi": "设置 → AI",
+    "orPickEnd": " 中选择更强的模型。"
+  },
+  "working": {
+    "readingTheWork": "阅读作品",
+    "thinkingItThrough": "仔细思考",
+    "pullingTheThreads": "理清线索",
+    "checkingTheCast": "核对角色",
+    "weighingIt": "权衡利弊",
+    "almostThere": "快完成了"
+  },
+  "tools": {
+    "used_one": "使用了 {{count}} 个工具",
+    "used_other": "使用了 {{count}} 个工具",
+    "usedWithNames_one": "使用了 {{count}} 个工具 · {{names}}",
+    "usedWithNames_other": "使用了 {{count}} 个工具 · {{names}}"
+  },
+  "analysis": {
+    "header": "分析 — 已在此聊天中回答"
+  },
+  "confirm": {
+    "deleteTitle": "删除聊天？",
+    "deleteTitleN": "删除 {{count}} 个聊天？",
+    "deleteSingle_this": "此聊天",
+    "messageN": "这将永久删除 <strong>{{count}} 个聊天</strong>及其记录。此操作无法撤销。",
+    "messageOne": "这将永久删除 <strong>{{title}}</strong>及其记录。此操作无法撤销。",
+    "selected": "已选择 {{count}} 项"
+  },
+  "error": {
+    "requestFailed": "⚠ 请求失败 — {{message}}。请检查 API 密钥（停靠栏 → Agent），或打开帮助（？）。"
+  },
+  "kind": {
+    "scene": "场景",
+    "character": "角色",
+    "location": "地点",
+    "item": "物品",
+    "lore": "背景知识"
+  },
+  "time": {
+    "now": "现在",
+    "minutes": "{{n}}分钟",
+    "hours": "{{n}}小时",
+    "days": "{{n}}天",
+    "weeks": "{{n}}周",
+    "months": "{{n}}个月"
+  }
+}

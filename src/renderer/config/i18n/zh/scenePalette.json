@@ -1,0 +1,13 @@
+{
+  "expandAll": "展开所有文件夹",
+  "collapseAll": "折叠所有文件夹",
+  "searchPlaceholder": "搜索文件夹和场景…",
+  "empty": "还没有文件夹或场景。",
+  "sceneCount_one": "{{count}} 个场景",
+  "sceneCount_other": "{{count}} 个场景",
+  "dragTip": {
+    "placed": "已放置",
+    "folder": "拖到视图上（放置整个文件夹）",
+    "scene": "拖到视图上"
+  }
+}

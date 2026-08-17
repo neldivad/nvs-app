@@ -1,0 +1,220 @@
+{
+  "tab": {
+    "analysis": "分析",
+    "database": "データベース",
+    "agent": "エージェント"
+  },
+  "header": {
+    "help": "コンソールの仕組み"
+  },
+  "empty": {
+    "noProject": "コンソールを使うには作品を開いてください。"
+  },
+  "nonfiction": {
+    "title": "決定的なビューのみ",
+    "body": "ノンフィクションでは、NVSがトランスクリプトを直接読み取ります。<b>キャスト</b>では、誰がどれだけ話しているか（文字量による）が表示され、<b>タイムライン</b>では流れが表示されます。AI分析は現在オフになっています。カスタム抽出は、必要なときに実行できるスキルとして追加される予定です。"
+  },
+  "health": {
+    "updating": "更新中…",
+    "noAi": "AIに接続されていません — 追加するまでステップはスキップされます。"
+  },
+  "statusDetail": {
+    "upToDate": "{{n}}件が最新",
+    "outdated": "{{n}}件が古い",
+    "notRead": "{{n}}件が未読",
+    "draft": "{{n}}件が下書き"
+  },
+  "run": {
+    "stop": "停止",
+    "stopTip": "現在のシーンの後に停止",
+    "moreActions": "その他の分析アクション",
+    "tip": {
+      "viewing": "過去のバージョンを表示中 — 更新するには現在のバージョンに戻してください",
+      "cycle": "タイムラインにleads_toの循環があります — 分析でグラフをたどれるよう修正してください",
+      "dirty": "変更されたシーンを分析に読み込む",
+      "graph": "前回の実行後にタイムラインのグラフが変更されています — 再実行して更新してください",
+      "skim_one": "{{count}}シーンを高速読み込み済み — エキスパート分析を実行してキャラクターのアークとプロフィールを作成してください",
+      "skim_other": "{{count}}シーンを高速読み込み済み — エキスパート分析を実行してキャラクターのアークとプロフィールを作成してください",
+      "upToDate": "すべて最新です"
+    },
+    "label": {
+      "update": "分析を更新（{{n}}）",
+      "graph": "分析を更新 · グラフが変更されました",
+      "expert": "エキスパート分析（{{n}}）",
+      "upToDate": "最新"
+    }
+  },
+  "coherence": {
+    "tipViewing": "過去のバージョンを表示中 — 確認するには現在のバージョンに戻してください",
+    "tipNone": "ページとアークの両方があるキャラクターはまだいません",
+    "tipReady": "各キャラクターのページを、物語で描かれている内容と比較します",
+    "check": "整合性を確認",
+    "checkCount": "整合性を確認（{{n}}）"
+  },
+  "readiness": {
+    "tip": "分析を実行する前に、AIにプロジェクトの事前チェックを依頼します",
+    "label": "準備状況を確認"
+  },
+  "rebuild": {
+    "tip": "ファイルから分析を再構築",
+    "button": "ファイルから再構築…",
+    "confirmTitle": "ファイルから分析を再構築しますか？",
+    "confirmBody": "ストーリーとの同期がずれたときに、シーンから分析をクリーンに再構築します。<b>執筆内容が変更されることはありません。</b>",
+    "confirmLabel": "再構築",
+    "table": {
+      "whenLabel": "タイミング",
+      "whenBody": "スレッド、アーク、または整合性がおかしく見えるとき — 通常は章の名前変更や構成変更の後",
+      "whatLabel": "実行内容",
+      "whatBody": "派生分析（スレッド、アーク、整合性、バージョン履歴）を消去し、ファイルを再読み込みします",
+      "writingLabel": "あなたの文章",
+      "writingBody": "変更されません — 再構築されるのは分析のみです",
+      "safetyLabel": "安全性",
+      "safetyBody": "まず現在の分析を .nvs.bak-… フォルダーにバックアップするため、データが失われることはありません",
+      "afterLabel": "完了後",
+      "afterBody": "AI処理を再実行して、スレッド／アーク／整合性を再生成します"
+    }
+  },
+  "reanalyze": {
+    "confirmTitle_one": "{{count}}シーンを再分析しますか？",
+    "confirmTitle_other": "{{count}}シーンを再分析しますか？",
+    "confirmBody_one": "最新の状態でも{{count}}シーンを再読み込みします — <b>{{conn}}</b>経由でAI呼び出しは約{{count}}回です（モデルの切り替え後などに便利です）。先にデータベースのスナップショットを作成します。",
+    "confirmBody_other": "最新の状態でも{{count}}シーンを再読み込みします — <b>{{conn}}</b>経由でAI呼び出しは約{{count}}回です（モデルの切り替え後などに便利です）。先にデータベースのスナップショットを作成します。",
+    "yourConnection": "あなたの接続",
+    "confirmLabel": "再分析",
+    "selectedTip": "最新の状態でも選択したシーンを再読み込みします（より高速なモデルを使う場合など）",
+    "selected": "選択した{{n}}件を再分析"
+  },
+  "timetravel": {
+    "viewing": "過去のバージョンを表示中（読み取り専用） — {{time}}",
+    "restore": "このバージョンを復元",
+    "return": "現在のバージョンに戻る"
+  },
+  "recent": {
+    "title": "最近の更新",
+    "behind": "· 現在の分析より整合性が遅れています",
+    "historyTip": "過去の各実行で章ごとに何が分析されたかを確認します",
+    "history": "履歴",
+    "empty": "実行すると、過去の更新がここに表示されます。",
+    "current": "現在",
+    "prunedTip": "容量節約のため古いバージョンは削除されます — このバージョンはプレビューも復元もできません",
+    "pruned": "削除済み",
+    "restoreTip": "これを現在のバージョンにします（元に戻せます — 現在のバージョンは一覧に残ります）",
+    "restore": "復元",
+    "targets_one": "{{count}}件の対象",
+    "targets_other": "{{count}}件の対象",
+    "rows": "{{n}}行"
+  },
+  "provenance": {
+    "viewedTip": "このバージョンの対象範囲",
+    "noneTip": "来歴は記録されていません",
+    "versionCurrentTip": "現在のバージョン（ライブ）",
+    "versionPrunedTip": "スナップショットは削除済みです — 古すぎてプレビューできません（最新のバージョンのみ保持されます）",
+    "versionViewTip": "このバージョンを表示（読み取り専用）",
+    "scene_one": "{{count}}シーン",
+    "scene_other": "{{count}} シーン",
+    "arc_one": "{{count}}アーク",
+    "arc_other": "{{count}}アーク",
+    "coherence": "{{n}}件の整合性",
+    "more": "さらに{{n}}件"
+  },
+  "coherenceRow": {
+    "behind": "整合性が遅れています — このバージョンを再確認してください",
+    "notChecked": "整合性 — まだ確認されていません",
+    "tip": "整合性チェック（この分析バージョンに基づく）",
+    "findings_one": "整合性 · {{count}}件の指摘",
+    "findings_other": "整合性 · {{count}}件の指摘"
+  },
+  "scenes": {
+    "all": "すべてのシーン（{{n}}）",
+    "empty": "シーンはまだありません — 1つ書くと、ここに表示されます。",
+    "clear": "消去",
+    "selectAll": "すべて選択",
+    "draft": "下書き",
+    "showMore": "さらに200件表示 — {{n}}件は非表示"
+  },
+  "queue": {
+    "updating": "更新中 — {{settled}} / {{total}}",
+    "lastRun": "前回の実行",
+    "phaseTip": "{{label}}: {{settled}} / {{total}}",
+    "phaseTipFailed": "{{label}}: {{settled}} / {{total}} · {{failed}}件失敗",
+    "earlier": "さらに前の{{n}}件",
+    "queued": "キューに追加済み{{n}}件"
+  },
+  "phase": {
+    "scene": "シーン",
+    "window": "アーク",
+    "profile": "プロファイル",
+    "digest": "ダイジェスト",
+    "coherence": "整合性"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minAgo": "{{m}}分前",
+    "hAgo": "{{h}}時間前"
+  },
+  "db": {
+    "filter": "読み込んだ行を絞り込む…",
+    "ofRows_one": "{{count}}行中",
+    "ofRows_other": "{{count}}行中",
+    "reread": "テーブルを再読み込み",
+    "healthTip": "DBの健全性を確認 — エージェントが重複、残留データ、孤立データ、古さを監査します（読み取り専用。修正はあなたが確認します）",
+    "none": "データベースはまだありません — 分析を実行して作成してください。",
+    "empty": "空のテーブルです。",
+    "loading": "読み込み中…",
+    "loadMore": "さらに{{n}}件読み込む"
+  },
+  "copy": {
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "url": "URL",
+    "json": "JSONをコピー"
+  },
+  "status": {
+    "active": "アクティブ",
+    "ready": "準備完了",
+    "needs-key": "キーが必要"
+  },
+  "agent": {
+    "connections": "接続（キー）",
+    "plan": "プラン（Claude Code）"
+  },
+  "connections": {
+    "intro": "プロバイダーキー — 一度に有効にできるのは1つだけです（保存済みカードのようなもの）。有効な接続によって、<span>チャット（右側のパネル）と分析パスの両方</span>が実行されます。",
+    "add": "接続を追加",
+    "use": "使用",
+    "deactivate": "無効化",
+    "changeModel": "モデルを変更",
+    "setKey": "キーを設定／置換",
+    "remove": "削除",
+    "customModelId": "カスタムモデル id",
+    "save": "保存",
+    "current": "現在: {{dots}}",
+    "replaceKey": "キーを置換…",
+    "saveKey": "キーを保存",
+    "custom": "カスタム…",
+    "model": "モデル",
+    "label": "ラベル",
+    "cancel": "キャンセル",
+    "keyless": "APIキーなし — Claude Code のログイン情報で実行します。まだログインしていない場合は、<code>claude</code>で一度ログインしてください。",
+    "aboutLogin": "Claude Code のログインについて",
+    "getKey": "{{provider}}キーを取得",
+    "pricing": "料金"
+  },
+  "notice": {
+    "keySaved": "キーを保存しました — 有効にして、チャットでテストしてください。",
+    "modelSet": "モデルを{{model}}に設定しました。"
+  },
+  "mcp": {
+    "title": "アプリ内 MCP サーバー",
+    "running": "実行中",
+    "stopped": "停止中",
+    "recheck": "再確認",
+    "error": "エラー: {{error}}",
+    "intro": "エージェント（Claude Code / Desktop）が実行中のアプリに接続し、これらをライブツールとして呼び出します — UI が使用するものと同じエンジン契約です。キー不要: モデルはここではなくエージェント内で実行されます。",
+    "connectOne": "接続 — 1つのコマンド（Claude Code）",
+    "orConfig": "…またはエージェントの MCP 設定に追加",
+    "capture": "ツールには<code>captureView</code>が含まれます — エージェントはアプリのスクリーンショットを撮って、データを読むだけでなく、レール（複雑に絡み合ったタイムラインやコヒーレンス・ガント）を<b>確認</b>できます。",
+    "fullGuide": "完全ガイド — Store → Claude で使う（セットアップ＋例）→",
+    "tools": "公開されているツール"
+  }
+}

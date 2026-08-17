@@ -1,0 +1,77 @@
+{
+  "install": "インストール",
+  "installReady": "一覧の権限を許可してインストール",
+  "uninstall": "アンインストール",
+  "uninstallTitle": "この拡張機能を削除",
+  "status": {
+    "compatible": "互換性あり",
+    "incompatible": "互換性なし",
+    "disabled": "無効",
+    "installed": "インストール済み",
+    "installedTitle": "インストール済み",
+    "compatibleTitle": "互換性あり"
+  },
+  "incompatibleReasons": "互換性なし: {{reasons}}",
+  "empty": {
+    "updates": "利用可能な更新はありません。（更新の検出にはレジストリとインストール済みバージョンの比較が必要です。拡張機能レジストリで提供予定です。）",
+    "search": "検索に一致する拡張機能はありません。",
+    "installed": "インストール済みの拡張機能はまだありません。",
+    "browse": "拡張機能が見つかりません（同梱サンプルがありませんか？）。"
+  },
+  "subtabs": {
+    "browse": "閲覧",
+    "installed": "インストール済み",
+    "installedCount": "インストール済み · {{n}}",
+    "updates": "更新"
+  },
+  "toggle": {
+    "enabled": "有効",
+    "disabled": "無効",
+    "enabledTitle": "有効 — クリックして無効化",
+    "disabledTitle": "無効 — クリックして有効化"
+  },
+  "claudePlugin": {
+    "title": "Claude Desktop プラグイン",
+    "builtIn": "組み込み",
+    "desc": "小説についてClaudeに質問できます — スレッド、プロットの矛盾、あらゆるシーンについて。ダウンロードしてClaudeに追加し、入力",
+    "saved": "保存済み",
+    "download": "ダウンロード",
+    "saving": "保存中…",
+    "restart": "この機能を有効にするにはNVSを再起動してください。",
+    "buildError": "プラグインをビルドできませんでした"
+  },
+  "runState": {
+    "starting": "起動中…",
+    "running": "実行中",
+    "done": "完了",
+    "stopped": "停止中",
+    "crashed": "クラッシュしました",
+    "unresponsive": "応答なし"
+  },
+  "launcher": {
+    "title": "拡張機能ツール",
+    "footerNote": "インストール済みの拡張機能を実行します。拡張機能は独自のプロセスで動作します。",
+    "getMore": "Storeでさらに入手",
+    "emptyTitle": "実行可能な拡張機能がインストールされていません。",
+    "emptyHint": "アクティブな拡張機能（必要なときに実行するツール）は、インストールするとここに表示されます。フォントなどの常駐型拡張機能は、有効にしている間だけ適用されます。",
+    "browseStore": "Storeを閲覧",
+    "wontRun": "このアプリでは実行できません",
+    "disabledHint": "無効 — 実行するにはStoreで有効にしてください",
+    "failedToStart": "起動に失敗しました",
+    "run": "実行",
+    "stop": "停止"
+  },
+  "permissions": {
+    "noAccessNeeded": "アクセス不要",
+    "moreCount": "さらに{{n}}件",
+    "noAccessDetail": "アクセス不要 — この拡張機能は作業中の内容を読み取ったり変更したりできません。",
+    "optional": "（任意）",
+    "heading": "この拡張機能がアクセスできる内容",
+    "sandboxNote": "拡張機能は別のプロセスで実行され、ここに記載されたアクセス権限のみを取得します。マシン上のその他のものにはアクセスできません。"
+  },
+  "panel": {
+    "stop": "停止",
+    "dismiss": "破棄",
+    "title": "{{name}}パネル"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "tab": {
+    "browse": "閲覧",
+    "library": "ライブラリ",
+    "history": "履歴"
+  },
+  "preview": {
+    "heading": "アプリの中身"
+  },
+  "size": {
+    "scenes_one": "{{count}}シーン",
+    "scenes_other": "{{count}} シーン",
+    "world": "{{n}} ワールド",
+    "custody": "{{n}} 監護"
+  },
+  "loading": {
+    "registry": "レジストリを取得中…"
+  },
+  "empty": {
+    "registryUnreachable": "レジストリに接続できません。接続を確認するか、NVS_REGISTRY_URLにローカルのindex.jsonを設定してください。",
+    "noMatch": "検索に一致する作品はありません。",
+    "noWorks": "レジストリに作品はありません。",
+    "libraryEmpty": "ライブラリは空です。閲覧から作品をインストールするか、上記のサンプルを復元してください。",
+    "noDownloadMatch": "検索に一致するダウンロードはありません。",
+    "historyEmpty": "読書リストは空です。閲覧からインストールしたものはここに表示され、後でローカルコピーを削除しても残ります。"
+  },
+  "button": {
+    "open": "ページの詳細とフェーズの設定は",
+    "install": "インストール",
+    "installing": "インストール中…",
+    "remove": "削除",
+    "back": "戻る",
+    "getAgain": "再取得",
+    "restoreExamples": "サンプルを復元",
+    "needsVersion": "NVS ≥ {{version}} が必要です"
+  },
+  "status": {
+    "installed": "インストール済み",
+    "inLibrary": "ライブラリ内",
+    "verifiedClean": "検証済み（問題なし）",
+    "notInRegistry": "レジストリから削除済み"
+  },
+  "error": {
+    "installFailed": "インストールに失敗しました"
+  },
+  "detail": {
+    "registryBlurb": "検証済みのコミュニティ作品です。インストールするとバンドルをダウンロードし、整合性（sha256）を確認して、編集可能なコピーをライブラリに追加します。",
+    "libraryBlurb": "ライブラリ内にあります。開いて執筆＋分析するか、ディスクから削除できます。"
+  },
+  "restore": {
+    "restored": "{{n}} 件を復元しました",
+    "allPresent": "すべてのサンプルがすでに存在します"
+  },
+  "confirm": {
+    "remove": "「{{title}}」をライブラリから削除しますか？ファイルはディスクから削除されます。"
+  },
+  "tooltip": {
+    "enlarge": "{{label}} — クリックして拡大",
+    "verifiedClean": "検証済み（問題なし）",
+    "deleteFromLibrary": "ライブラリから削除",
+    "removeFromLibrary": "ライブラリから取り除く",
+    "downloadAgain": "再度ダウンロード",
+    "restoreExamples": "同梱のGetting Started＋デモプロジェクトを再追加（現在も保持しているものはスキップ）"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutes": "{{n}}分前",
+    "hours": "{{n}}時間前",
+    "days": "{{n}}日前",
+    "months": "{{n}}か月前",
+    "years": "{{n}}年前"
+  }
+}

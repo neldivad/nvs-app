@@ -1,0 +1,26 @@
+{
+  "title": {
+    "dirty": "未保存的更改",
+    "clean": "要离开此项目吗？"
+  },
+  "verb": {
+    "library": "返回资料库",
+    "tab": "关闭此标签页",
+    "app": "退出",
+    "nav": "离开此页面",
+    "default": "离开"
+  },
+  "button": {
+    "cancel": "取消",
+    "dontSave": "不保存",
+    "save": "保存",
+    "quit": "退出",
+    "closeTab": "关闭标签页",
+    "returnToLibrary": "返回库"
+  },
+  "thisPage": "此页面",
+  "thisProject": "此项目",
+  "dirty": "你在 <hl>{{name}}</hl> 中有未保存的编辑。要在{{verb}}前保存吗？",
+  "clean": "所有内容都已保存。准备{{verb}}了吗？",
+  "job": "正在对 <hl>{{name}}</hl> 进行分析（{{done}}/{{total}}）。离开会<em>暂停</em>分析——下次打开时会从上次中断处继续。"
+}

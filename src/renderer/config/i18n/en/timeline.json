@@ -1,0 +1,202 @@
+{
+  "node": {
+    "archivedTooltip": "Archived — still bridges the timeline (ancestry flows through) but is excluded from analysis",
+    "missingSceneDeleted": "missing — scene deleted?"
+  },
+  "folder": {
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "missing": "missing",
+    "removeFromTimeline": "Remove folder from timeline"
+  },
+  "reveal": {
+    "reveals": "★ reveals",
+    "plants": "○ plants"
+  },
+  "layers": {
+    "title": "Layers",
+    "phase": { "label": "Phase", "hint": "Tint nodes by content-phase" },
+    "presence": { "label": "Presence", "hint": "Show who appears in each scene" },
+    "threads": { "label": "Threads", "hint": "Show thread events per scene" },
+    "revelations": { "label": "Revelations", "hint": "Where secrets are planted (○) and go public (★)" },
+    "collapseTo": "Collapse to",
+    "collapseToLevel": "Collapse everything at/below {{level}}",
+    "expandAll": "Expand everything (show all scenes)",
+    "scenes": "Scenes"
+  },
+  "confirm": {
+    "cancel": "Cancel"
+  },
+  "export": {
+    "title": "Export graph as a PNG image",
+    "nothingTitle": "Nothing to export",
+    "nothingBody": "Place scenes on the canvas first.",
+    "failedTitle": "Export failed",
+    "failedBody": "Could not render the graph image."
+  },
+  "fab": {
+    "connect": "Connect selected scenes in reading order  (C)",
+    "disconnect": "Disconnect selected scenes — cut every edge in or out of them  (X)",
+    "quickConnect": "Quick-connect the scenes on the timeline in reading order  (⇧C)",
+    "reset": "Reset all connectors on this variant  (⇧X)",
+    "help": "How the timeline works"
+  },
+  "loose": {
+    "label_one": "scene not on the route",
+    "label_other": "scenes not on the route",
+    "quickConnect": "Quick connect",
+    "quickConnectTitle": "Chain every scene in reading order (this variant)",
+    "howToConnect": "How to connect",
+    "howToConnectTitle": "How to connect the timeline"
+  },
+  "inspector": {
+    "inFolderTitle": "This scene belongs to a folder on the canvas",
+    "inFolder": "in folder — remove the folder",
+    "remove": "Remove"
+  },
+  "reset": {
+    "title": "Reset all connectors?",
+    "message": "This clears leads_to on every scene in the work — all timeline connections are removed. This can't be undone.",
+    "confirm": "Reset connectors"
+  },
+  "quick": {
+    "title": "Quick-connect in reading order?",
+    "message": "This chains the scenes on the timeline in reading order (.order), overwriting their leads_to — any existing branches/merges on those scenes are replaced. Scenes not on the timeline are untouched.",
+    "confirm": "Connect in order"
+  },
+  "tabs": {
+    "canvas": "Canvas",
+    "cells": "Cells",
+    "config": "Chart Config"
+  },
+  "bench": {
+    "exit": "Exit bench",
+    "enter": "Perf bench",
+    "cullingOn": "culling on",
+    "cullingOff": "culling off",
+    "edgesOn": "edges on",
+    "edgesOff": "edges off",
+    "fit": "fit",
+    "count": "{{nodes}} nodes · {{edges}} edges",
+    "hint": "Fit = all nodes on screen (worst case; culling can’t help). Zoom in + pan to feel the realistic case. Watch the fps tone."
+  },
+  "variant": {
+    "pickerTitle": "Tree variant — the active branch/merge graph (drives the canvas, analysis, and axis)",
+    "rename": "Rename variant",
+    "delete": "Delete variant",
+    "maxTitle": "Max {{max}} variants — delete one to add another",
+    "newTitle": "New variant (copies this one)",
+    "maxLabel": "Max {{max}} variants",
+    "newWithHint": "New variant <hint>(copies this one)</hint>",
+    "aiTitle": "Build a fresh timeline with AI — opens the chat with a routing prompt (the agent creates the variant + wires it)",
+    "aiNew": "New timeline with AI"
+  },
+  "cell": {
+    "folderCardTitle_one": "{{title}} — {{count}} scene (expand on the Canvas tab to see them)",
+    "folderCardTitle_other": "{{title}} — {{count}} scenes (expand on the Canvas tab to see them)",
+    "sceneCardTitle": "Click to read · right-click to color this route",
+    "emptyTitle": "The Cell view draws your wired scenes as a visual-novel flowchart — main route centered, branches flanking, merges colored.",
+    "emptyHint": "Add and connect scenes on the Canvas tab to see the flow here.",
+    "flowName": "Cell flow",
+    "exportCaption": "Cell flow — {{name}}",
+    "timelineFallback": "timeline",
+    "help": "Cell flow help",
+    "colorRoute": "Color this route",
+    "clearRouteColor": "Clear this route's color",
+    "clear": "Clear",
+    "mergePoint": "Merge point — routes converge here",
+    "branchPoint": "Branch point — the route splits here"
+  },
+  "help": {
+    "navigate": {
+      "title": "Navigate",
+      "rows": {
+        "Scroll": "Zoom in / out",
+        "Drag the background": "Pan around",
+        "+ / − / ⤢ (bottom-left)": "Zoom in · out · fit the whole flow",
+        "Minimap (bottom-right)": "Overview + jump around a large flow"
+      }
+    },
+    "canvas": {
+      "title": "Timeline · Canvas",
+      "build": {
+        "title": "Build the canvas",
+        "rows": {
+          "Drag a scene": "Place it as a standalone card",
+          "Drag a folder": "Place it as a group (drops collapsed; click the header to expand)",
+          "Drag a folder card": "Moves the group — its scenes follow",
+          "Right dot → left dot": "Draw a reading-order link (writes leads_to)"
+        }
+      },
+      "selectRoute": {
+        "title": "Select & route",
+        "rows": {
+          "⇧ drag": "Draw a selection box — any scene the box touches is picked up",
+          "C": "Connect the selected scenes in reading order",
+          "X": "Disconnect the selected scenes (cut every edge in/out of them)",
+          "⇧C": "Quick-connect — chain the scenes on the timeline in reading order",
+          "⇧X": "Reset — clear all connectors on this variant"
+        }
+      },
+      "editDelete": {
+        "title": "Edit & delete",
+        "rows": {
+          "Click a scene": "Open the read view (cover + prose)",
+          "Backspace / Delete": "Remove the selected node or edge",
+          "Scene inside a folder": "Removed via the folder, not individually"
+        }
+      },
+      "layers": {
+        "title": "Layers",
+        "rows": {
+          "Phase": "Tints each card by content-phase",
+          "Presence": "Cast count per scene",
+          "Threads": "Thread events per scene",
+          "Revelations": "★ a secret goes public here · ○ first planted here (from custody)"
+        }
+      },
+      "noAutowire": {
+        "title": "Why folders don't auto-wire",
+        "body": "A folder shows its scenes but does *not* auto-connect them. The order in the Scene navigator can be mis-sorted, and auto-wiring would bake in a wrong sequence — so connections stay deliberate: draw them by hand, or use **Quick-connect** when the reading order is correct."
+      }
+    },
+    "cells": {
+      "title": "Timeline · Cells",
+      "cellFlow": {
+        "title": "The cell flow",
+        "body": "A read-only mirror of the Canvas branch graph, snapped to a VN-flowchart grid: the main sequence runs down the center spine, with branches flanking it. Edit the topology on the **Canvas** tab — this view is for reading the shape."
+      },
+      "readFlow": {
+        "title": "Read the flow",
+        "rows": {
+          "Click a scene": "Open the read view (cover + prose)",
+          "Branch / merge badge": "Marks where a route splits (branch) or converges (merge)"
+        }
+      }
+    },
+    "config": {
+      "title": "Timeline · Chart Config",
+      "what": {
+        "title": "What Chart Config does",
+        "body": "Author a **chart axis** — a linear route through the connected scenes that becomes a Gantt's X-axis. Create, pick, and rename axes in the sidebar; the preview on top is the real Gantt of the route you're lighting."
+      },
+      "buildPath": {
+        "title": "Build the path",
+        "rows": {
+          "Click a scene": "Light it — auto-routes from the current tail (skill-tree style)",
+          "Double-click a scene": "Append the whole straight run up to the next fork",
+          "Click the tail": "Step back one",
+          "Click an earlier lit scene": "Truncate the path back to it"
+        }
+      },
+      "saveUndo": {
+        "title": "Save & undo",
+        "rows": {
+          "Save (top-right)": "Every chart re-axes to this sequence",
+          "⌘/Ctrl+Z · ⌘/Ctrl+Y": "Undo / redo the path build",
+          "⌘/Ctrl+S": "Save the sequence"
+        }
+      }
+    }
+  }
+}

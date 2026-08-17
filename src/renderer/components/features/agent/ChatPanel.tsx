@@ -6,6 +6,7 @@
  * requests resolve). Connections/keys are configured in the bottom dock's Agent tab.
  */
 import { useEffect, useRef, useState, type JSX } from 'react';
+import { Trans, useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import { AlertTriangle, Check, ChevronDown, ChevronRight, Clapperboard, Copy, MessageSquarePlus, Paperclip, Search, Send, Sparkles, Square, Trash2, X } from 'lucide-react'
 import Markdown from 'react-markdown'
@@ -31,12 +32,13 @@ function isWeakAgentModel(conn: AiConnection | undefined): boolean {
 /** Expandable ⚠ in the chat header when a weak model drives the agent — nudges toward the Claude plugin / a
  *  stronger model, without blocking. Only appears for models the heuristic flags. */
 function WeakModelWarning({ conn, onUseClaude }: { conn: AiConnection; onUseClaude: () => void }): JSX.Element {
+  const { t } = useTranslation('chat')
   const [open, setOpen] = useState(false)
   return (
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        title="This model may struggle with multi-step tasks"
+        title={t('tooltip.weakModel')}
         className={cn('rounded p-1 text-warn hover:bg-panel-soft', open && 'bg-panel-soft')}
       >
         <AlertTriangle className="size-3.5" />
@@ -45,11 +47,11 @@ function WeakModelWarning({ conn, onUseClaude }: { conn: AiConnection; onUseClau
         <>
           <div className="fixed inset-0 z-40" onMouseDown={() => setOpen(false)} />
           <div className="absolute right-0 top-full z-50 mt-1 w-64 rounded-lg border border-warn/40 bg-panel p-2.5 text-[11px] leading-relaxed shadow-lg">
-            <p className="mb-1 flex items-center gap-1 font-medium text-warn"><AlertTriangle className="size-3 shrink-0" /> {conn.model} may struggle here</p>
-            <p className="text-muted-foreground">Small/fast models tend to loop or misfire on multi-step tool use — finding scenes, queuing bulk edits. For complex agentic work:</p>
+            <p className="mb-1 flex items-center gap-1 font-medium text-warn"><AlertTriangle className="size-3 shrink-0" /> {t('weakModel.struggle', { model: conn.model })}</p>
+            <p className="text-muted-foreground">{t('weakModel.explain')}</p>
             <div className="mt-1.5 space-y-1 text-muted-foreground">
-              <p>• <button onClick={() => { setOpen(false); onUseClaude() }} className="text-thread underline underline-offset-2 hover:opacity-80">Drive NVS from Claude</button> — the plugin (Store → Use with Claude).</p>
-              <p>• Or pick a stronger model in <span className="text-foreground/80">Settings → AI</span>.</p>
+              <p>• <button onClick={() => { setOpen(false); onUseClaude() }} className="text-thread underline underline-offset-2 hover:opacity-80">{t('weakModel.driveFromClaude')}</button>{t('weakModel.pluginHint')}</p>
+              <p>• {t('weakModel.orPick')}<span className="text-foreground/80">{t('weakModel.settingsAi')}</span>{t('weakModel.orPickEnd')}</p>
             </div>
           </div>
         </>
@@ -59,6 +61,7 @@ function WeakModelWarning({ conn, onUseClaude }: { conn: AiConnection; onUseClau
 }
 
 export function ChatPanel(): JSX.Element {
+  const { t } = useTranslation('chat')
   const project = useWorkspace((s) => s.project)
   const sessions = useWorkspace((s) => s.chatSessions) ?? []
   const activeId = useWorkspace((s) => s.chatActiveId)
@@ -120,26 +123,26 @@ export function ChatPanel(): JSX.Element {
       {/* Header: sessions + new + close */}
       <div className="flex items-center gap-1.5 border-b border-border px-2 py-1.5 text-[11px]">
         <SessionPicker sessions={sessions} activeId={activeId} onSwitch={switchChat} onDelete={(ids) => setConfirmDelete(ids)} />
-        <button onClick={() => newChat()} title="New chat" className="rounded p-1 text-muted-foreground hover:bg-panel-soft"><MessageSquarePlus className="size-3.5" /></button>
-        {active && <button onClick={() => setConfirmDelete([active.id])} title="Delete chat" className="rounded p-1 text-muted-foreground hover:bg-panel-soft"><Trash2 className="size-3.5" /></button>}
+        <button onClick={() => newChat()} title={t('tooltip.newChat')} className="rounded p-1 text-muted-foreground hover:bg-panel-soft"><MessageSquarePlus className="size-3.5" /></button>
+        {active && <button onClick={() => setConfirmDelete([active.id])} title={t('tooltip.deleteChat')} className="rounded p-1 text-muted-foreground hover:bg-panel-soft"><Trash2 className="size-3.5" /></button>}
         {isWeakAgentModel(activeConn) && activeConn && (
           <div className="ml-auto"><WeakModelWarning conn={activeConn} onUseClaude={() => setDiscoverOpen('claude')} /></div>
         )}
       </div>
 
       {!project ? (
-        <Empty>Open a work to chat with the agent.</Empty>
+        <Empty>{t('empty.noProject')}</Empty>
       ) : (
         <>
           {/* Context chip — what the agent "sees" */}
           <div className="flex items-center gap-2 border-b border-border px-3 py-1 text-[10px] text-faint">
-            <span className="truncate">context: {activePage ? <span className="text-muted-foreground">@ {activePage.title}</span> : 'whole project'}</span>
-            {events.length > 0 && <button onClick={() => resetChat()} className="ml-auto rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">Clear</button>}
+            <span className="truncate">{t('context.prefix')}{activePage ? <span className="text-muted-foreground">{t('context.page', { title: activePage.title })}</span> : t('context.wholeProject')}</span>
+            {events.length > 0 && <button onClick={() => resetChat()} className="ml-auto rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">{t('button.clear')}</button>}
           </div>
 
           {/* Transcript */}
           <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-auto p-3 text-[11px]">
-            {events.length === 0 && <p className="text-faint">Ask the agent about the open work — it can read scenes and write analysis. Try “analyze Act I,” or with a page open, “find threads from this page.”</p>}
+            {events.length === 0 && <p className="text-faint">{t('empty.transcript')}</p>}
             {groupEvents(events).map((g, i) => (g.tools ? <ToolTrace key={i} events={g.tools} /> : <EventLine key={i} e={g.event} />))}
             {busy && <WorkingIndicator />}
             <div ref={bottomRef} />
@@ -150,11 +153,12 @@ export function ChatPanel(): JSX.Element {
           {input.length > 8000 && (
             <div className={cn('flex items-center gap-2 border-t border-border px-2 py-1 text-[10px]', tooBig ? 'text-warn' : 'text-faint')}>
               <span className="min-w-0 flex-1">
-                ≈{Math.ceil(input.length / 4).toLocaleString()} tokens
-                {tooBig && ' — too large to send; it would crowd the context window / burn usage. Trim it, or analyze one chapter/page at a time.'}
+                {tooBig
+                  ? t('tokens.tooBig', { tokens: Math.ceil(input.length / 4).toLocaleString() })
+                  : t('tokens.count', { tokens: Math.ceil(input.length / 4).toLocaleString() })}
               </span>
               {tooBig && !busy && (
-                <button onClick={() => send(true)} className="shrink-0 rounded border border-warn/40 px-1.5 py-0.5 text-warn hover:bg-warn/10">Send anyway</button>
+                <button onClick={() => send(true)} className="shrink-0 rounded border border-warn/40 px-1.5 py-0.5 text-warn hover:bg-warn/10">{t('button.sendAnyway')}</button>
               )}
             </div>
           )}
@@ -165,7 +169,7 @@ export function ChatPanel(): JSX.Element {
               {attached.map((a) => {
                 const v = pageVisual(a.kind)
                 return (
-                  <button key={a.path} onClick={() => setAttached((cur) => cur.filter((x) => x.path !== a.path))} title="Remove" className="flex items-center gap-1 rounded border border-border bg-panel-soft px-1.5 py-0.5 text-[10px] text-foreground hover:border-flag hover:text-flag">
+                  <button key={a.path} onClick={() => setAttached((cur) => cur.filter((x) => x.path !== a.path))} title={t('tooltip.remove')} className="flex items-center gap-1 rounded border border-border bg-panel-soft px-1.5 py-0.5 text-[10px] text-foreground hover:border-flag hover:text-flag">
                     <v.Icon className={cn('size-2.5', v.text)} /> {a.title} <X className="size-2.5 opacity-70" />
                   </button>
                 )
@@ -194,15 +198,15 @@ export function ChatPanel(): JSX.Element {
                   send()
                 }
               }}
-              placeholder="Ask the agent…  (Shift+Enter for a new line)"
+              placeholder={t('placeholder.composer')}
               disabled={busy}
               rows={1}
               className="max-h-32 flex-1 resize-none self-stretch rounded-md border border-border bg-panel-soft px-2 py-1 text-[11px] leading-snug text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
             />
             {busy ? (
-              <button onClick={() => stopChat()} title="Stop" className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-warn hover:border-foreground/30"><Square className="size-3" /></button>
+              <button onClick={() => stopChat()} title={t('tooltip.stop')} className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-warn hover:border-foreground/30"><Square className="size-3" /></button>
             ) : (
-              <button onClick={() => send()} disabled={!input.trim() || tooBig} title={tooBig ? 'Too large — trim it or use “Send anyway”' : 'Send'} className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-foreground hover:border-foreground/30 disabled:opacity-50"><Send className="size-3" /></button>
+              <button onClick={() => send()} disabled={!input.trim() || tooBig} title={tooBig ? t('tooltip.sendTooBig') : t('tooltip.send')} className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-foreground hover:border-foreground/30 disabled:opacity-50"><Send className="size-3" /></button>
             )}
           </div>
         </>
@@ -210,15 +214,15 @@ export function ChatPanel(): JSX.Element {
 
       <ConfirmDialog
         open={!!confirmDelete}
-        title={delCount > 1 ? `Delete ${delCount} chats?` : 'Delete chat?'}
+        title={delCount > 1 ? t('confirm.deleteTitleN', { count: delCount }) : t('confirm.deleteTitle')}
         message={
           delCount > 1 ? (
-            <>This will permanently delete <span className="text-foreground">{delCount} chats</span> and their transcripts. This can&apos;t be undone.</>
+            <Trans i18nKey="confirm.messageN" ns="chat" count={delCount} components={{ strong: <span className="text-foreground" /> }} />
           ) : (
-            <>This will permanently delete <span className="text-foreground">{delTitle || 'this chat'}</span> and its transcript. This can&apos;t be undone.</>
+            <Trans i18nKey="confirm.messageOne" ns="chat" values={{ title: delTitle || t('confirm.deleteSingle_this') }} components={{ strong: <span className="text-foreground" /> }} />
           )
         }
-        confirmLabel={delCount > 1 ? `Delete ${delCount}` : 'Delete'}
+        confirmLabel={delCount > 1 ? t('button.deleteN', { count: delCount }) : t('button.delete')}
         danger
         onConfirm={() => { confirmDelete?.forEach((id) => deleteChat(id)); setConfirmDelete(null) }}
         onCancel={() => setConfirmDelete(null)}
@@ -231,40 +235,42 @@ function Empty({ children }: { children: React.ReactNode }): JSX.Element {
   return <div className="flex min-h-0 flex-1 items-center justify-center p-6 text-center text-[12px] text-muted-foreground">{children}</div>
 }
 
-const WORKING_PHRASES = ['reading the work', 'thinking it through', 'pulling the threads', 'checking the cast', 'weighing it', 'almost there']
+const WORKING_PHRASE_KEYS = ['working.readingTheWork', 'working.thinkingItThrough', 'working.pullingTheThreads', 'working.checkingTheCast', 'working.weighingIt', 'working.almostThere']
 
 /** Animated "working" signal — cycles editor-ish phrases + trailing dots so a long run reads alive. */
 function WorkingIndicator(): JSX.Element {
+  const { t } = useTranslation('chat')
   const [phrase, setPhrase] = useState(0)
   const [dots, setDots] = useState(1)
   useEffect(() => {
-    const a = window.setInterval(() => setPhrase((p) => (p + 1) % WORKING_PHRASES.length), 2400)
+    const a = window.setInterval(() => setPhrase((p) => (p + 1) % WORKING_PHRASE_KEYS.length), 2400)
     const b = window.setInterval(() => setDots((d) => (d % 3) + 1), 400)
     return () => { window.clearInterval(a); window.clearInterval(b) }
   }, [])
   return (
     <p className="self-start text-faint">
-      {WORKING_PHRASES[phrase]}<span className="inline-block w-3 text-left">{'.'.repeat(dots)}</span>
+      {t(WORKING_PHRASE_KEYS[phrase])}<span className="inline-block w-3 text-left">{'.'.repeat(dots)}</span>
     </p>
   )
 }
 
 /** Copy a response's raw Markdown to the clipboard (export = paste anywhere). Reveals on bubble hover. */
 function CopyButton({ text }: { text: string }): JSX.Element {
+  const { t } = useTranslation('chat')
   const [done, setDone] = useState(false)
   return (
     <button
       onClick={() => { void navigator.clipboard.writeText(text); setDone(true); window.setTimeout(() => setDone(false), 1200) }}
-      title="Copy as Markdown"
+      title={t('tooltip.copyMarkdown')}
       className="flex items-center gap-1 rounded px-1 py-0.5 text-[9px] text-faint opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
     >
-      {done ? <><Check className="size-2.5 text-ok" /> copied</> : <><Copy className="size-2.5" /> copy</>}
+      {done ? <><Check className="size-2.5 text-ok" /> {t('button.copied')}</> : <><Copy className="size-2.5" /> {t('button.copy')}</>}
     </button>
   )
 }
 
 // Per-kind icon + accent for the attach list (scenes use the slate icon; world kinds reuse entityVisual).
-const KIND_LABEL: Record<string, string> = { scene: 'Scenes', character: 'Characters', location: 'Locations', item: 'Items', lore: 'Lore' }
+const KIND_LABEL_KEY: Record<string, string> = { scene: 'kind.scene', character: 'kind.character', location: 'kind.location', item: 'kind.item', lore: 'kind.lore' }
 const KIND_ORDER = ['scene', 'character', 'location', 'item', 'lore']
 function pageVisual(kind: string): { Icon: typeof Clapperboard; text: string } {
   if (kind === 'scene') return { Icon: Clapperboard, text: 'text-thread' }
@@ -275,6 +281,7 @@ function pageVisual(kind: string): { Icon: typeof Clapperboard; text: string } {
 /** Attach a project page (scene or world) as focus for the next message — the agent reads it (readScene).
  *  Searchable + category-filtered popover, per-kind icons; already-attached pages drop out. */
 function AttachMenu({ attached, onAttach }: { attached: PageRef[]; onAttach: (p: PageRef) => void }): JSX.Element {
+  const { t } = useTranslation('chat')
   const scenes = useWorkspace((s) => s.scenes)
   const worldPages = useWorkspace((s) => s.worldPages)
   const [open, setOpen] = useState(false)
@@ -302,20 +309,20 @@ function AttachMenu({ attached, onAttach }: { attached: PageRef[]; onAttach: (p:
 
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen((o) => !o)} title="Attach a page as context" className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-muted-foreground hover:border-foreground/30 hover:text-foreground">
+      <button onClick={() => setOpen((o) => !o)} title={t('tooltip.attachPage')} className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-muted-foreground hover:border-foreground/30 hover:text-foreground">
         <Paperclip className="size-3" />
       </button>
       {open && (
         <div className="absolute bottom-full left-0 mb-1 w-72 overflow-hidden rounded-md border border-border bg-panel shadow-xl">
           <div className="flex items-center gap-1.5 border-b border-border px-2 py-1.5">
             <Search className="size-3 shrink-0 text-faint" />
-            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Attach a scene or page…" className="min-w-0 flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-faint" />
+            <input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('placeholder.attach')} className="min-w-0 flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-faint" />
           </div>
           {present.length > 1 && (
             <div className="flex flex-wrap gap-1 border-b border-border px-2 py-1.5 text-[10px]">
               {['all', ...present].map((k) => (
                 <button key={k} onClick={() => setCat(k)} className={cn('rounded px-1.5 py-0.5', cat === k ? 'bg-panel-soft text-foreground' : 'text-muted-foreground hover:bg-panel-soft')}>
-                  {k === 'all' ? 'All' : KIND_LABEL[k]}
+                  {k === 'all' ? t('button.all') : t(KIND_LABEL_KEY[k])}
                 </button>
               ))}
             </div>
@@ -325,7 +332,7 @@ function AttachMenu({ attached, onAttach }: { attached: PageRef[]; onAttach: (p:
             getKey={(p) => p.path}
             resetKey={`${cat}:${needle}`}
             pageSize={20}
-            empty="No pages"
+            empty={t('empty.noPages')}
             renderItem={(p) => {
               const v = pageVisual(p.kind)
               return (
@@ -346,6 +353,7 @@ function AttachMenu({ attached, onAttach }: { attached: PageRef[]; onAttach: (p:
 /** Quick-pick for ANALYSIS prompts — they read the work, so they run here in chat (not as page edits).
  *  Hidden when the library has no analysis prompts. Clicking one sends its directive as a chat message. */
 function AnalysisPicker({ onPick }: { onPick: (directive: string) => void }): JSX.Element | null {
+  const { t } = useTranslation('chat')
   const items = useWorkspace((s) => s.prompts).filter((p) => isAnalysis(p.category))
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -359,12 +367,12 @@ function AnalysisPicker({ onPick }: { onPick: (directive: string) => void }): JS
   if (!items.length) return null
   return (
     <div ref={ref} className="relative">
-      <button onClick={() => setOpen((o) => !o)} title="Analysis prompts" className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-thread hover:border-foreground/30">
+      <button onClick={() => setOpen((o) => !o)} title={t('tooltip.analysisPrompts')} className="flex items-center rounded-md border border-border bg-panel-soft px-2 py-1 text-thread hover:border-foreground/30">
         <Sparkles className="size-3" />
       </button>
       {open && (
         <div className="absolute bottom-full left-0 mb-1 w-60 overflow-hidden rounded-md border border-border bg-panel shadow-xl">
-          <div className="border-b border-border px-2 py-1 text-[10px] text-faint">Analysis — answered here in chat</div>
+          <div className="border-b border-border px-2 py-1 text-[10px] text-faint">{t('analysis.header')}</div>
           <div className="max-h-56 overflow-auto p-1">
             {items.map((p) => (
               <button key={p.id} onClick={() => { onPick(p.directive); setOpen(false) }} className="block w-full rounded px-2 py-1.5 text-left hover:bg-panel-soft">
@@ -433,13 +441,14 @@ function groupEvents(events: AgentEvent[]): Group[] {
 
 /** The tool calls behind a turn, folded away by default — "used N tools", expandable to the → / ← trace. */
 function ToolTrace({ events }: { events: AgentEvent[] }): JSX.Element {
+  const { t } = useTranslation('chat')
   const [open, setOpen] = useState(false)
   const names = [...new Set(events.filter((e) => e.type === 'tool').map((e) => (e as Extract<AgentEvent, { type: 'tool' }>).name))]
   return (
     <div className="w-full max-w-[90%] self-start">
       <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-1 text-[10px] text-faint hover:text-muted-foreground">
         <ChevronRight className={cn('size-3 transition-transform', open && 'rotate-90')} />
-        used {names.length} tool{names.length !== 1 ? 's' : ''}{names.length ? ` · ${names.join(', ')}` : ''}
+        {names.length ? t('tools.usedWithNames', { count: names.length, names: names.join(', ') }) : t('tools.used', { count: names.length })}
       </button>
       {open && <div className="mt-0.5 space-y-0.5 border-l border-border pl-2">{events.map((e, i) => <ToolLine key={i} e={e} />)}</div>}
     </div>
@@ -448,6 +457,7 @@ function ToolTrace({ events }: { events: AgentEvent[] }): JSX.Element {
 
 /** One line of the tool trace; a `path` arg becomes a clickable link that opens the page (VSCode-style). */
 function ToolLine({ e }: { e: AgentEvent }): JSX.Element | null {
+  const { t } = useTranslation('chat')
   if (e.type === 'tool') {
     const o = e.input && typeof e.input === 'object' ? (e.input as Record<string, unknown>) : {}
     const path = typeof o.path === 'string' ? o.path : null
@@ -455,7 +465,7 @@ function ToolLine({ e }: { e: AgentEvent }): JSX.Element | null {
       <div className="font-mono text-[10px] text-muted-foreground">
         → {e.name}(
         {path ? (
-          <a onClick={() => useWorkspace.getState().openLinkedPage(path)} title="Open this page" className="cursor-pointer underline" style={{ color: 'var(--thread)' }}>
+          <a onClick={() => useWorkspace.getState().openLinkedPage(path)} title={t('tooltip.openPage')} className="cursor-pointer underline" style={{ color: 'var(--thread)' }}>
             {path.split('/').pop()}
           </a>
         ) : (
@@ -487,13 +497,14 @@ function ToolLine({ e }: { e: AgentEvent }): JSX.Element | null {
 }
 
 function EventLine({ e }: { e: AgentEvent }): JSX.Element {
+  const { t } = useTranslation('chat')
   if (e.type === 'user')
     return (
       <div className="flex max-w-[85%] flex-col items-end self-end">
         {!!e.attached?.length && (
           <div className="mb-1 flex flex-wrap justify-end gap-1">
             {e.attached.map((a) => (
-              <button key={a.path} onClick={() => useWorkspace.getState().openLinkedPage(a.path)} title="Open this page" className="flex items-center gap-1 rounded border border-thread/40 bg-thread/10 px-1.5 py-0.5 text-[9px] text-foreground/80 hover:border-thread">
+              <button key={a.path} onClick={() => useWorkspace.getState().openLinkedPage(a.path)} title={t('tooltip.openPage')} className="flex items-center gap-1 rounded border border-thread/40 bg-thread/10 px-1.5 py-0.5 text-[9px] text-foreground/80 hover:border-thread">
                 <Paperclip className="size-2.5" /> {a.title}
               </button>
             ))}
@@ -512,7 +523,7 @@ function EventLine({ e }: { e: AgentEvent }): JSX.Element {
       </div>
     )
   if (e.type === 'error')
-    return <div className="self-center rounded-md border px-2 py-0.5 text-center text-[10px] text-warn" style={{ borderColor: 'color-mix(in oklab, var(--warn) 40%, transparent)' }}>⚠ Request failed — {e.message}. Check the API key (dock → Agent), or open Help (?).</div>
+    return <div className="self-center rounded-md border px-2 py-0.5 text-center text-[10px] text-warn" style={{ borderColor: 'color-mix(in oklab, var(--warn) 40%, transparent)' }}>{t('error.requestFailed', { message: e.message })}</div>
   return <></>
 }
 
@@ -523,24 +534,25 @@ function summarizeInput(input: unknown): string {
 }
 
 /** Compact relative time, e.g. "now", "3m", "2h", "5d". */
-function relTime(iso: string): string {
+function relTime(iso: string, tr: (key: string, opts?: Record<string, unknown>) => string): string {
   const t = Date.parse(iso)
   if (Number.isNaN(t)) return ''
   const s = Math.floor((Date.now() - t) / 1000)
-  if (s < 60) return 'now'
+  if (s < 60) return tr('time.now')
   const m = Math.floor(s / 60)
-  if (m < 60) return `${m}m`
+  if (m < 60) return tr('time.minutes', { n: m })
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h`
+  if (h < 24) return tr('time.hours', { n: h })
   const d = Math.floor(h / 24)
-  if (d < 7) return `${d}d`
+  if (d < 7) return tr('time.days', { n: d })
   const w = Math.floor(d / 7)
-  return w < 5 ? `${w}w` : `${Math.floor(d / 30)}mo`
+  return w < 5 ? tr('time.weeks', { n: w }) : tr('time.months', { n: Math.floor(d / 30) })
 }
 
 /** Searchable session history — trigger + popover list (recency-sorted). Per-row quick delete (trash) +
  *  checkbox multi-select → "Delete N". `onDelete` hands ids up to the parent's confirm dialog. */
 function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: ChatSession[]; activeId: string | null; onSwitch: (id: string) => void; onDelete: (ids: string[]) => void }): JSX.Element {
+  const { t } = useTranslation('chat')
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState('')
   const [sel, setSel] = useState<Set<string>>(new Set())
@@ -567,7 +579,7 @@ function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: C
         onClick={() => { setOpen((o) => !o); setQ('') }}
         className="flex w-full items-center justify-between gap-2 rounded-md border border-border bg-panel-soft px-2 py-1 text-[11px] text-foreground hover:border-foreground/30"
       >
-        <span className="truncate">{active?.title || 'No chats yet'}</span>
+        <span className="truncate">{active?.title || t('empty.noChatsYet')}</span>
         <ChevronDown className="size-3 shrink-0 text-muted-foreground" />
       </button>
       {open && (
@@ -578,13 +590,13 @@ function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: C
               autoFocus
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search chats…"
+              placeholder={t('placeholder.searchChats')}
               className="min-w-0 flex-1 bg-transparent text-[11px] text-foreground outline-none placeholder:text-faint"
             />
           </div>
           <div className="max-h-64 overflow-auto p-1">
             {filtered.length === 0 ? (
-              <p className="px-2 py-3 text-center text-[11px] text-faint">No chats</p>
+              <p className="px-2 py-3 text-center text-[11px] text-faint">{t('empty.noChats')}</p>
             ) : (
               filtered.map((s) => {
                 const on = sel.has(s.id)
@@ -593,7 +605,7 @@ function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: C
                     <button
                       type="button"
                       onClick={() => toggle(s.id)}
-                      title="Select"
+                      title={t('tooltip.select')}
                       className={cn('flex size-4 shrink-0 items-center justify-center rounded border', on ? 'border-thread bg-thread/20 text-thread' : 'border-border text-transparent hover:border-foreground/40')}
                     >
                       <Check className="size-3" />
@@ -603,10 +615,10 @@ function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: C
                       onClick={() => { onSwitch(s.id); setOpen(false) }}
                       className={cn('flex min-w-0 flex-1 items-center gap-2 text-left text-[11px]', s.id === activeId ? 'text-foreground' : 'text-muted-foreground')}
                     >
-                      <span className="min-w-0 flex-1 truncate">{s.title || 'Untitled'}</span>
-                      <span className="shrink-0 text-[10px] text-faint">{relTime(s.updatedAt)}</span>
+                      <span className="min-w-0 flex-1 truncate">{s.title || t('button.untitled')}</span>
+                      <span className="shrink-0 text-[10px] text-faint">{relTime(s.updatedAt, t)}</span>
                     </button>
-                    <button type="button" onClick={() => onDelete([s.id])} title="Delete chat" className="shrink-0 rounded p-0.5 text-faint opacity-0 hover:text-flag group-hover:opacity-100">
+                    <button type="button" onClick={() => onDelete([s.id])} title={t('tooltip.deleteChat')} className="shrink-0 rounded p-0.5 text-faint opacity-0 hover:text-flag group-hover:opacity-100">
                       <Trash2 className="size-3" />
                     </button>
                   </div>
@@ -616,9 +628,9 @@ function SessionPicker({ sessions, activeId, onSwitch, onDelete }: { sessions: C
           </div>
           {sel.size > 0 && (
             <div className="flex items-center gap-2 border-t border-border px-2 py-1.5 text-[11px]">
-              <span className="text-faint">{sel.size} selected</span>
-              <button onClick={() => setSel(new Set())} className="ml-auto rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">Clear</button>
-              <button onClick={() => { onDelete([...sel]); setSel(new Set()) }} className="rounded px-1.5 py-0.5 font-medium text-flag hover:bg-flag/10">Delete {sel.size}</button>
+              <span className="text-faint">{t('confirm.selected', { count: sel.size })}</span>
+              <button onClick={() => setSel(new Set())} className="ml-auto rounded px-1.5 py-0.5 text-muted-foreground hover:bg-panel-soft">{t('button.clear')}</button>
+              <button onClick={() => { onDelete([...sel]); setSel(new Set()) }} className="rounded px-1.5 py-0.5 font-medium text-flag hover:bg-flag/10">{t('button.deleteN', { count: sel.size })}</button>
             </div>
           )}
         </div>

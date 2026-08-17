@@ -1,0 +1,13 @@
+{
+  "expandAll": "Expand all folders",
+  "collapseAll": "Collapse all folders",
+  "searchPlaceholder": "Search folders & scenes…",
+  "empty": "No folders or scenes yet.",
+  "sceneCount_one": "{{count}} scene",
+  "sceneCount_other": "{{count}} scenes",
+  "dragTip": {
+    "placed": "Already placed",
+    "folder": "Drag onto a view (places the whole folder)",
+    "scene": "Drag onto a view"
+  }
+}

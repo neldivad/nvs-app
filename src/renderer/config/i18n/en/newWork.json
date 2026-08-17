@@ -1,0 +1,29 @@
+{
+  "title": "New work",
+  "name": {
+    "label": "Name",
+    "placeholder": "The working title — you can rename any time"
+  },
+  "domain": {
+    "label": "What is this?",
+    "hint": "Fiction or non-fiction — this shapes what the analysis looks for. You can change it later in Project info."
+  },
+  "structure": {
+    "label": "Structure",
+    "hint": "Picks the world categories (characters, items, suspects…) — change later in Project Structure (⌘,)."
+  },
+  "language": {
+    "label": "Language",
+    "hint": "The work’s language steers every analysis pass and AI edit — summaries, thread titles, and findings are written in it. Set it now; a wrong first run costs a re-run."
+  },
+  "create": "Create",
+  "starterHint": "Starts from the guided starter content — delete its sample pages whenever you like.",
+  "ready": {
+    "title": "“{{name}}” is ready",
+    "body": "Write in the editor; the analysis rails light up after your first Update analysis run (status bar). This tour replays any time from Help."
+  },
+  "demos": {
+    "title": "See it alive first",
+    "body": "Open “Office Drama (demo)” or “Hamlet (demo)” from the library — pre-analyzed, every rail already lit."
+  }
+}

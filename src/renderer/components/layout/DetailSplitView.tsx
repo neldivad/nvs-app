@@ -9,6 +9,7 @@
  * (Category · Latest · Hide-empty), selection, and layout — so the three details stay uniform by construction.
  */
 import { useEffect, useMemo, useState, type JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, ChevronRight, ArrowUpNarrowWide, ArrowDownNarrowWide, Eye, EyeOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Select } from '@/components/ui/Select'
@@ -37,6 +38,7 @@ export interface FeedEvent {
   title: string
   summary: string // short line for the left list
   detail: ReactNode // full body for the right pane
+  detailOwnsHeader?: boolean // the detail renders its OWN chip/title/padding — the right pane adds nothing
   kind?: string // small chip label (action / category)
   tone?: FeedTone
   code?: string // scene code, right-aligned in the row
@@ -100,6 +102,7 @@ export function DetailSplitView({
   isFeed,
   focusId
 }: DetailSplitViewProps): JSX.Element {
+  const { t } = useTranslation('detailSplitView')
   const [selId, setSelId] = useState<string | null>(focusId ?? null)
   // Deep-link: when a caller passes a new focusId (e.g. the scene inspector opening this arc on a specific event's
   // window), pre-select it so its detail pane is already showing.
@@ -144,7 +147,7 @@ export function DetailSplitView({
           <div className="min-w-0 flex-1 truncate text-[12px] font-medium text-foreground">{title}</div>
           {chips}
           {meta && <span className="ml-auto shrink-0 text-[11px] tabular-nums text-faint">{meta}</span>}
-          <button onClick={onClose} title="Close" className="ml-1 shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground">
+          <button onClick={onClose} title={t('close')} className="ml-1 shrink-0 rounded p-1 text-faint hover:bg-panel-soft hover:text-foreground">
             <X className="size-3.5" />
           </button>
         </div>
@@ -165,7 +168,7 @@ export function DetailSplitView({
                       mainView === m ? 'bg-panel-soft text-foreground' : 'text-faint hover:text-foreground'
                     )}
                   >
-                    {m === 'resolves' ? 'Resolves' : 'Appears'}
+                    {m === 'resolves' ? t('mainView.resolves') : t('mainView.appears')}
                   </button>
                 ))}
               </div>
@@ -213,19 +216,19 @@ export function DetailSplitView({
                 value={cat}
                 onChange={setCat}
                 className="w-36"
-                options={[{ value: 'all', label: 'All categories' }, ...categories.map((c) => ({ value: c, label: c }))]}
+                options={[{ value: 'all', label: t('allCategories') }, ...categories.map((c) => ({ value: c, label: c }))]}
               />
             )}
             <button
               onClick={() => setLatest((v) => !v)}
-              title={latest ? 'Latest first — click for oldest first' : 'Oldest first — click for latest first'}
+              title={latest ? t('sort.latest') : t('sort.oldest')}
               className="flex size-7 items-center justify-center rounded-md border border-border/60 text-muted-foreground transition-colors hover:text-foreground"
             >
               {latest ? <ArrowDownNarrowWide className="size-3.5" /> : <ArrowUpNarrowWide className="size-3.5" />}
             </button>
             <button
               onClick={() => setHideEmpty((v) => !v)}
-              title={hideEmpty ? 'Quiet chapters hidden — click to show them' : 'Showing quiet chapters — click to hide'}
+              title={hideEmpty ? t('hideEmpty.on') : t('hideEmpty.off')}
               className={cn(
                 'flex size-7 items-center justify-center rounded-md border transition-colors',
                 hideEmpty ? 'border-thread/40 bg-thread/10 text-thread' : 'border-border/60 text-muted-foreground hover:text-foreground'
@@ -243,11 +246,11 @@ export function DetailSplitView({
           {/* left — reading-ordered event feed */}
           <div className="flex w-2/5 min-w-56 shrink-0 flex-col border-r border-border/60">
             <div className="flex items-center gap-2 px-4 pt-2.5 pb-1">
-              <span className="text-[9.5px] font-medium uppercase tracking-wide text-faint">Events</span>
+              <span className="text-[9.5px] font-medium uppercase tracking-wide text-faint">{t('events')}</span>
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-4">
               {bands.length === 0 ? (
-                <div className="px-2 py-8 text-center text-[12px] text-faint">No events.</div>
+                <div className="px-2 py-8 text-center text-[12px] text-faint">{t('noEvents')}</div>
               ) : (
                 bands.map((b) =>
                   b.events.length === 0 ? (
@@ -288,9 +291,12 @@ export function DetailSplitView({
               )}
             </div>
           </div>
-          {/* right — the selected event's detail */}
+          {/* right — the selected event's detail. An event whose detail owns its header (chip + title +
+              padding, e.g. the coherence card) renders bare so the card reads identically in every host. */}
           <div className="min-w-0 flex-1 overflow-y-auto">
-            {selected ? (
+            {selected?.detailOwnsHeader ? (
+              selected.detail
+            ) : selected ? (
               <div className="px-5 py-4">
                 {selected.kind && (
                   <div className="mb-2">
@@ -309,7 +315,7 @@ export function DetailSplitView({
               </div>
             ) : (
               <div className="flex h-full items-center justify-center px-6 text-center text-[12.5px] text-faint">
-                Select an event on the left to read it here.
+                {t('selectPrompt')}
               </div>
             )}
           </div>

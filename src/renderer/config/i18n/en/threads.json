@@ -1,0 +1,112 @@
+{
+  "roster": {
+    "updateAnalysis": "Update analysis — read changed scenes into the ledgers (the same run as the console)",
+    "reading": "Reading…",
+    "empty": "No threads yet — analysis populates these.",
+    "section": {
+      "open": "Open",
+      "resolved": "Resolved",
+      "other": "Other branches"
+    }
+  },
+  "dups": {
+    "heading_one": "{{count}} possible duplicate",
+    "heading_other": "{{count}} possible duplicates",
+    "explain": "These threads share a handle — likely one promise re-opened. Open each to compare, then merge to fold them into the earliest.",
+    "sharedHandle": "shared handle: {{slug}}",
+    "recast": "recast",
+    "recastTitle": "A member supersedes another (succeeds) — an intentional recast, not a duplicate. Not mergeable.",
+    "merging": "merging…",
+    "mergeTitle": "Fold these into one thread (the earliest opener)",
+    "merge": "Merge",
+    "cancel": "Cancel",
+    "opened": "opened {{at}}",
+    "events_one": "{{count}} event",
+    "events_other": "{{count}} events",
+    "kept": "kept (earliest)",
+    "foldsIn": "folds in",
+    "confirmPre": "Keep",
+    "confirmPost_one": "and fold in the other {{count}}?",
+    "confirmPost_other": "and fold in the other {{count}}?",
+    "mergeFailedTitle": "Merge failed",
+    "mergeFailedBody": "unknown error"
+  },
+  "character": {
+    "empty": "No character arc recorded yet.",
+    "meta": "{{w}}w · {{total}}"
+  },
+  "entity": {
+    "empty": "Nothing tracked yet — run analysis to discover the items and factions your scenes feature.",
+    "showUnseen": "show {{n}} unseen",
+    "hideUnseen": "hide {{n}} unseen",
+    "sceneCount": "{{n}}sc"
+  },
+  "map": {
+    "type": "Type",
+    "clear": "clear",
+    "looseThread": "Loose thread — opened but never developed or resolved. Often noise (a one-off event, or an unconnected payoff). Review or prune."
+  },
+  "detail": {
+    "status": {
+      "open": "open",
+      "resolved": "resolved"
+    },
+    "inferred": "inferred",
+    "inferredTitle": "The analysis agent's reading of your dialogue.",
+    "sceneSummary": "Scene summary",
+    "castAndPlace": "Cast & place",
+    "openPage": "{{name}} — open page",
+    "openedBy": "Opened by",
+    "resolvesWhen": "Resolves when",
+    "noCloseCondition": "— no close-condition",
+    "resolvedBy": "Resolved by",
+    "resolvesBy": "Resolves by",
+    "stillOpen": "still open — not yet resolved",
+    "feed": "Feed",
+    "loading": "Loading…",
+    "events_one": "{{count}} event",
+    "events_other": "{{count}} events",
+    "heatCell_one": "{{title}} — {{count}} event",
+    "heatCell_other": "{{title}} — {{count}} events"
+  },
+  "help": {
+    "title": "Threads — how it works",
+    "whatIsAThread": {
+      "title": "What a thread is",
+      "items": [
+        "A **thread** is a promise or question the story opens and (maybe) pays off — a mystery, a goal, a conflict.",
+        "Its status is a **fold over its events**: a *resolve* closes it, a later *reopen* re-opens it. The close-gate is what would pay it off.",
+        "A thread can fork into **strands** (per subject) — e.g. one layoff thread, one strand per person."
+      ]
+    },
+    "readingMap": {
+      "title": "Reading the Map",
+      "rows": {
+        "lane color": "the archetype (mystery · promise · conflict · task · foreshadowing)",
+        "lane opacity": "solid = open · faded = resolved",
+        "● open": "the event that opened the thread",
+        "• advance": "an event that develops it",
+        "◆ resolve": "an event that closes it (the gate is met)",
+        "◌ reopen": "a later event that re-opens a closed thread",
+        "columns": "scenes in reading order — click one to read it",
+        "chapter bands": "the wrap-layer groups scenes by folder; toggle with the layers button"
+      }
+    },
+    "sheet": {
+      "title": "The Sheet (click a thread)",
+      "items": [
+        "The sheet is a **chapter railway**: each chapter is a **station** — a filled stop (●) where the thread has events, a hollow stop (○ ··) for a chapter it stays **quiet**, a **◆ terminus** where it resolves.",
+        "Events are **cards** under their station (so each names just its scene). Click one to expand its full moment, the **“evidence”** dialogue it was drawn from, the surrounding **scene context**, and its cast.",
+        "The hollow stops between stations show how long a thread goes **silent** — a slow burn, or a thread left hanging."
+      ]
+    },
+    "provenance": {
+      "title": "Provenance — this is the agent's reading",
+      "items": [
+        "Threads are **inferred** by the analysis agent from your dialogue — they are its understanding, not authored truth.",
+        "Each event carries a **confidence**; low values (highlighted) are worth a second look before you trust a close.",
+        "Re-running analysis after you edit a scene refreshes the threads it touched."
+      ]
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "openCharacter": "{{name}} — キャラクターを開く",
+  "inspectThread": "{{name}} — スレッドを確認",
+  "threadLabel": "スレッド: {{name}}",
+  "definedTerm": "定義済み用語",
+  "chapter": "第{{num}}章"
+}

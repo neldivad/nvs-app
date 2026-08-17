@@ -1,0 +1,11 @@
+{
+  "agent": "エージェント（チャット＋タスク）",
+  "taskRunning": "タスク実行中",
+  "tasksReady_one": "{{count}} 件のタスクを実行できます",
+  "tasksReady_other": "{{count}} 件のタスクを実行できます",
+  "promptLibrary": "プロンプトライブラリ",
+  "jobs": "ジョブ — 分析の実行と進捗",
+  "analysisRunning": "分析実行中",
+  "store": "ストア — コミュニティ作品と拡張機能",
+  "extensionTools": "拡張機能ツール — インストール済みの拡張機能を実行"
+}

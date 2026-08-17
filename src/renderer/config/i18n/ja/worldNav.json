@@ -1,0 +1,30 @@
+{
+  "title": "世界",
+  "searchPlaceholder": "ワールドページを検索…",
+  "newCategory": "新しい{{name}}",
+  "custodyHint": "カストディのトピックは既存のエンティティに紐づきます — カストディレールから作成してください",
+  "custodyBadge": "<key/>経由",
+  "createError": "「{{name}}」を作成できませんでした。この問題が続く場合は、アプリを完全に終了して再起動してください。名前がすでに使用されている可能性もあります。",
+  "emptyCategory": "まだありません。",
+  "archived": "アーカイブ済み",
+  "namePlaceholder": "名前を入力してEnter",
+  "categoryPhase": "フェーズ — すべての{{name}}ページ",
+  "menu": {
+    "rename": "名前を変更",
+    "exportMd": ".mdを書き出し…",
+    "delete": "削除"
+  },
+  "createMenu": {
+    "heading": "新しいページ"
+  },
+  "row": {
+    "restore": "復元",
+    "archive": "アーカイブ",
+    "delete": "削除"
+  },
+  "delete": {
+    "title": "ページを削除しますか？",
+    "confirm": "削除",
+    "message": "<hl>{{name}}</hl>を削除しますか？ディスクからファイルが削除されます。代わりに保留するには、プロパティでフェーズを<hl>アーカイブ済み</hl>に設定してください。"
+  }
+}

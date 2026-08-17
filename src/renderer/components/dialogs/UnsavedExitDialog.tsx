@@ -1,14 +1,15 @@
 import { type JSX } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { anyDirty } from '@/lib/editor/saveTarget'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
-const VERB: Record<string, string> = {
-  library: 'return to the Library',
-  tab: 'close this tab',
-  app: 'quit',
-  nav: 'leave this page' // an in-app switch (page / custody tab / topic) held behind the prompt
+const VERB_KEY: Record<string, string> = {
+  library: 'verb.library',
+  tab: 'verb.tab',
+  app: 'verb.app',
+  nav: 'verb.nav' // an in-app switch (page / custody tab / topic) held behind the prompt
 }
 
 /**
@@ -18,13 +19,14 @@ const VERB: Record<string, string> = {
  * library/quit path always asks (guard against a stray click), so it can open with a clean project too.
  */
 export function UnsavedExitDialog(): JSX.Element {
+  const { t } = useTranslation('unsavedExit')
   const pending = useWorkspace((s) => s.pendingExit)
   const resolve = useWorkspace((s) => s.resolvePendingExit)
   const pageTitle = useWorkspace((s) => s.activePage?.title)
   const sceneDirty = useWorkspace((s) => s.sceneDirty)
   const progress = useWorkspace((s) => s.ingestProgress)
 
-  const verb = pending ? VERB[pending.kind] : 'leave'
+  const verb = pending ? t(VERB_KEY[pending.kind]) : t('verb.default')
   const dirty = sceneDirty || anyDirty()
   // Leaving the project or app pauses a running analysis (resumable) — remind, don't block. Not for tab-close.
   const jobActive = !!progress?.active && (pending?.kind === 'app' || pending?.kind === 'library')
@@ -36,18 +38,18 @@ export function UnsavedExitDialog(): JSX.Element {
       size="confirm"
       open={!!pending}
       onClose={() => void resolve('cancel')}
-      title={dirty ? 'Unsaved changes' : 'Leave this project?'}
+      title={dirty ? t('title.dirty') : t('title.clean')}
       footer={
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={() => void resolve('cancel')}>Cancel</Button>
+          <Button variant="ghost" size="sm" onClick={() => void resolve('cancel')}>{t('button.cancel')}</Button>
           {dirty ? (
             <>
-              <Button variant="outline" size="sm" onClick={() => void resolve('discard')}>Don't Save</Button>
-              <Button size="sm" onClick={() => void resolve('save')}>Save</Button>
+              <Button variant="outline" size="sm" onClick={() => void resolve('discard')}>{t('button.dontSave')}</Button>
+              <Button size="sm" onClick={() => void resolve('save')}>{t('button.save')}</Button>
             </>
           ) : (
             <Button size="sm" onClick={() => void resolve('discard')}>
-              {pending?.kind === 'app' ? 'Quit' : pending?.kind === 'tab' ? 'Close tab' : 'Return to Library'}
+              {pending?.kind === 'app' ? t('button.quit') : pending?.kind === 'tab' ? t('button.closeTab') : t('button.returnToLibrary')}
             </Button>
           )}
         </DialogFooter>
@@ -56,16 +58,24 @@ export function UnsavedExitDialog(): JSX.Element {
       <div className="space-y-4">
         {dirty ? (
           <p className="text-sm text-muted-foreground">
-            You have unsaved edits in <span className="text-foreground">{pageTitle || 'this page'}</span>.
-            Save them before you {verb}?
+            <Trans
+              t={t}
+              i18nKey="dirty"
+              values={{ name: pageTitle || t('thisPage'), verb }}
+              components={{ hl: <span className="text-foreground" /> }}
+            />
           </p>
         ) : (
-          <p className="text-sm text-muted-foreground">Everything's saved. {`Ready to ${verb}?`}</p>
+          <p className="text-sm text-muted-foreground">{t('clean', { verb })}</p>
         )}
         {jobActive && (
           <p className="rounded border border-border bg-panel-soft px-3 py-2 text-xs text-muted-foreground">
-            Analysis is running on <span className="text-foreground">{progress?.projectName || 'this project'}</span> ({jobDone}/{progress?.steps.length ?? 0}).
-            Leaving <span className="text-foreground">pauses</span> it — it resumes right where it left off next time you open it.
+            <Trans
+              t={t}
+              i18nKey="job"
+              values={{ name: progress?.projectName || t('thisProject'), done: jobDone, total: progress?.steps.length ?? 0 }}
+              components={{ hl: <span className="text-foreground" />, em: <span className="text-foreground" /> }}
+            />
           </p>
         )}
       </div>

@@ -1,0 +1,13 @@
+{
+  "state": {
+    "willRead": "これから読む",
+    "fresh": "最新",
+    "draft": "下書き",
+    "offVariant": "タイムライン外",
+    "read": "既読",
+    "notRun": "未実行"
+  },
+  "empty": "プレビューするシーンはまだありません。",
+  "moreScenes_one": "さらに{{count}}シーン",
+  "moreScenes_other": "さらに{{count}}シーン"
+}

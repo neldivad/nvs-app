@@ -14,6 +14,7 @@
  */
 import { useEffect, useMemo, useState, type JSX } from 'react'
 import { ChevronDown, ChevronRight, Gauge, Loader2, Play, Route, Sparkles, TriangleAlert } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { FreshnessOutline } from '@/components/features/analysis/FreshnessOutline'
 import type { AiState, AnalysisDepth, IngestPreview } from '@shared/ipc'
 import { AI_PROVIDERS } from '@shared/config/aiProviders'
@@ -24,14 +25,12 @@ import { useWorkspace } from '@/stores/workspace'
 import { activeVariant } from '@/lib/timeline/treeVariant'
 import { cn } from '@/lib/utils'
 
-const KIND_LABEL: Record<string, string> = { scene: 'scenes', window: 'arcs', profile: 'profiles', digest: 'digests' }
 // Above this many targets, a keyless PLAN run is long enough to reliably hit the subscription session cap
 // before finishing — the point where we steer the author to a metered API connection instead.
 const PLAN_WARN_TARGETS = 40
-/** Naive de-plural for the count of 1 (scenes→scene) — all our kind labels are regular. */
-const plural = (label: string, n: number): string => (n === 1 ? label.replace(/s$/, '') : label)
 
 export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boolean; onClose: () => void; initialDepth?: AnalysisDepth }): JSX.Element | null {
+  const { t } = useTranslation('analysisRun')
   const project = useWorkspace((s) => s.project)
   const aiEnabled = useWorkspace((s) => s.aiEnabled) // analysis runs are AI → the run dialog is unavailable when off
   const startIngestRun = useWorkspace((s) => s.startIngestRun)
@@ -80,10 +79,10 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
       const range = fmtCostRange(est.costLo, est.costHi)
       // plan → subscription; a known price → the range (≈ when it's a family guess); an unknown model → tell
       // the user to look it up rather than showing a fabricated number.
-      const cost = c.type === 'plan' ? 'plan usage' : range ? (est.approx ? `≈${range}` : range) : 'check pricing'
+      const cost = c.type === 'plan' ? t('cost.planUsage') : range ? (est.approx ? `≈${range}` : range) : t('cost.checkPricing')
       return { conn: c, est, cost }
     })
-  }, [preview, ai, depth, measuredSceneMs])
+  }, [preview, ai, depth, measuredSceneMs, t])
 
   // Plan (keyless subscription) is ~15× slower per call than a metered API and can't parallelize, so a large
   // run runs for hours and reliably dies on the Claude Code usage/session cap partway through. Warn when the
@@ -99,7 +98,7 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
 
   const breakdown = preview
     ? Object.entries(preview.counts)
-        .map(([k, n]) => `${n} ${plural(KIND_LABEL[k] ?? k, n)}`)
+        .map(([k, n]) => `${n} ${t(`kind.${k}`, { count: n, defaultValue: k })}`)
         .join(' · ')
     : null
 
@@ -125,14 +124,14 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
     <Dialog
       open={open}
       onClose={onClose}
-      title="Update analysis"
+      title={t('title')}
       size="panel"
       footer={
         <DialogFooter aside={<ReadinessLink onClose={onClose} />}>
-          <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>{t('button.cancel')}</Button>
           <Button size="sm" onClick={() => void start()} disabled={!picked || !preview || preview.total === 0 || starting}>
             {starting ? <Loader2 className="size-3 animate-spin" /> : <Play className="size-3" />}
-            Start {depth === 'skim' ? 'fast' : 'expert'} run
+            {t('button.start', { mode: depth === 'skim' ? t('button.modeFast') : t('button.modeExpert') })}
           </Button>
         </DialogFooter>
       }
@@ -142,13 +141,13 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
             lives in the tooltip, not inline — the target count below is for THIS timeline. */}
         {variant && (
           <div
-            title={variantCount > 1 ? 'Analysis follows the active timeline. Switch it on the canvas to analyze a different one.' : undefined}
+            title={variantCount > 1 ? t('timeline.tooltip') : undefined}
             className="flex items-center gap-1.5 rounded-md border border-border bg-panel-soft/40 px-2.5 py-1.5 text-[11px]"
           >
             <Route className="size-3.5 shrink-0 text-thread" />
-            <span className="text-faint">Timeline</span>
+            <span className="text-faint">{t('timeline.label')}</span>
             <span className="font-medium text-foreground">{variant.name}</span>
-            {variantCount > 1 && <span className="ml-auto tabular-nums text-faint">{variantIndex} of {variantCount}</span>}
+            {variantCount > 1 && <span className="ml-auto tabular-nums text-faint">{t('timeline.count', { index: variantIndex, total: variantCount })}</span>}
           </div>
         )}
 
@@ -156,15 +155,15 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
         <div className="text-muted-foreground">
           {preview ? (
             preview.total === 0 ? (
-              <span>Everything is up to date at this depth — nothing to run.</span>
+              <span>{t('summary.upToDate')}</span>
             ) : (
               <span>
-                <span className="font-medium text-foreground">{preview.total} targets</span>
+                <span className="font-medium text-foreground">{t('summary.targets', { n: preview.total })}</span>
                 <span className="text-faint"> · {breakdown}</span>
               </span>
             )
           ) : (
-            <span className="flex items-center gap-1.5"><Loader2 className="size-3 animate-spin" /> planning…</span>
+            <span className="flex items-center gap-1.5"><Loader2 className="size-3 animate-spin" /> {t('summary.planning')}</span>
           )}
         </div>
 
@@ -174,7 +173,7 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
           <div>
             <button onClick={() => setShowOutline((v) => !v)} className="flex items-center gap-1 text-[11px] text-faint hover:text-foreground">
               {showOutline ? <ChevronDown className="size-3" /> : <ChevronRight className="size-3" />}
-              Preview by chapter
+              {t('previewByChapter')}
             </button>
             {showOutline && (
               <div className="mt-1 rounded border border-border bg-panel-soft/30 p-2">
@@ -186,12 +185,12 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
 
         {/* Mode — fast (skim) vs expert (full contract) */}
         <div className="flex items-center gap-2">
-          <span className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-faint">Mode</span>
+          <span className="w-20 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('mode.label')}</span>
           <div className="flex overflow-hidden rounded border border-border">
             {(
               [
-                { d: 'skim' as const, label: 'Fast', Icon: Gauge, hint: 'summary + threads + presence — story-so-far & timeline stay fresh; arcs wait for an expert pass' },
-                { d: 'full' as const, label: 'Expert', Icon: Sparkles, hint: 'the full ledger: goals, conflicts, items, lore, arcs, profiles' }
+                { d: 'skim' as const, label: t('mode.fast.label'), Icon: Gauge, hint: t('mode.fast.hint') },
+                { d: 'full' as const, label: t('mode.expert.label'), Icon: Sparkles, hint: t('mode.expert.hint') }
               ] as const
             ).map(({ d, label, Icon, hint }) => (
               <button
@@ -211,19 +210,19 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
         <div>
           <div className="mb-1">
             <span
-              title="Estimates are approximate. Set your analysis connection in the console’s Connections list."
+              title={t('connection.runsOnTooltip')}
               className="text-[10px] font-semibold uppercase tracking-wide text-faint"
             >
-              Runs on
+              {t('connection.runsOn')}
             </span>
           </div>
           <div className="overflow-hidden rounded border border-border">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-panel-soft/50 text-[10px] uppercase tracking-wide text-faint">
-                  <th className="px-2.5 py-1 text-left font-medium">Connection</th>
-                  <th className="w-28 px-2.5 py-1 text-right font-medium">Time</th>
-                  <th className="w-24 px-2.5 py-1 text-right font-medium">Cost</th>
+                  <th className="px-2.5 py-1 text-left font-medium">{t('connection.colConnection')}</th>
+                  <th className="w-28 px-2.5 py-1 text-right font-medium">{t('connection.colTime')}</th>
+                  <th className="w-24 px-2.5 py-1 text-right font-medium">{t('connection.colCost')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -236,7 +235,7 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
                       <span className={cn('mr-1.5 inline-block size-1.5 rounded-full align-middle', picked === conn.id ? 'bg-thread' : 'bg-border')} />
                       <span className="text-foreground">{conn.label || AI_PROVIDERS[conn.type].label}</span>
                       <span className="ml-1.5 text-[10px] text-faint">{conn.model}</span>
-                      {picked === conn.id && <span className="ml-1.5 rounded bg-thread/20 px-1 py-px text-[9px] uppercase tracking-wide text-thread">current</span>}
+                      {picked === conn.id && <span className="ml-1.5 rounded bg-thread/20 px-1 py-px text-[9px] uppercase tracking-wide text-thread">{t('connection.current')}</span>}
                     </td>
                     <td className="whitespace-nowrap px-2.5 py-1.5 text-right font-mono text-[11px] text-muted-foreground">
                       {preview && preview.total > 0 ? `${fmtDuration(est.timeLoMs)}–${fmtDuration(est.timeHiMs)}` : '—'}
@@ -248,7 +247,7 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
                 ))}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="px-2.5 py-2 text-muted-foreground">No AI connections yet — add one in Settings → AI.</td>
+                    <td colSpan={3} className="px-2.5 py-2 text-muted-foreground">{t('connection.empty')}</td>
                   </tr>
                 )}
               </tbody>
@@ -258,12 +257,12 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
             <div className="mt-2 flex items-start gap-2 rounded border border-warn/40 bg-warn/10 px-2.5 py-2 text-[11px] leading-relaxed text-warn">
               <TriangleAlert className="mt-px size-3.5 shrink-0" />
               <span>
-                This runs on your Claude subscription (no API key), which is ~15× slower per scene and can’t run in
-                parallel — about <b>{planWarning.hours || 'several'} hour{planWarning.hours === 1 ? '' : 's'}</b> for
-                this run, long enough that it usually hits your usage limit before finishing.{' '}
+                {t('warning.plan.body')}
+                <b>{planWarning.hours ? t('warning.plan.hours', { count: planWarning.hours }) : t('warning.plan.hoursSeveral')}</b>
+                {t('warning.plan.tail')}{' '}
                 {planWarning.apiLabel
-                  ? <>Switch the analysis connection to <b>{planWarning.apiLabel}</b> (an API key) in the console — it finishes in minutes.</>
-                  : <>Add an API-key connection (Anthropic / OpenRouter) in Settings → AI and use it for full analysis; it finishes in minutes.</>}
+                  ? <>{t('warning.plan.switchPre')}<b>{planWarning.apiLabel}</b>{t('warning.plan.switchPost')}</>
+                  : t('warning.plan.addKey')}
               </span>
             </div>
           )}
@@ -275,6 +274,7 @@ export function AnalysisRunDialog({ open, onClose, initialDepth }: { open: boole
 
 /** "Not sure the project is ready?" — seeds the read-only preflight prompt into chat (config/chatPrompts). */
 function ReadinessLink({ onClose }: { onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('analysisRun')
   const setChatDraft = useWorkspace((s) => s.setChatDraft)
   const setChatOpen = useWorkspace((s) => s.setChatOpen)
   return (
@@ -286,10 +286,10 @@ function ReadinessLink({ onClose }: { onClose: () => void }): JSX.Element {
           onClose()
         })
       }}
-      title="Run a read-only preflight in chat — checks canon prose, structure, and connection before you spend a run."
+      title={t('readiness.tooltip')}
       className="text-[11px] text-faint underline-offset-2 hover:text-foreground hover:underline"
     >
-      Check readiness
+      {t('readiness.link')}
     </button>
   )
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState, type JSX } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { Play, GitFork, Trash2, Loader2, FolderOpen } from 'lucide-react'
 import { useWorkspace } from '@/stores/workspace'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
@@ -12,6 +13,7 @@ import type { ProjectInfo } from '@shared/ipc'
  * no need to open the work) + the primary actions: Open · Fork · Delete. Driven by the shared `detailWork` slot.
  */
 export function WorkDetailDialog(): JSX.Element {
+  const { t } = useTranslation('workDetail')
   const work = useWorkspace((s) => s.detailWork)
   const setDetailWork = useWorkspace((s) => s.setDetailWork)
   const openWork = useWorkspace((s) => s.openWork)
@@ -37,7 +39,7 @@ export function WorkDetailDialog(): JSX.Element {
   }, [work])
 
   const close = (): void => setDetailWork(null)
-  const fallback = work ? work.title || work.name || 'Untitled' : ''
+  const fallback = work ? work.title || work.name || t('untitled') : ''
 
   const run = (fn: (path: string) => Promise<boolean | void>) => async (): Promise<void> => {
     if (!work) return
@@ -59,15 +61,15 @@ export function WorkDetailDialog(): JSX.Element {
       bodyClassName="select-text overflow-auto"
       footer={
         confirming ? (
-          <DialogFooter aside={<span className="text-[12px] text-muted-foreground">Move <span className="text-foreground">{fallback}</span> to the system Trash? (recoverable)</span>}>
-            <Button variant="ghost" size="sm" disabled={busy} onClick={() => setConfirming(false)}>Cancel</Button>
-            <Button variant="destructive" size="sm" disabled={busy} onClick={() => void run(deleteWork)()}>Move to Trash</Button>
+          <DialogFooter aside={<span className="text-[12px] text-muted-foreground"><Trans t={t} i18nKey="confirm" values={{ name: fallback }} components={{ name: <span className="text-foreground" /> }} /></span>}>
+            <Button variant="ghost" size="sm" disabled={busy} onClick={() => setConfirming(false)}>{t('cancel')}</Button>
+            <Button variant="destructive" size="sm" disabled={busy} onClick={() => void run(deleteWork)()}>{t('moveToTrash')}</Button>
           </DialogFooter>
         ) : (
           <DialogFooter
             aside={
               <div className="flex min-w-0 items-center gap-3">
-                <Button variant="ghost" size="sm" disabled={busy} onClick={() => setConfirming(true)} className="shrink-0 text-flag hover:bg-flag/10"><Trash2 className="size-3.5" /> Delete</Button>
+                <Button variant="ghost" size="sm" disabled={busy} onClick={() => setConfirming(true)} className="shrink-0 text-flag hover:bg-flag/10"><Trash2 className="size-3.5" /> {t('delete')}</Button>
                 {/* Disk folder — shown when it differs from the title, so you confirm you're opening the right
                     copy (e.g. the original vs a same-titled backup) before entering. */}
                 {work?.title && work.title !== work.name && (
@@ -78,9 +80,9 @@ export function WorkDetailDialog(): JSX.Element {
               </div>
             }
           >
-            <Button variant="outline" size="sm" disabled={busy} onClick={() => void run(forkWork)()}><GitFork className="size-3.5" /> Fork</Button>
+            <Button variant="outline" size="sm" disabled={busy} onClick={() => void run(forkWork)()}><GitFork className="size-3.5" /> {t('fork')}</Button>
             <Button size="sm" disabled={busy} onClick={() => void run(openWork)()}>
-              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5 fill-current" />} Open project
+              {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5 fill-current" />} {t('open')}
             </Button>
           </DialogFooter>
         )

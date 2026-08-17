@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, Fragment, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { regionAttrs } from '@/config/regions'
 import {
   Archive,
@@ -151,6 +152,7 @@ function findNode(nodes: StoryNode[], relPath: string): StoryNode | null {
  * geometry. We keep the app-specific behavior around it: single-click-opens, the inline create/rename inputs
  * (with duplicate-name guards), the right-click menu, the phase spine + active marker, and the Archived bin. */
 export function SceneNavigator(): JSX.Element {
+  const { t } = useTranslation('sceneNav')
   const storyTree = useWorkspace((s) => s.storyTree)
   const activePath = useWorkspace((s) => s.activePage?.path)
   const openTabs = useWorkspace((s) => s.openTabs)
@@ -409,8 +411,8 @@ export function SceneNavigator(): JSX.Element {
         : siblings.some((c) => c.type === 'scene' && c.name.toLowerCase() === slugify(trimmed).toLowerCase())
     setCreateError(
       dup
-        ? `A ${creating.type} named “${trimmed}” already exists here.`
-        : `“${trimmed}” isn’t a usable ${creating.type} name — try different characters.`
+        ? t('error.dupExists', { kind: t(`kind.${creating.type}`), name: trimmed })
+        : t('error.badName', { kind: t(`kind.${creating.type}`), name: trimmed })
     )
   }
 
@@ -445,8 +447,8 @@ export function SceneNavigator(): JSX.Element {
     const dup = siblings.some((c) => c.type === 'folder' && c.relPath !== node.relPath && c.name.toLowerCase() === trimmed.toLowerCase())
     setRenameError(
       dup
-        ? `A folder named “${trimmed}” already exists here.`
-        : `“${trimmed}” isn’t a usable folder name — try different characters.`
+        ? t('error.dupExists', { kind: t('kind.folder'), name: trimmed })
+        : t('error.badName', { kind: t('kind.folder'), name: trimmed })
     )
   }
 
@@ -540,7 +542,7 @@ export function SceneNavigator(): JSX.Element {
         <NewInput
           depth={level}
           initial={d.type === 'scene' ? d.title ?? d.name : d.name}
-          placeholder={d.type === 'scene' ? 'Scene title…' : 'Folder name…'}
+          placeholder={d.type === 'scene' ? t('placeholder.sceneTitle') : t('placeholder.folderName')}
           error={d.type === 'folder' ? renameError : null}
           onSubmit={(n) => void submitRename(d, n)}
           onCancel={cancelRename}
@@ -601,14 +603,14 @@ export function SceneNavigator(): JSX.Element {
           <span className="flex-1" />
           {folderArchived > 0 && (
             <span
-              title={`${folderArchived} archived scene${folderArchived > 1 ? 's' : ''} inside (shown in the Archived bin)`}
+              title={t('tooltip.archivedInside', { count: folderArchived })}
               className="flex shrink-0 items-center gap-0.5 text-[9px] text-faint"
             >
               <Archive className="size-2.5" />
               {folderArchived}
             </span>
           )}
-          {d.protected && <span className="font-mono text-[8px] uppercase text-faint/60">locked</span>}
+          {d.protected && <span className="font-mono text-[8px] uppercase text-faint/60">{t('badge.locked')}</span>}
         </button>
       </div>
     )
@@ -623,27 +625,27 @@ export function SceneNavigator(): JSX.Element {
       onContextMenu={(e) => openMenu(e, null)}
     >
       <SidebarHeader
-        title="Story"
+        title={t('title')}
         className="group/story"
-        search={{ results: searchResults, onSelect: onSearchSelect, placeholder: 'Search scenes & folders…' }}
+        search={{ results: searchResults, onSelect: onSearchSelect, placeholder: t('search.placeholder') }}
         action={
           <>
             <button
-              title="Expand all folders"
+              title={t('action.expandAll')}
               onClick={() => setSceneCollapsed([])}
               className="rounded p-0.5 text-faint opacity-0 transition-opacity hover:bg-panel-soft hover:text-foreground group-hover/story:opacity-100"
             >
               <ListTree className="size-3.5" />
             </button>
             <button
-              title="Collapse all folders"
+              title={t('action.collapseAll')}
               onClick={() => setSceneCollapsed(allFolders)}
               className="rounded p-0.5 text-faint opacity-0 transition-opacity hover:bg-panel-soft hover:text-foreground group-hover/story:opacity-100"
             >
               <FoldVertical className="size-3.5" />
             </button>
             <button
-              title="New…"
+              title={t('action.new')}
               onClick={(e) => openMenu(e, null)}
               className="rounded p-0.5 text-faint opacity-0 transition-opacity hover:bg-panel-soft hover:text-foreground group-hover/story:opacity-100"
             >
@@ -656,7 +658,7 @@ export function SceneNavigator(): JSX.Element {
       {creating?.parentRel === '' && (
         <NewInput
           depth={0}
-          placeholder={creating.type === 'folder' ? 'Folder name…' : 'Scene title…'}
+          placeholder={creating.type === 'folder' ? t('placeholder.folderName') : t('placeholder.sceneTitle')}
           error={createError}
           onSubmit={(n) => void submitCreate(n)}
           onCancel={cancelCreate}
@@ -666,16 +668,15 @@ export function SceneNavigator(): JSX.Element {
       {items.length === 0 && !creating ? (
         typeof window.nvs.listStoryTree !== 'function' ? (
           <p className="px-3 text-xs leading-relaxed text-flag">
-            Fully quit & relaunch the app to load the story tree — it's a new backend feature. Your scenes are
-            safe on disk; a renderer reload alone can't pick it up.
+            {t('empty.relaunch')}
           </p>
         ) : storyTree.length === 0 ? (
           <p className="px-3 text-xs leading-relaxed text-muted-foreground">
-            Empty. Right-click or use <Plus className="inline size-3" /> to add a folder or scene.
+            {t('empty.hintPrefix')} <Plus className="inline size-3" /> {t('empty.hintSuffix')}
           </p>
         ) : null
       ) : (
-        <div ref={tree.registerElement} {...tree.getContainerProps('Story')} className="group/tree relative">
+        <div ref={tree.registerElement} {...tree.getContainerProps(t('title'))} className="group/tree relative">
           {items.map((item) => (
             <Fragment key={item.getId()}>
               {renderItem(item)}
@@ -683,7 +684,7 @@ export function SceneNavigator(): JSX.Element {
               {creating?.parentRel === item.getId() && item.isExpanded() && item.getItemData()?.type === 'folder' && (
                 <NewInput
                   depth={item.getItemMeta().level + 1}
-                  placeholder={creating.type === 'folder' ? 'Folder name…' : 'Scene title…'}
+                  placeholder={creating.type === 'folder' ? t('placeholder.folderName') : t('placeholder.sceneTitle')}
                   error={createError}
                   onSubmit={(n) => void submitCreate(n)}
                   onCancel={cancelCreate}
@@ -714,7 +715,7 @@ export function SceneNavigator(): JSX.Element {
               <ChevronRight className="size-3 shrink-0 text-faint" />
             )}
             <Archive className="size-3 shrink-0 text-faint" />
-            <span className="flex-1 text-[10px] uppercase tracking-wide text-faint">Archived</span>
+            <span className="flex-1 text-[10px] uppercase tracking-wide text-faint">{t('archived.heading')}</span>
             <span className="font-mono text-[9px] text-faint/50">{archivedScenes.length}</span>
           </button>
           {archivedOpen &&
@@ -769,7 +770,7 @@ export function SceneNavigator(): JSX.Element {
               ? selectedRels.map((r) => index.get(r)).filter((n): n is StoryNode => !!n)
               : []
           }
-          folders={[{ rel: '', name: '/ (root)' }, ...allFolders.map((r) => ({ rel: r, name: r }))]}
+          folders={[{ rel: '', name: t('folder.root') }, ...allFolders.map((r) => ({ rel: r, name: r }))]}
           onBulkPhase={(phase) => {
             const nodes = selectedRels.map((r) => index.get(r)).filter((n): n is StoryNode => !!n)
             void setPagePhaseBulk([...new Set(nodes.flatMap(collectScenePaths))], phase)
@@ -791,18 +792,18 @@ export function SceneNavigator(): JSX.Element {
 
       <ConfirmDialog
         open={confirm != null}
-        title={confirm?.type === 'folder' ? 'Delete folder?' : 'Delete scene?'}
+        title={confirm?.type === 'folder' ? t('confirm.titleFolder') : t('confirm.titleScene')}
         danger
-        confirmLabel="Delete"
+        confirmLabel={t('confirm.delete')}
         message={
           <>
-            Delete <span className="text-foreground">{confirm?.title ?? confirm?.name}</span>
-            {confirm?.type === 'folder' ? ' and everything inside it' : ''}? This removes it from disk.
+            {t('confirm.prefix')} <span className="text-foreground">{confirm?.title ?? confirm?.name}</span>
+            {confirm?.type === 'folder' ? t('confirm.folderInside') : ''}{t('confirm.suffix')}
             {(() => {
               const n = confirm?.type === 'folder' ? collectArchived(confirm.children ?? []).length : 0
               return n > 0 ? (
                 <span className="mt-1.5 block text-flag">
-                  ⚠ This also deletes {n} archived scene{n > 1 ? 's' : ''} still inside it (shown in the Archived bin).
+                  {t('confirm.alsoArchived', { count: n })}
                 </span>
               ) : null
             })()}
@@ -817,13 +818,13 @@ export function SceneNavigator(): JSX.Element {
 
       <ConfirmDialog
         open={bulkConfirm != null}
-        title={`Delete ${bulkConfirm?.length ?? 0} item${(bulkConfirm?.length ?? 0) === 1 ? '' : 's'}?`}
+        title={t('bulkConfirm.title', { count: bulkConfirm?.length ?? 0 })}
         danger
-        confirmLabel="Delete"
+        confirmLabel={t('confirm.delete')}
         message={
           <>
-            Delete <span className="text-foreground">{bulkConfirm?.length ?? 0}</span> selected item
-            {(bulkConfirm?.length ?? 0) === 1 ? '' : 's'} (folders remove everything inside)? This removes them from disk.
+            {t('bulkConfirm.prefix')} <span className="text-foreground">{bulkConfirm?.length ?? 0}</span>{' '}
+            {t('bulkConfirm.suffix', { count: bulkConfirm?.length ?? 0 })}
           </>
         }
         onCancel={() => setBulkConfirm(null)}
@@ -856,6 +857,7 @@ function ArchivedSceneRow({
   onDelete: () => void
   onMenu: (e: React.MouseEvent) => void
 }): JSX.Element {
+  const { t } = useTranslation('sceneNav')
   return (
     <div className={cn('group/row relative flex items-center transition-colors hover:bg-panel-soft', active && 'bg-panel-soft')}>
       <span className={cn('pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-1', PHASE_META.archived.dot)} />
@@ -864,8 +866,8 @@ function ArchivedSceneRow({
         <span className={cn('truncate', active ? 'text-foreground/90' : 'text-muted-foreground')}>{node.title ?? node.name}</span>
       </button>
       <div className="flex shrink-0 items-center gap-0.5 pr-2 opacity-0 transition-opacity group-hover/row:opacity-100">
-        <button title="Restore" onClick={(e) => { e.stopPropagation(); onRestore() }} className="rounded p-0.5 text-faint hover:text-foreground"><ArchiveRestore className="size-3" /></button>
-        <button title="Delete" onClick={(e) => { e.stopPropagation(); onDelete() }} className="rounded p-0.5 text-faint hover:text-flag"><Trash2 className="size-3" /></button>
+        <button title={t('row.restore')} onClick={(e) => { e.stopPropagation(); onRestore() }} className="rounded p-0.5 text-faint hover:text-foreground"><ArchiveRestore className="size-3" /></button>
+        <button title={t('row.delete')} onClick={(e) => { e.stopPropagation(); onDelete() }} className="rounded p-0.5 text-faint hover:text-flag"><Trash2 className="size-3" /></button>
       </div>
     </div>
   )
@@ -873,10 +875,11 @@ function ArchivedSceneRow({
 
 /** Inline hover shortcuts on a scene row — archive (→ phase archived) + delete. Mirrors the World rail. */
 function RowActions({ onArchive, onDelete }: { onArchive: () => void; onDelete: () => void }): JSX.Element {
+  const { t } = useTranslation('sceneNav')
   return (
     <div className="flex shrink-0 items-center gap-0.5 pr-2 opacity-0 transition-opacity group-hover/row:opacity-100">
       <button
-        title="Archive"
+        title={t('row.archive')}
         onClick={(e) => {
           e.stopPropagation()
           onArchive()
@@ -886,7 +889,7 @@ function RowActions({ onArchive, onDelete }: { onArchive: () => void; onDelete: 
         <Archive className="size-3" />
       </button>
       <button
-        title="Delete"
+        title={t('row.delete')}
         onClick={(e) => {
           e.stopPropagation()
           onDelete()
@@ -938,6 +941,7 @@ function ContextMenu({
   onBulkMove: (folderRel: string) => void
   onBulkDelete: () => void
 }): JSX.Element {
+  const { t } = useTranslation('sceneNav')
   const [showFolders, setShowFolders] = useState(false)
   // Where "new" items go: inside a folder, beside a scene (its parent), or root.
   const parentRel =
@@ -948,11 +952,11 @@ function ContextMenu({
   if (selection.length >= 2) {
     return (
       <ContextMenuShell x={x} y={y} onClose={onClose}>
-        <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{selection.length} selected</div>
+        <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('menu.selectedCount', { count: selection.length })}</div>
         <MenuSeparator />
-        <PhaseSection current="" label="Set phase" onSet={onBulkPhase} />
+        <PhaseSection current="" label={t('menu.setPhase')} onSet={onBulkPhase} />
         <MenuSeparator />
-        <MenuItem label="Move to folder…" onClick={() => setShowFolders((v) => !v)} />
+        <MenuItem label={t('menu.moveToFolder')} onClick={() => setShowFolders((v) => !v)} />
         {showFolders && (
           <div className="max-h-48 overflow-y-auto border-y border-border">
             {folders.map((f) => (
@@ -968,7 +972,7 @@ function ContextMenu({
           </div>
         )}
         <MenuSeparator />
-        <MenuItem label={`Delete ${selection.length}…`} danger onClick={onBulkDelete} />
+        <MenuItem label={t('menu.bulkDelete', { count: selection.length })} danger onClick={onBulkDelete} />
       </ContextMenuShell>
     )
   }
@@ -976,13 +980,13 @@ function ContextMenu({
   return (
     <ContextMenuShell x={x} y={y} onClose={onClose}>
       {/* Free-form: make a folder or a scene anywhere (suggested, not enforced). */}
-      <MenuItem label="New scene" onClick={() => onNewScene(parentRel)} />
-      <MenuItem label="New folder" onClick={() => onNewFolder(parentRel)} />
+      <MenuItem label={t('menu.newScene')} onClick={() => onNewScene(parentRel)} />
+      <MenuItem label={t('menu.newFolder')} onClick={() => onNewFolder(parentRel)} />
       {/* optional soft label: shade a folder with a ladder level (colour swatch, Cast-style — no constraint) */}
       {node?.type === 'folder' && (
         <>
           <MenuSeparator />
-          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">Label as</div>
+          <div className="px-3 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t('menu.labelAs')}</div>
           <div className="flex flex-wrap items-center gap-1.5 px-3 py-1">
             {STORY_LADDER.map((lvl) => (
               <button
@@ -994,7 +998,7 @@ function ContextMenu({
               />
             ))}
             {node.containerType && (
-              <button onMouseDown={(e) => { e.preventDefault(); onSetType(node, null) }} className="ml-0.5 text-[10px] text-faint hover:text-foreground">clear</button>
+              <button onMouseDown={(e) => { e.preventDefault(); onSetType(node, null) }} className="ml-0.5 text-[10px] text-faint hover:text-foreground">{t('menu.clear')}</button>
             )}
           </div>
         </>
@@ -1002,12 +1006,12 @@ function ContextMenu({
       <MenuSeparator />
       {node?.type === 'scene' && <PhaseSection current={node.phase ?? defaultPhase('scene')} onSet={(p) => onSetPhase(node, p)} />}
       {/* folder → bulk phase for every scene beneath (the 1000-scene canon answer); no current check — a folder is mixed */}
-      {node?.type === 'folder' && !node.protected && <PhaseSection current="" label="Phase — every scene inside" onSet={(p) => onSetPhaseBulk(node, p)} />}
+      {node?.type === 'folder' && !node.protected && <PhaseSection current="" label={t('menu.phaseEveryScene')} onSet={(p) => onSetPhaseBulk(node, p)} />}
       {node?.type === 'scene' && <MenuSeparator />}
-      {node?.type === 'scene' && <MenuItem label="Export .md…" onClick={() => onExportScene(node)} />}
+      {node?.type === 'scene' && <MenuItem label={t('menu.exportMd')} onClick={() => onExportScene(node)} />}
       {canEdit && <MenuSeparator />}
-      {canEdit && <MenuItem label="Rename" onClick={() => onRename(node!)} />}
-      {canEdit && <MenuItem label="Delete" danger onClick={() => onDelete(node!)} />}
+      {canEdit && <MenuItem label={t('menu.rename')} onClick={() => onRename(node!)} />}
+      {canEdit && <MenuItem label={t('menu.delete')} danger onClick={() => onDelete(node!)} />}
     </ContextMenuShell>
   )
 }

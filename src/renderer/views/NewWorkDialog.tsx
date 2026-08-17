@@ -8,6 +8,7 @@
  */
 import { useState, type JSX } from 'react'
 import { Loader2, Sparkles } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { Dialog } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +25,7 @@ const KIND_TINT: Record<string, { on: string; dot: string }> = {
 }
 
 export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('newWork')
   const createWork = useWorkspace((s) => s.createWork)
   const pushNotification = useWorkspace((s) => s.pushNotification)
   const loadProjectInfo = useWorkspace((s) => s.loadProjectInfo)
@@ -57,8 +59,8 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
       // the learning nudges land in the mailbox — present when wanted, never blocking. (The tour, which used to be
       // just a nudge here, now launches directly — the first impression is a guided walkthrough, not a wall of
       // prefilled sample pages.) Its steps are KIND-scoped, so a non-fiction project gets the non-fiction tour.
-      pushNotification({ id: 'welcome-work', kind: 'success', title: `“${trimmed}” is ready`, body: 'Write in the editor; the analysis rails light up after your first Update analysis run (status bar). This tour replays any time from Help.' })
-      pushNotification({ id: 'welcome-demos', kind: 'info', title: 'See it alive first', body: 'Open “Office Drama (demo)” or “Hamlet (demo)” from the library — pre-analyzed, every rail already lit.' })
+      pushNotification({ id: 'welcome-work', kind: 'success', title: t('ready.title', { name: trimmed }), body: t('ready.body') })
+      pushNotification({ id: 'welcome-demos', kind: 'info', title: t('demos.title'), body: t('demos.body') })
       setName('')
       onClose()
       setTourStep(0) // launch the KIND-scoped Tour the app on the fresh project
@@ -68,10 +70,10 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
   }
 
   return (
-    <Dialog open={open} onClose={onClose} title="New work" className="h-[80vh] w-[80vw] max-w-[80vw]" bodyClassName="flex min-h-0 flex-col gap-6 overflow-y-auto p-6">
+    <Dialog open={open} onClose={onClose} title={t('title')} className="h-[80vh] w-[80vw] max-w-[80vw]" bodyClassName="flex min-h-0 flex-col gap-6 overflow-y-auto p-6">
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
         <div>
-          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">Name</p>
+          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('name.label')}</p>
           <Input
             autoFocus
             value={name}
@@ -79,14 +81,14 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
             onKeyDown={(e) => {
               if (e.key === 'Enter') void submit()
             }}
-            placeholder="The working title — you can rename any time"
+            placeholder={t('name.placeholder')}
             className="text-sm"
           />
         </div>
 
         <div>
-          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">What is this?</p>
-          <p className="pb-2 text-[11px] text-muted-foreground">Fiction or non-fiction — this shapes what the analysis looks for. You can change it later in Project info.</p>
+          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('domain.label')}</p>
+          <p className="pb-2 text-[11px] text-muted-foreground">{t('domain.hint')}</p>
           <div className="grid grid-cols-2 gap-2">
             {DOMAINS.map((d) => (
               <button
@@ -108,8 +110,8 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
         </div>
 
         <div>
-          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">Structure</p>
-          <p className="pb-2 text-[11px] text-muted-foreground">Picks the world categories (characters, items, suspects…) — change later in Project Structure (⌘,).</p>
+          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('structure.label')}</p>
+          <p className="pb-2 text-[11px] text-muted-foreground">{t('structure.hint')}</p>
           <div className="grid grid-cols-2 gap-2">
             {templates.map((t) => (
               <button
@@ -128,10 +130,8 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
         </div>
 
         <div>
-          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">Language</p>
-          <p className="pb-2 text-[11px] text-muted-foreground">
-            The work’s language steers <b>every</b> analysis pass and AI edit — summaries, thread titles, and findings are written in it. Set it now; a wrong first run costs a re-run.
-          </p>
+          <p className="pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint">{t('language.label')}</p>
+          <p className="pb-2 text-[11px] text-muted-foreground">{t('language.hint')}</p>
           <div className="flex flex-wrap gap-1.5">
             {LANGUAGES.map((l) => (
               <button
@@ -151,9 +151,9 @@ export function NewWorkDialog({ open, onClose }: { open: boolean; onClose: () =>
         <div className="flex items-center gap-3 pt-2">
           <Button disabled={!name.trim() || busy} onClick={() => void submit()}>
             {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Sparkles className="size-3.5" />}
-            Create
+            {t('create')}
           </Button>
-          <span className="text-[11px] text-faint">Starts from the guided starter content — delete its sample pages whenever you like.</span>
+          <span className="text-[11px] text-faint">{t('starterHint')}</span>
         </div>
       </div>
     </Dialog>

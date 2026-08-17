@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Dialog, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
@@ -8,7 +9,7 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Confirm',
+  confirmLabel,
   danger,
   className,
   onConfirm,
@@ -24,6 +25,7 @@ export function ConfirmDialog({
   onConfirm: () => void
   onCancel: () => void
 }): JSX.Element {
+  const { t } = useTranslation('confirm')
   return (
     <Dialog
       region="confirmDialog"
@@ -34,10 +36,10 @@ export function ConfirmDialog({
       title={title}
       footer={
         <DialogFooter>
-          <Button variant="ghost" size="sm" onClick={onCancel}>Cancel</Button>
+          <Button variant="ghost" size="sm" onClick={onCancel}>{t('cancel')}</Button>
           {/* autoFocus → the confirm button owns the keyboard the moment the dialog opens, so Enter confirms
               and Esc cancels (Dialog's own handler) without reaching for the mouse. */}
-          <Button autoFocus size="sm" variant={danger ? 'destructive' : 'default'} onClick={onConfirm}>{confirmLabel}</Button>
+          <Button autoFocus size="sm" variant={danger ? 'destructive' : 'default'} onClick={onConfirm}>{confirmLabel ?? t('confirm')}</Button>
         </DialogFooter>
       }
     >

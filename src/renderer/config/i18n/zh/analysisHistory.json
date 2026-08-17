@@ -1,0 +1,32 @@
+{
+  "title": "分析历史",
+  "empty": "还没有过去的运行记录 — 请从停靠栏的“更新”中运行。",
+  "option_one": "{{when}} · {{count}} 个目标 · {{dur}}",
+  "option_other": "{{when}} · {{count}} 个目标 · {{dur}}",
+  "tab": {
+    "graph": "已分析的图",
+    "stats": "覆盖率与统计"
+  },
+  "graphEmpty": "此运行未涉及任何场景。",
+  "noCoverage": "此运行未记录任何覆盖率。",
+  "kind": {
+    "scene": "场景",
+    "window": "情节线",
+    "profile": "档案",
+    "digest": "摘要",
+    "coherence": "连贯性"
+  },
+  "stat": {
+    "targets": "目标",
+    "rowsWritten": "已写入行数",
+    "done": "已完成",
+    "failedSkipped": "失败 / 已跳过",
+    "duration": "持续时间",
+    "finished": "已结束"
+  },
+  "liveOnlyNote": "运行会保留其覆盖的内容，而不会保留逐步日志（该流仅实时可用）。",
+  "restore": "恢复此版本",
+  "restoreTitle": "将分析数据库回滚到此版本的快照",
+  "snapshotPruned": "快照已清理 — 无法恢复",
+  "close": "关闭"
+}

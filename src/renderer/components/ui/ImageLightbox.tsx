@@ -4,6 +4,7 @@
  * image-detail viewer. Used by galleries + read dialogs to inspect a cover/asset at full size.
  */
 import { useEffect, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { X, ZoomIn, ZoomOut, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ export function ImageLightbox({
   start?: number
   onClose: () => void
 }): JSX.Element {
+  const { t } = useTranslation('imageLightbox')
   const [i, setI] = useState(start)
   const [zoom, setZoom] = useState(1)
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
@@ -47,16 +49,16 @@ export function ImageLightbox({
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/85" onClick={onClose}>
-      <button onClick={onClose} className={cn(ctrl, 'absolute right-4 top-4')} title="Close (Esc)">
+      <button onClick={onClose} className={cn(ctrl, 'absolute right-4 top-4')} title={t('close')}>
         <X className="size-4" />
       </button>
 
       {n > 1 && (
         <>
-          <button onClick={(e) => { e.stopPropagation(); step(-1) }} className={cn(ctrl, 'absolute left-4')} title="Previous (←)">
+          <button onClick={(e) => { e.stopPropagation(); step(-1) }} className={cn(ctrl, 'absolute left-4')} title={t('previous')}>
             <ChevronLeft className="size-5" />
           </button>
-          <button onClick={(e) => { e.stopPropagation(); step(1) }} className={cn(ctrl, 'absolute right-4 top-1/2')} title="Next (→)">
+          <button onClick={(e) => { e.stopPropagation(); step(1) }} className={cn(ctrl, 'absolute right-4 top-1/2')} title={t('next')}>
             <ChevronRight className="size-5" />
           </button>
         </>
@@ -84,14 +86,14 @@ export function ImageLightbox({
       </div>
 
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2" onClick={(e) => e.stopPropagation()}>
-        <button onClick={() => setZoom((z) => clampZoom(z - 0.5))} className={ctrl} title="Zoom out">
+        <button onClick={() => setZoom((z) => clampZoom(z - 0.5))} className={ctrl} title={t('zoomOut')}>
           <ZoomOut className="size-4" />
         </button>
         <span className="min-w-12 text-center font-mono text-xs text-white/80">{Math.round(zoom * 100)}%</span>
-        <button onClick={() => setZoom((z) => clampZoom(z + 0.5))} className={ctrl} title="Zoom in">
+        <button onClick={() => setZoom((z) => clampZoom(z + 0.5))} className={ctrl} title={t('zoomIn')}>
           <ZoomIn className="size-4" />
         </button>
-        <button onClick={() => { setZoom(1); setPos(null) }} className={ctrl} title="Reset">
+        <button onClick={() => { setZoom(1); setPos(null) }} className={ctrl} title={t('reset')}>
           <RotateCcw className="size-4" />
         </button>
         {n > 1 && <span className="ml-2 font-mono text-xs text-white/60">{i + 1} / {n}</span>}

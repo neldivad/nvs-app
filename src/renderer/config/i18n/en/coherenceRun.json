@@ -1,0 +1,27 @@
+{
+  "title": "Check coherence",
+  "summary": {
+    "checking": "checking…",
+    "empty": "No characters have both a page and an arc yet — nothing to check.",
+    "characters_one": "{{count}} character",
+    "characters_other": "{{count}} characters",
+    "pageVsScenes": "page vs what the scenes show",
+    "moved": " · {{n}} moved since last check"
+  },
+  "about": "Diffs each character’s world page against their observed arc — surfacing drift, gaps, and contradictions. Runs in the background; findings land in the Coherence rail.",
+  "connection": {
+    "runsOn": "Runs on",
+    "runsOnTooltip": "Set your analysis connection in the console’s Connections list.",
+    "colConnection": "Connection",
+    "current": "current",
+    "empty": "No AI connections yet — add one in Settings → AI."
+  },
+  "button": {
+    "cancel": "Cancel",
+    "check": "Check coherence"
+  },
+  "critique": {
+    "label": "Also ask the tough questions",
+    "hint": "An opt-in critique pass: does each beat earn its place? Flags setups with no payoff and episodes nothing references (kind: Cuttable?). Opinion, not error — your call."
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "title": "キャラクターアーク",
+  "all": "すべて",
+  "highlight": "ハイライト",
+  "clear": "クリア",
+  "row": {
+    "noFacet": "{{name}} — {{facet}}なし",
+    "openPage": "{{name}} — ページを開く",
+    "povScene": "{{name}} — POVシーン",
+    "band_one": "{{name}} · {{title}}: {{count}}件のイベント",
+    "band_other": "{{name}} · {{title}}: {{count}}件のイベント"
+  },
+  "panel": {
+    "charactersNoun": "登場人物",
+    "rangeLabel": "範囲",
+    "rangeTitle": "イベント数でキャラクターを絞り込む — 下限つまみを上にドラッグして、あまり描かれていない人物を非表示にし、動きの多いアークに集中します。"
+  },
+  "detail": {
+    "firstAppears": "初登場",
+    "lastAppears": "最終登場",
+    "appearsIn": "登場作品",
+    "appearsCount_one": "{{count}}シーン",
+    "appearsCount_other": "{{count}} シーン",
+    "wants": "望み",
+    "goal": "目標",
+    "status": "ステータス",
+    "tension": "葛藤",
+    "over": "めぐるもの",
+    "with": "関係する人物",
+    "changes": "変化",
+    "type": "タイプ",
+    "change": "変化",
+    "summary": "概要",
+    "changesThisChapter_one": "この章で{{count}}件の変化",
+    "changesThisChapter_other": "この章で{{count}}件の変化",
+    "changeCount_one": "{{count}}件の変化",
+    "changeCount_other": "{{count}}件の変化",
+    "openCharPage": "キャラクターページを開く",
+    "metaEvents_one": "{{count}}件のイベント",
+    "metaEvents_other": "{{count}}件のイベント",
+    "metaWindows_one": "{{count}}個のウィンドウ",
+    "metaWindows_other": "{{count}}個のウィンドウ",
+    "journey": "軌跡",
+    "heatCell": "{{title}} — {{count}}行"
+  },
+  "help": {
+    "title": "キャラクターアーク — 読み方",
+    "grid": {
+      "title": "グリッド",
+      "items": [
+        "各**行**はキャラクターを、**列**は読了順のシーンを表します。",
+        "**帯**はシーンをチャプター（フォルダー）ごとにまとめます。キャラクターの変化はシーン単位ではなくチャプター単位で蓄積されます。特性は一定の範囲を通して現れるためです。",
+        "セルの**ドット**はそのチャプターでの変化を種類ごとに色分けして示します。行をクリックするとすべて読めます。"
+      ]
+    },
+    "facet": {
+      "title": "何が変わったか（側面）"
+    },
+    "change": {
+      "title": "どのように変わったか",
+      "rows": {
+        "● gains": "それを得る（目標、味方、影響力など）",
+        "● loses": "それを失う",
+        "● revealed": "それが知られるようになる — 他の登場人物や読者に明らかになる"
+      }
+    },
+    "sheet": {
+      "title": "シート（キャラクターをクリック）",
+      "items": [
+        "シートは**チャプターの鉄道路線**です。各チャプターは**駅**で、キャラクターが変化する停車駅（●）と、そのチャプターで**登場しない、または変化がない**場合の空の停車駅（○ ··）があります。",
+        "駅を開くと、そのチャプターの**概要**、キャラクターの**望み**、**緊張関係**（相手も含む）、そして変化そのものを読めます。"
+      ]
+    },
+    "provenance": {
+      "title": "出典",
+      "items": [
+        "アークは分析エージェントが会話を読み取った結果であり、著者が定めた事実ではありません。分析を再実行すると更新されます。"
+      ]
+    }
+  },
+  "graph": {
+    "edgeTip": "{{a}} — {{b}} · {{value}} — 関係を表示するにはクリック",
+    "nodeTip": "{{name}} · {{value}}",
+    "needTwo": "関係をグラフ化するには、2人以上のキャラクターが必要です。",
+    "group": "グループ {{n}}"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "composition": {
+    "title": "執筆モード",
+    "label": "構成"
+  },
+  "settings": {
+    "title": "設定",
+    "label": "設定"
+  },
+  "theme": {
+    "toggle": "テーマを切り替え",
+    "light": "ライトテーマ",
+    "dark": "ダークテーマ"
+  }
+}

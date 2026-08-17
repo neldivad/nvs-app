@@ -1,0 +1,10 @@
+{
+  "checkTitle": "Deterministic structural checks — no duplicate ids or broken timeline edges",
+  "clean": "Structure — no broken references",
+  "issues_one": "Structure — {{count}} issue",
+  "issues_other": "Structure — {{count}} issues",
+  "toFix": "· {{count}} to fix",
+  "openPage": "Open the page",
+  "openScene": "Open the scene",
+  "more": "…and {{count}} more"
+}

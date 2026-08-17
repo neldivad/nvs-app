@@ -6,6 +6,7 @@
  */
 import { useEffect, useState, type JSX } from 'react'
 import { Loader2, X, ArrowRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useWorkspace } from '@/stores/workspace'
 import { FloatWindow, type Box } from '@/components/layout/FloatWindow'
 import { RelationshipSpine } from '@/components/features/relationships/RelationshipSpine'
@@ -21,6 +22,7 @@ const box = (): Box => ({
 })
 
 export function RelationshipPreviewFloat({ aId, bId, onClose }: { aId: string; bId: string; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('relationships')
   const setRelA = useWorkspace((s) => s.setRelA)
   const setRelB = useWorkspace((s) => s.setRelB)
   const setWorkspace = useWorkspace((s) => s.setWorkspace)
@@ -48,14 +50,14 @@ export function RelationshipPreviewFloat({ aId, bId, onClose }: { aId: string; b
     <FloatWindow region="characterDynamicFloat" persistKey="relationship-preview" accent="var(--character)" maxWidth={760} onEscape={onClose} initial={box}>
       <div className="flex h-full flex-col">
         <div className="flex shrink-0 items-center justify-between border-b border-border px-3 py-2">
-          <div className="truncate text-sm font-medium">{ev ? `${ev.a.name} ↔ ${ev.b.name}` : 'Relationship'}</div>
+          <div className="truncate text-sm font-medium">{ev ? `${ev.a.name} ↔ ${ev.b.name}` : t('preview.title')}</div>
           <button onClick={onClose} className="shrink-0 text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
         </div>
         <div className="min-h-0 flex-1 select-text overflow-auto p-3">
           {!ev ? (
             <div className="flex items-center justify-center py-8 text-muted-foreground"><Loader2 className="size-4 animate-spin" /></div>
           ) : ev.events.length === 0 && ev.coScenes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{ev.a.name} and {ev.b.name} never share a scene.</p>
+            <p className="text-sm text-muted-foreground">{t('preview.neverShare', { a: ev.a.name, b: ev.b.name })}</p>
           ) : (
             <RelationshipSpine ev={ev} sceneAxis={sceneAxis} latest={false} preview={PREVIEW} />
           )}
@@ -64,7 +66,7 @@ export function RelationshipPreviewFloat({ aId, bId, onClose }: { aId: string; b
           onClick={openRail}
           className="flex shrink-0 items-center justify-center gap-1.5 border-t border-border px-3 py-2 text-[12px] font-medium text-character transition-colors hover:bg-character/10"
         >
-          View more on the Relationships rail <ArrowRight className="size-3.5" />
+          {t('preview.viewMore')} <ArrowRight className="size-3.5" />
         </button>
       </div>
     </FloatWindow>

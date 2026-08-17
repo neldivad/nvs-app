@@ -1,0 +1,12 @@
+{
+  "library": {
+    "title": "ライブラリ",
+    "openElsewhere": "別の場所で開く…",
+    "empty": "作品はまだありません。",
+    "workSub": "{{scenes}}シーン · {{world}}ワールド"
+  },
+  "timeline": {
+    "reload": "ディスクから再読み込み",
+    "buildWithAi": "チャットを開いてAIでタイムラインを作成"
+  }
+}

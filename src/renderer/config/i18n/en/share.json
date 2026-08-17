@@ -1,0 +1,13 @@
+{
+  "title": "Share",
+  "untitled": "Untitled",
+  "group": {
+    "export": "Export a file",
+    "shareTo": "Share to"
+  },
+  "tile": {
+    "community": "Community"
+  },
+  "comingSoon": "Coming soon",
+  "footer": "A `.nvsproj` carries the prose _and_ the analysis in one self-contained file. Community & social sharing are coming soon."
+}

@@ -1,0 +1,7 @@
+{
+  "openCharacter": "{{name}} — 打开角色",
+  "inspectThread": "{{name}} — 查看线程",
+  "threadLabel": "线程：{{name}}",
+  "definedTerm": "已定义术语",
+  "chapter": "第 {{num}} 章"
+}

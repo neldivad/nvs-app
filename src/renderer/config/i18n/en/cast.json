@@ -1,0 +1,82 @@
+{
+  "help": {
+    "title": "Cast — how it works",
+    "tabs": {
+      "title": "Tabs",
+      "items": [
+        "**Presence** — dialog-volume bars per scene over a character × scene heatmap (shaded by lines spoken).",
+        "**Co-presence** — how often two characters share a scene (lower-triangle heatmap).",
+        "**Relationships** — the co-presence as a force-directed graph: nodes = characters (sized by appearances), edges = shared scenes. Drag nodes, scroll to zoom; the **scene range** limits it to a stretch (e.g. one act)."
+      ]
+    },
+    "reading": {
+      "title": "Reading it",
+      "items": [
+        "The **wrap bands** across the top group the scene columns by the story hierarchy — one row per folder level (book · act · chapter …), read straight from your folder tree. A level only appears when it actually subdivides what you're viewing, so nesting deeper folders (e.g. region → chapter) adds bands automatically. The **dialogue-volume bars** hanging below are colored by chapter, so you can see each chapter's weight at a glance.",
+        "Hover any cell or bar for its value.",
+        "Click a **row** (character) or **column** (scene) to read it in place.",
+        "The **lines** window trims the cast by how many lines each character speaks — the low thumb hides bit-part / rarely-speaking characters, the high thumb hides the most talkative leads (to focus on the mid-tier), and dragging the band's center slides the whole range. It's the same windowed slider as the scene range.",
+        "The **sidebar** roster picks which characters appear in the matrices — deselect to cut the grid down at scale."
+      ]
+    }
+  },
+  "rail": {
+    "name": "Cast"
+  },
+  "tabs": {
+    "presence": "presence",
+    "copresence": "Co-presence",
+    "graph": "Relationships"
+  },
+  "empty": {
+    "allHidden": {
+      "title": "All cast hidden",
+      "body": "Every name is hidden from the matrices. Click the eye at the top of the roster (left) to show them — or click a name to toggle it back."
+    },
+    "noPresence": {
+      "title": "No speaking presence yet",
+      "body": "Presence is read from scene dialogue — no speaking cast was found in the visible scene range."
+    }
+  },
+  "charactersNoun": "characters",
+  "metric": {
+    "volume": "Volume",
+    "all": "all",
+    "title": "Quasi-log steps — fine at the low end (where the cast collapses), coarse at the top. Edges set the min/max; drag the band's center to slide."
+  },
+  "export": {
+    "presence": "presence",
+    "copresence": "co-presence",
+    "graph": "relationships",
+    "caption": "Cast — {{view}}",
+    "scenes": " · scenes {{from}}–{{to}} of {{total}}",
+    "lines": " · lines {{min}}–{{max}}"
+  },
+  "presence": {
+    "sortByDebut": "Sorted by first appearance — click to sort by lines spoken",
+    "sortByLines": "Sorted by lines spoken — click to sort by first appearance",
+    "firstSeen": "First seen",
+    "mostLines": "Most lines",
+    "cell": "{{name}} · {{title}} — {{value}}",
+    "cellSilent": "{{name}} · {{title}} — present, silent",
+    "sceneVol": "{{title}} — {{value}}"
+  },
+  "copresence": {
+    "cell": "{{a}} + {{b}} — {{value}}",
+    "clickRel": " · click for the relationship"
+  },
+  "sidebar": {
+    "searchCast": "Search cast…",
+    "hideAll": "Hide all",
+    "showAll": "Show all",
+    "noCharacters": "No characters yet.",
+    "include": "Include in the matrices",
+    "exclude": "Exclude from the matrices",
+    "charsSpoken": "{{chars}} chars spoken"
+  },
+  "ranking": {
+    "others": "+{{n}} others",
+    "empty": "No speaking volume yet — this reads from scene dialogue.",
+    "rowTitle": "{{name}} — {{chars}} chars"
+  }
+}

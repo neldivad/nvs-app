@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { Minimize2 } from 'lucide-react'
 import type { ImperativePanelHandle } from 'react-resizable-panels'
 import {
@@ -42,6 +43,7 @@ import { dispatchSave, dispatchUndo, dispatchRedo, dispatchTab } from '@/lib/edi
  * react-resizable-panels, no docking lib (decisions O6).
  */
 export function AppShell(): JSX.Element {
+  const { t } = useTranslation('appShell')
   const loadWorks = useWorkspace((s) => s.loadWorks)
   const dockOpen = useWorkspace((s) => s.dockOpen)
   const setDockOpen = useWorkspace((s) => s.setDockOpen)
@@ -64,6 +66,8 @@ export function AppShell(): JSX.Element {
     void useWorkspace.getState().loadPrompts()
     void applyUiContributions() // apply enabled ui-extension contributions (e.g. the manuscript font)
     void window.nvs.ping().then((r) => setVersion(r.version))
+    void useWorkspace.getState().runUpdateCheck() // no auto-update — just a dismissible "newer version available" nudge, once per launch
+
     // Stream agent events into the chat store (survives the dock/chat being unmounted).
     const offAgent = window.nvs.onAgentEvent(useWorkspace.getState().appendChatEvent)
     // Mirror the main-owned tasks inbox into the store (push on every change; fires the done toast).
@@ -196,7 +200,7 @@ export function AppShell(): JSX.Element {
         </div>
         <button
           onClick={() => setComposing(false)}
-          title="Leave composition mode (Esc)"
+          title={t('leaveComposition')}
           className="app-no-drag fixed right-3 top-3 z-50 flex items-center gap-1 rounded-md border border-border bg-panel/70 px-2 py-1 text-[11px] text-muted-foreground opacity-40 backdrop-blur transition-opacity hover:opacity-100"
         >
           <Minimize2 className="size-3.5" /> Esc

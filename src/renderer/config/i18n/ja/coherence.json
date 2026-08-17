@@ -1,0 +1,117 @@
+{
+  "help": {
+    "title": "一貫性 — 仕組み",
+    "flags": {
+      "title": "検出対象",
+      "items": [
+        "各検出結果は、**ページに書かれていること**（キャラクターまたはスレッドの宣言プロフィール）と、**シーンに描かれていること**を比較します — 章ごとのチェックポイントで読み取ります。",
+        "これは分析エージェントによる読み取りであり、作者が定めた真実ではありません — 確認すべき箇所の一覧であって、従う必要のある判定ではありません。"
+      ]
+    },
+    "questions": {
+      "title": "各チップが問いかけるもの"
+    },
+    "reading": {
+      "title": "検出結果の見方",
+      "rows": {
+        "category": "種類チップ — ページと本編の食い違い · ゆるやかなずれ · ページ未記載 · シーン未描写 · 事実の食い違い · 根拠なし · ルール違反",
+        "severity": "トリアージの色 — 高 · 中 · 低（何を先に検討するか）",
+        "Subject": "対象 — キャラクター、スレッド、またはストーリー全体",
+        "Where": "問題が実際に発生する章（証拠から取得）",
+        "Analyzed through": "実行で読み取った範囲 — すべての検出結果で同じため、問題の発生箇所ではありません",
+        "page says / scenes show": "宣言プロフィールと本文の比較 — 検出の核心"
+      }
+    },
+    "acting": {
+      "title": "対応する",
+      "items": [
+        "**…のページを開く** — 同期していないプロフィールを編集します（検出結果が示す修正箇所です）。",
+        "**シーンで確認** — 変更する前に、参照されているシーンを開いて本文を自分で読みます。",
+        "**スレッドを確認** — 検出結果の対象になっているスレッドに移動します。",
+        "アンバー色の**提案**はアシスタントによる読み取りです — 事実とは意図的に分けられています。助言なので、採用するかはあなた次第です。"
+      ]
+    },
+    "confirmation": {
+      "title": "確認",
+      "items": [
+        "**確認**の検出結果は一貫性が*確認済み*という意味です — 修正することはなく、一覧の下部に移動します。"
+      ]
+    }
+  },
+  "rail": {
+    "name": "整合性",
+    "caption": "整合性 — 指摘"
+  },
+  "loading": "読み込み中…",
+  "filter": {
+    "highlight": "ハイライト",
+    "clear": "クリア"
+  },
+  "scale": {
+    "characters": "登場人物",
+    "rangeLabel": "範囲",
+    "all": "すべて",
+    "rangeTitle": "指摘数で行を絞り込む — 下限ハンドルを上にドラッグして、指摘の少ないキャラクターを非表示にし、最も多く指摘されたキャラクターに集中します。"
+  },
+  "row": {
+    "noKind": "{{name}} — {{kind}}なし",
+    "openPage": "{{name}} — {{kind}} · ページを開く"
+  },
+  "review": {
+    "wholeStory": "物語全体",
+    "subjectKind": {
+      "character": "キャラクター",
+      "item": "アイテム",
+      "faction": "勢力",
+      "lore": "設定",
+      "location": "場所",
+      "thread": "スレッド",
+      "story": "ストーリー"
+    },
+    "ownersPage": "{{owner}}のページ",
+    "pageSays": "ページの記載",
+    "noMention": "これについては言及していません",
+    "scenesShow": "シーンが示す内容",
+    "earlier": "先に確立された事実",
+    "later": "後のシーンが示す内容",
+    "suggestion": "提案 — アシスタントの判断です。最終判断はあなたに委ねられます",
+    "intentional": "意図的",
+    "markIntentional": "意図的としてマーク",
+    "intentionalTitleOn": "意図的と判定済み — クリックして再び指摘を開始",
+    "intentionalTitleOff": "仕様（欺瞞／どんでん返し）ですか？意図的と判定すると、再実行時も指摘されません",
+    "related": "関連",
+    "openOwnersPage": "{{name}}のページを開く",
+    "inspectThread": "スレッドを確認",
+    "chapterEvidenceTitle": "章単位で読む — 一致するシーンを選択",
+    "noScenes": "シーンが見つかりません",
+    "openScene": "「{{title}}」を開く",
+    "setsUp": "物語が仕込んだもの",
+    "comesOf": "その後どうなったか"
+  },
+  "detail": {
+    "fallbackName": "整合性",
+    "unplaced": "未配置",
+    "findingCount_one": "{{count}}件の指摘",
+    "findingCount_other": "{{count}}件の指摘",
+    "tabFindings": "指摘",
+    "tabFinding": "指摘"
+  },
+  "sidebar": {
+    "title": "整合性",
+    "runTitle": "整合性を確認 — 各キャラクターのページと物語の描写を比較します",
+    "reading": "読み込み中…",
+    "empty": "指摘はありません — 分析を実行すると表示されます。",
+    "severity": {
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "noCharacterIssues": "キャラクターの整合性に関する問題はありません。",
+    "plotHoles": "プロットの矛盾 · {{count}}",
+    "onTrack": "欺瞞は順調 ✓ · {{count}}",
+    "intentional": "意図的 ✓ · {{count}}",
+    "threadVerdicts": "スレッドの判定 · {{count}}",
+    "pageVsStory": "ページ vs 本編 · {{count}}",
+    "toughQuestions": "厳しい問い · {{count}}"
+  }
+}

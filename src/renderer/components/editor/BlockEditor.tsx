@@ -9,6 +9,7 @@
 
 import { JSX, createContext, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSaveTarget } from '@/lib/editor/saveTarget'
+import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import {
   EditorContent,
@@ -197,14 +198,6 @@ const CONTENT_STYLE: Record<BlockKind, string> = {
   transition: 'text-xs font-medium uppercase tracking-widest text-muted-foreground'
 }
 
-const PLACEHOLDER: Record<BlockKind, string> = {
-  speech: 'Dialogue…',
-  thinking: 'Inner thought…',
-  narration: 'Narration…',
-  action: 'Stage direction…',
-  transition: 'Cut…'
-}
-
 // ── Slash command palette ─────────────────────────────────────────────────────
 
 /** One palette row: a block-kind insert, or the `/ag` AI-write action (mirrors the world editor). */
@@ -215,15 +208,6 @@ type PaletteItem = {
   icon: React.ReactNode
   iconColor?: string
   pick: 'agent' | BlockKind
-}
-
-const AGENT_ITEM: PaletteItem = {
-  slashCommand: '/agent',
-  label: 'Ask AI to write',
-  description: 'Queue a background edit for this scene (review & apply from Tasks).',
-  icon: <Sparkles className="size-3.5" />,
-  iconColor: 'text-thread',
-  pick: 'agent'
 }
 
 function SlashPalette({
@@ -239,6 +223,7 @@ function SlashPalette({
   onClose: () => void
   showAgent?: boolean // the block-icon menu opens this WITHOUT the agent-command item (it only converts block types)
 }) {
+  const { t } = useTranslation('blockEditor')
   const [idx, setIdx] = useState(0)
 
   const filtered = useMemo(() => {
@@ -251,7 +236,16 @@ function SlashPalette({
         iconColor: KIND_COLOR[b.kind],
         pick: b.kind as BlockKind
       })),
-      ...(showAgent ? [AGENT_ITEM] : [])
+      ...(showAgent
+        ? [{
+            slashCommand: '/agent',
+            label: t('agent.label'),
+            description: t('agent.description'),
+            icon: <Sparkles className="size-3.5" />,
+            iconColor: 'text-thread',
+            pick: 'agent' as const
+          }]
+        : [])
     ]
     const q = filter.toLowerCase()
     return items.filter((b) => b.slashCommand.includes(q) || b.label.toLowerCase().includes(q))
@@ -349,6 +343,7 @@ function SpeakerPicker({
   goToPage?: { label: string; onOpen: () => void } // the character page this cue resolves to (name/alias) — jump link
   onClose: () => void
 }) {
+  const { t } = useTranslation('blockEditor')
   const pickerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [filter, setFilter] = useState(current)
@@ -407,14 +402,14 @@ function SpeakerPicker({
           className="flex w-full items-center gap-1.5 border-b border-border bg-panel-soft/40 px-3 py-1.5 text-left text-[11px] text-thread transition-colors hover:bg-panel-soft"
         >
           <ArrowUpRight className="size-3 shrink-0" />
-          <span className="truncate">Open <b className="font-medium">{goToPage.label}</b> page</span>
+          <span className="truncate">{t('speaker.openPageBefore')} <b className="font-medium">{goToPage.label}</b> {t('speaker.openPageAfter')}</span>
         </button>
       )}
       <input
         ref={inputRef}
         className="w-full border-b border-border bg-transparent px-3 py-1.5 text-xs outline-none placeholder:text-faint"
         value={filter}
-        placeholder="Character name…"
+        placeholder={t('speaker.placeholder')}
         onChange={(e) => setFilter(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'ArrowDown') { e.preventDefault(); setIdx((i) => Math.min(i + 1, filtered.length - 1)) }
@@ -449,11 +444,11 @@ function SpeakerPicker({
               className={cn('flex w-full items-center px-3 py-1.5 text-left text-[11px] text-faint hover:bg-panel-soft', filtered.length > 0 && 'border-t border-border')}
               onMouseDown={(e) => { e.preventDefault(); onSelect(filter.trim().toUpperCase()); onClose() }}
             >
-              Add &ldquo;{filter.trim().toUpperCase()}&rdquo;
+              {t('speaker.add', { name: filter.trim().toUpperCase() })}
             </button>
           ) : (
             <div className={cn('px-3 py-1.5 text-[11px] text-lore', filtered.length > 0 && 'border-t border-border')}>
-              Can&rsquo;t use &ldquo;{filter.trim()}&rdquo; — a cue is letters/digits/spaces and <code>- &rsquo; .</code> only (or <code>???</code>)
+              {t('speaker.invalidBefore', { name: filter.trim() })} <code>- &rsquo; .</code> {t('speaker.invalidOnly')} <code>???</code>{t('speaker.invalidAfter')}
             </div>
           )
         )}
@@ -477,6 +472,7 @@ function MoodPopover({
   onSet: (mood: string) => void // '' = neutral (clear the parenthetical)
   onClose: () => void
 }) {
+  const { t } = useTranslation('blockEditor')
   const popRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [filter, setFilter] = useState(current.toLowerCase())
@@ -520,7 +516,7 @@ function MoodPopover({
         ref={inputRef}
         className="w-full border-b border-border bg-transparent px-3 py-1.5 text-xs outline-none placeholder:text-faint"
         value={filter}
-        placeholder="Emotion, e.g. angry…"
+        placeholder={t('mood.placeholder')}
         onChange={(e) => setFilter(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); onSet(filter.trim()) } }}
       />
@@ -529,7 +525,7 @@ function MoodPopover({
           className="flex w-full items-center px-3 py-1.5 text-left text-[11px] italic text-faint hover:bg-panel-soft"
           onMouseDown={(e) => { e.preventDefault(); onSet('') }}
         >
-          Neutral (no direction)
+          {t('mood.neutral')}
         </button>
         {filtered.map((m) => (
           <button
@@ -606,6 +602,7 @@ function TimingPopover({
   onSet: (start: string, end: string) => void
   onClose: () => void
 }) {
+  const { t } = useTranslation('blockEditor')
   const popRef = useRef<HTMLDivElement>(null)
   const [s, setS] = useState<HMS>(() => splitTC(start))
   const [e, setE] = useState<HMS>(() => splitTC(end))
@@ -633,16 +630,16 @@ function TimingPopover({
       className="z-9999 w-52 rounded-lg border border-border bg-panel p-2.5 shadow-lg"
     >
       <div className="mb-2 flex items-center gap-1 text-[10px] uppercase tracking-wide text-faint">
-        <Clock className="size-2.5" /> Timing <span className="ml-auto font-mono normal-case tracking-normal text-faint/70">hh:mm:ss</span>
+        <Clock className="size-2.5" /> {t('timing.label')} <span className="ml-auto font-mono normal-case tracking-normal text-faint/70">hh:mm:ss</span>
       </div>
-      <TCRow label="Start" val={s} onChange={setS} autoFocus onEnter={() => { commit(); onClose() }} />
-      <TCRow label="End" val={e} onChange={setE} onEnter={() => { commit(); onClose() }} />
+      <TCRow label={t('timing.start')} val={s} onChange={setS} autoFocus onEnter={() => { commit(); onClose() }} />
+      <TCRow label={t('timing.end')} val={e} onChange={setE} onEnter={() => { commit(); onClose() }} />
       <div className="mt-1.5 flex items-center justify-between border-t border-border/60 pt-1.5">
         <button onMouseDown={(ev) => { ev.preventDefault(); onSet('', ''); onClose() }} className="text-[10px] text-faint hover:text-flag">
-          Clear
+          {t('timing.clear')}
         </button>
         <button onMouseDown={(ev) => { ev.preventDefault(); commit(); onClose() }} className="rounded bg-thread/10 px-2 py-0.5 text-[10px] text-thread hover:bg-thread/20">
-          Set
+          {t('timing.set')}
         </button>
       </div>
     </div>,
@@ -724,6 +721,7 @@ function FountainBlockView({
   editor,
   getPos
 }: NodeViewProps) {
+  const { t } = useTranslation('blockEditor')
   const kind: BlockKind = (node.attrs.kind as BlockKind) ?? 'narration'
   const speaker: string = (node.attrs.speaker as string) ?? ''
   const mood: string = (node.attrs.mood as string) ?? '' // '' = neutral (no parenthetical). Speech only.
@@ -904,7 +902,7 @@ function FountainBlockView({
           <button
             ref={timingRef}
             onMouseDown={(e) => { e.preventDefault(); setShowTimingPop((v) => !v) }}
-            title="Timing — the beat's start → end timecodes"
+            title={t('timing.title')}
             className={cn(
               // TEAL (character token) — deliberately distinct from the AMBER (lore) mood chip so timing and mood
               // never read as the same kind of tag.
@@ -913,7 +911,7 @@ function FountainBlockView({
             )}
           >
             <Clock className="size-2.5" />
-            {start ? (end ? `${start} → ${end}` : start) : '+ time'}
+            {start ? (end ? `${start} → ${end}` : start) : t('timing.add')}
           </button>
           {showTimingPop && (
             <TimingPopover
@@ -941,7 +939,7 @@ function FountainBlockView({
               setShowSpeaker((v) => !v)
             }}
           >
-            {speaker || <span className="font-normal italic text-faint">no speaker</span>}
+            {speaker || <span className="font-normal italic text-faint">{t('speaker.noSpeaker')}</span>}
             <ChevronDown className="size-2.5 opacity-50" />
           </button>
           {showSpeaker && (
@@ -961,13 +959,13 @@ function FountainBlockView({
               <button
                 ref={moodRef}
                 onMouseDown={(e) => { e.preventDefault(); setShowMood((v) => !v) }}
-                title="Delivery / mood — the (parenthetical) after the speaker"
+                title={t('mood.title')}
                 className={cn(
                   'rounded px-1.5 py-0.5 text-[11px] transition-colors',
                   mood ? 'bg-panel-soft italic text-lore hover:bg-panel' : 'text-faint/60 hover:bg-panel-soft hover:text-faint'
                 )}
               >
-                {mood ? `(${mood.toLowerCase()})` : '+ mood'}
+                {mood ? `(${mood.toLowerCase()})` : t('mood.add')}
               </button>
               {showMood && (
                 <MoodPopover
@@ -986,7 +984,7 @@ function FountainBlockView({
       <div className="flex gap-3">
         <div className="relative mt-0.75 w-4 shrink-0" contentEditable={false}>
           <button
-            title="Change block type"
+            title={t('blockType')}
             onMouseDown={(e) => { e.preventDefault(); setBlockMenuOpen((v) => !v) }}
             className={cn(
               'block rounded transition-opacity hover:bg-panel-soft',
@@ -1012,7 +1010,7 @@ function FountainBlockView({
               CONTENT_STYLE[kind],
               'empty:before:pointer-events-none empty:before:text-faint/40 empty:before:content-[attr(data-placeholder)]'
             )}
-            data-placeholder={PLACEHOLDER[kind]}
+            data-placeholder={t(`placeholder.${kind}`)}
           />
 
           {paletteQuery !== null && (
@@ -1141,6 +1139,7 @@ const FountainBlock = TiptapNode.create({
 // ── BlockEditor component ─────────────────────────────────────────────────────
 
 export function BlockEditor({ registerApply, jumpTo }: { registerApply?: (fn: ((text: string, mode: PageEditMode) => void) | null) => void; jumpTo?: { line: number; seq: number } }): JSX.Element {
+  const { t } = useTranslation('blockEditor')
   const body = useWorkspace((s) => s.body)
   const raw = useWorkspace((s) => s.raw)
   const setBody = useWorkspace((s) => s.setBody)
@@ -1309,7 +1308,7 @@ export function BlockEditor({ registerApply, jumpTo }: { registerApply?: (fn: ((
             onNext={() => stepFind(1)}
             onPrev={() => stepFind(-1)}
             onClose={closeFind}
-            placeholder="Find in scene"
+            placeholder={t('find')}
           />
           {editor && <SearchMinimap markers={sceneMarkers(editor)} onJump={(i) => { gotoSceneSearch(editor, i); syncFind() }} />}
         </>

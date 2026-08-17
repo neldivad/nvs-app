@@ -6,6 +6,7 @@
  * finding → coherence, sequence → timeline config (and activates it). Keyboard: ↑/↓ move, Enter opens, Esc closes.
  */
 import { useEffect, useMemo, useRef, useState, type JSX, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Search, FileText, Globe, Users, Spline, Package, ShieldAlert, KeyRound, ScrollText, Route, CornerDownLeft } from 'lucide-react'
 import { regionAttrs } from '@/config/regions'
 import { HOTKEYS } from '@/config/hotkeys'
@@ -83,6 +84,7 @@ function fuzzyScore(q: string, text: string): number | null {
 }
 
 export function CommandPalette(): JSX.Element | null {
+  const { t } = useTranslation('commandPalette')
   const open = useWorkspace((s) => s.searchOpen)
   const setOpen = useWorkspace((s) => s.setSearchOpen)
   const scenes = useWorkspace((s) => s.scenes)
@@ -190,7 +192,7 @@ export function CommandPalette(): JSX.Element | null {
         group: 'Custody',
         icon: <KeyRound className="size-3.5 shrink-0 text-lore" />,
         title: c.name,
-        subtitle: `${c.topic} · ${c.records.length} checkpoint${c.records.length === 1 ? '' : 's'}`,
+        subtitle: `${c.topic} · ${t('checkpoints', { count: c.records.length })}`,
         // openPage(kind: custody) routes to the Custody workspace AND selects the topic page.
         run: after(() => void openPage({ path: c.path, title: c.name, kind: 'custody' }))
       })
@@ -220,17 +222,17 @@ export function CommandPalette(): JSX.Element | null {
           setSelectedEntity(e.id)
         })
       })
-    for (const t of loreView?.topics ?? [])
+    for (const lt of loreView?.topics ?? [])
       hits.push({
-        key: `lore:${t.loreId}`,
+        key: `lore:${lt.loreId}`,
         group: 'Lore',
         icon: <ScrollText className="size-3.5 shrink-0 text-lore" />,
-        title: humanize(t.label),
-        subtitle: `${t.disclosures.length} disclosure${t.disclosures.length === 1 ? '' : 's'}${t.hasRetcon ? ' · paradox' : ''}`,
+        title: humanize(lt.label),
+        subtitle: `${t('disclosures', { count: lt.disclosures.length })}${lt.hasRetcon ? ` · ${t('paradox')}` : ''}`,
         run: after(() => {
           setWorkspace('threads')
           setThreadsTab('lore') // resets selection — so select AFTER
-          setSelectedLore(t.loreId)
+          setSelectedLore(lt.loreId)
         })
       })
     // Resolve a finding's entityId → a display name (its subject) so findings are searchable BY character.
@@ -258,7 +260,7 @@ export function CommandPalette(): JSX.Element | null {
         group: 'Sequences',
         icon: <Route className="size-3.5 shrink-0 text-thread" />,
         title: seq.name,
-        subtitle: `chart axis · ${seq.path.length} scene${seq.path.length === 1 ? '' : 's'}`,
+        subtitle: `${t('chartAxis')} · ${t('sceneCount', { count: seq.path.length })}`,
         run: after(() => {
           void setActiveChartSequence(seq.id)
           setTimelineTab('config')
@@ -266,7 +268,7 @@ export function CommandPalette(): JSX.Element | null {
         })
       })
     return hits
-  }, [scenes, worldPages, custodyTopics, threads, entities, loreView, coherence, chartSequences, openPage, setWorkspace, setThreadsTab, setSelectedThread, setSelectedEntity, setSelectedFinding, setSelectedLore, setActiveChartSequence, setTimelineTab, setOpen])
+  }, [t, scenes, worldPages, custodyTopics, threads, entities, loreView, coherence, chartSequences, openPage, setWorkspace, setThreadsTab, setSelectedThread, setSelectedEntity, setSelectedFinding, setSelectedLore, setActiveChartSequence, setTimelineTab, setOpen])
 
   // Fuzzy-rank into sections. Each hit scores by the best of its title / subtitle (subtitle penalized so a
   // title match wins); non-matches drop. Within a group, sort by score; then order the GROUPS by their best
@@ -306,7 +308,7 @@ export function CommandPalette(): JSX.Element | null {
       group: 'Content',
       icon: <FileText className="size-3.5 shrink-0 text-faint" />,
       title: m.title,
-      subtitle: m.count > 1 ? `${m.count} matches` : `line ${m.line}`,
+      subtitle: m.count > 1 ? t('matches', { count: m.count }) : t('lineNo', { line: m.line }),
       detail: highlight(m.snippet, q), // the prose snippet with the matched term marked (nelfuma-style)
       run: () => {
         setOpen(false)
@@ -316,7 +318,7 @@ export function CommandPalette(): JSX.Element | null {
       }
     }))
     return { group: 'Content', rows }
-  }, [content, query, worldByPath, openPage, setWorkspace, setOpen])
+  }, [t, content, query, worldByPath, openPage, setWorkspace, setOpen])
 
   const rendered = useMemo(() => (contentSection ? [...sections, contentSection] : sections), [sections, contentSection])
   const flat = useMemo<Hit[]>(() => rendered.flatMap((s) => s.rows), [rendered])
@@ -364,7 +366,7 @@ export function CommandPalette(): JSX.Element | null {
               setActive(0)
             }}
             onKeyDown={onKey}
-            placeholder="Search titles — or a phrase to find it inside your prose…"
+            placeholder={t('placeholder')}
             className="w-full bg-transparent text-[13px] text-foreground outline-none placeholder:text-faint"
           />
           <kbd className="shrink-0 rounded border border-border px-1 text-[10px] text-faint">Esc</kbd>
@@ -373,14 +375,14 @@ export function CommandPalette(): JSX.Element | null {
         <div ref={listRef} className="min-h-0 flex-1 overflow-auto py-1">
           {flat.length === 0 ? (
             <p className="px-3 py-6 text-center text-[12px] text-muted-foreground">
-              {all.length === 0 ? 'No content yet — run analysis or add scenes.' : 'No matches.'}
+              {all.length === 0 ? t('empty.noContent') : t('empty.noMatches')}
             </p>
           ) : (
             rendered.map(({ group: g, rows }) => {
               if (!rows.length) return null
               return (
                 <div key={g}>
-                  <div className="px-3 pb-0.5 pt-1.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{g}</div>
+                  <div className="px-3 pb-0.5 pt-1.5 text-[10px] font-semibold uppercase tracking-wide text-faint">{t(`group.${g.toLowerCase()}`)}</div>
                   {rows.map((h) => {
                     idx++
                     const myIdx = idx

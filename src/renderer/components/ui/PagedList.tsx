@@ -7,6 +7,7 @@
  * The caller still passes the full (filtered) array — only `pageSize * page` of it is mounted.
  */
 import { useEffect, useState, type ReactNode, type JSX } from 'react';
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 export function PagedList<T>({
@@ -15,7 +16,7 @@ export function PagedList<T>({
   getKey,
   resetKey = '',
   pageSize = 30,
-  empty = 'Nothing here',
+  empty,
   heightClass = 'h-56',
   className
 }: {
@@ -28,6 +29,7 @@ export function PagedList<T>({
   heightClass?: string // the constant height (overflow scrolls)
   className?: string
 }): JSX.Element {
+  const { t } = useTranslation('pagedList')
   const [page, setPage] = useState(1)
   useEffect(() => setPage(1), [resetKey])
 
@@ -38,7 +40,7 @@ export function PagedList<T>({
   return (
     <div className={cn('overflow-auto p-1', heightClass, className)}>
       {items.length === 0 ? (
-        <p className="px-2 py-3 text-center text-[10px] text-faint">{empty}</p>
+        <p className="px-2 py-3 text-center text-[10px] text-faint">{empty ?? t('empty')}</p>
       ) : (
         <>
           {visible.map((it) => (
@@ -49,7 +51,7 @@ export function PagedList<T>({
               onClick={() => setPage((p) => p + 1)}
               className="mt-1 w-full rounded px-2 py-1 text-center text-[10px] text-muted-foreground hover:bg-panel-soft"
             >
-              Load {Math.min(remaining, pageSize)} more · {remaining} left
+              {t('loadMore', { n: Math.min(remaining, pageSize), left: remaining })}
             </button>
           )}
         </>

@@ -1,0 +1,45 @@
+{
+  "layers": "Layers",
+  "layer": {
+    "presence": {
+      "label": "Presence",
+      "hint": "Back-to-back dialogue bars per scene (A ◀ cell ▶ B)"
+    },
+    "mutual": {
+      "label": "Mutual scenes",
+      "hint": "Only scenes where BOTH of the pair appear — hides solo scenes too"
+    },
+    "empty": {
+      "label": "Empty nodes",
+      "hint": "Show the time-gap ghosts (scenes where neither of the pair appears); off hides them"
+    },
+    "chapters": {
+      "label": "Chapters",
+      "hint": "Band/shell the scenes by chapter (folder)"
+    },
+    "warmth": {
+      "label": "Warmth",
+      "hint": "Replace the spine with the warmth trajectory (Warm↔Cold axis)"
+    },
+    "events": {
+      "label": "Events",
+      "hint": "Shift markers flanking each scene; click for the detail"
+    },
+    "pov": {
+      "label": "POV",
+      "hint": "Glow each character's POV scenes (authored, else the dominant speaker)"
+    },
+    "silent": {
+      "label": "Silent presence",
+      "hint": "Also show present-but-silent cast (the prose-read room), not just speakers"
+    },
+    "observed": {
+      "label": "Observed",
+      "hint": "Ghost marks where ANALYSIS saw this topic move/reveal with no declared checkpoint — the unplanned-reveal diff"
+    },
+    "irony": {
+      "label": "Irony",
+      "hint": "Dramatic-irony bands from custody topics — the reader knows what this fighter doesn't (band on the unknowing side)"
+    }
+  }
+}

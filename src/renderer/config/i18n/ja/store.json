@@ -1,0 +1,55 @@
+{
+  "field": {
+    "kind": "種類",
+    "type": "タイプ",
+    "status": "ステータス",
+    "author": "著者",
+    "language": "言語",
+    "genre": "ジャンル",
+    "subject": "主題",
+    "themes": "テーマ",
+    "warnings": "注意事項",
+    "keywords": "キーワード"
+  },
+  "relation": {
+    "series": "シリーズ",
+    "basedOn": "原作",
+    "forkedFrom": "派生元",
+    "coverOf": "カバー元",
+    "prompt": "プロンプト"
+  },
+  "heading": {
+    "synopsis": "あらすじ",
+    "credits": "クレジット",
+    "relations": "関係"
+  },
+  "button": {
+    "edit": "編集",
+    "showLess": "一部を表示",
+    "showAll": "すべて表示（{{count}}件）"
+  },
+  "empty": {
+    "noSynopsis": "あらすじはまだありません。",
+    "contributor": "寄稿者"
+  },
+  "nav": {
+    "back": "戻る",
+    "projects": "プロジェクト",
+    "backToWork": "作業に戻る",
+    "backToProjects": "プロジェクトに戻る"
+  },
+  "shell": {
+    "heading": "ストア"
+  },
+  "tab": {
+    "works": "作品",
+    "worksHint": "他の作家が共有したストーリー",
+    "extensions": "拡張機能",
+    "extensionsHint": "NVS内で動作するツール",
+    "claudeHint": "Claudeから小説を使用"
+  },
+  "search": {
+    "works": "作品を検索…",
+    "extensions": "拡張機能を検索…"
+  }
+}

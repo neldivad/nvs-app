@@ -5,6 +5,7 @@
  * the canvas panel, so switching here re-seeds the canvas there.
  */
 import { JSX, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { regionAttrs } from '@/config/regions'
 import { useCorkboard } from '@/stores/corkboard'
@@ -14,6 +15,7 @@ import { MAX_CORKBOARDS } from '@shared/ipc'
 import { cn } from '@/lib/utils'
 
 export function CorkboardSidebar(): JSX.Element {
+  const { t } = useTranslation('corkboard')
   const file = useCorkboard((s) => s.file)
   const setActive = useCorkboard((s) => s.setActive)
   const addBoard = useCorkboard((s) => s.addBoard)
@@ -36,12 +38,12 @@ export function CorkboardSidebar(): JSX.Element {
   return (
     <div {...regionAttrs('sidebar')} className="flex h-full flex-col bg-panel">
       <SidebarHeader
-        title="Boards"
+        title={t('board.boards')}
         count={boards.length}
         action={
           <button
-            onClick={() => (full ? setNotice(`You’ve reached the ${MAX_CORKBOARDS}-board limit.`) : addBoard())}
-            title={full ? `Max ${MAX_CORKBOARDS} boards` : 'New board'}
+            onClick={() => (full ? setNotice(t('board.limitReached', { max: MAX_CORKBOARDS })) : addBoard())}
+            title={full ? t('board.maxTitle', { max: MAX_CORKBOARDS }) : t('board.newBoard')}
             className={cn('transition-colors', full ? 'text-faint hover:text-warn' : 'text-muted-foreground hover:text-foreground')}
           >
             <Plus className="size-3.5" />
@@ -50,7 +52,7 @@ export function CorkboardSidebar(): JSX.Element {
       />
       <SidebarScroll>
         {boards.length === 0 ? (
-          <div className="px-3 py-2 text-xs text-faint">No boards yet.</div>
+          <div className="px-3 py-2 text-xs text-faint">{t('board.emptyBoards')}</div>
         ) : (
           boards.map((b) => (
             <SidebarRow
@@ -83,7 +85,7 @@ export function CorkboardSidebar(): JSX.Element {
                       setEditing(b.id)
                       setDraft(b.name)
                     }}
-                    title="Rename"
+                    title={t('common.rename')}
                     className={cn(iconBtn, 'hover:text-foreground')}
                   >
                     <Pencil className="size-3" />
@@ -93,7 +95,7 @@ export function CorkboardSidebar(): JSX.Element {
                       e.stopPropagation()
                       deleteBoard(b.id)
                     }}
-                    title="Delete"
+                    title={t('common.delete')}
                     className={cn(iconBtn, 'hover:text-flag')}
                   >
                     <Trash2 className="size-3" />

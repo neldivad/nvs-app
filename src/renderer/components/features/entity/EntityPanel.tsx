@@ -25,8 +25,9 @@ import { RailHeader } from '@/components/ui/RailHeader'
 import { Dialog } from '@/components/ui/dialog'
 import { HelpSection, HelpTable, HelpList } from '@/components/ui/help'
 import { PageReadDialog } from '@/components/dialogs/PageReadDialog'
-import { DetailSplitView, type FeedEvent, type FeedChapter, type DetailEndpoint } from '@/components/layout/DetailSplitView'
+import { DetailSplitView, type FeedEvent, type FeedChapter } from '@/components/layout/DetailSplitView'
 import { AppearanceHeatStrip, type HeatCell } from '@/components/layout/AppearanceHeatStrip'
+import { useTranslation } from 'react-i18next'
 import type { CharacterArc, ArcWindow, EntityTrack } from '@shared/ipc'
 
 /** Stable palette assignment for OPEN facets: sorted facet names cycle through the six facet color slots. */
@@ -36,6 +37,7 @@ function facetPalette(facets: string[]): Map<string, FacetVisual> {
 }
 
 export function EntityPanel(): JSX.Element {
+  const { t } = useTranslation('entity')
   const arcs = useWorkspace((s) => s.entityArcs)
   const tracks = useWorkspace((s) => s.entityTracks)
   const scenes = useWorkspace((s) => s.scenes)
@@ -116,7 +118,7 @@ export function EntityPanel(): JSX.Element {
               disabled={disabled}
               onClick={() => select(selectedId === a.entityId ? null : a.entityId)}
               className={cn('flex h-full w-full items-center gap-1.5 border-l-2 border-transparent pr-2 pl-1.5 text-left', disabled && 'opacity-30')}
-              title={disabled ? `${a.name} — no ${facet}` : `${a.name} — open journey`}
+              title={disabled ? t('panel.rowNoFacet', { name: a.name, facet }) : t('panel.rowOpen', { name: a.name })}
             >
               <Icon className={cn('size-3 shrink-0', text)} />
               <span className={GANTT_ROW_TITLE}>{a.name}</span>
@@ -134,7 +136,7 @@ export function EntityPanel(): JSX.Element {
                   key={i}
                   disabled={disabled}
                   onClick={() => select(selectedId === a.entityId ? null : a.entityId)}
-                  title={`${a.name} · ${w.title}: ${w.events.length} change${w.events.length === 1 ? '' : 's'}`}
+                  title={t('panel.bandTitle', { name: a.name, title: w.title, changes: t('changes', { count: w.events.length }) })}
                   className={cn('absolute top-1/2 flex h-4 -translate-y-1/2 items-center gap-0.5 overflow-hidden rounded-sm border border-border bg-panel-soft px-1', disabled && 'opacity-30')}
                   style={{ left: min * colW + 1, width }}
                 >
@@ -162,7 +164,7 @@ export function EntityPanel(): JSX.Element {
       <RailHeader data-export-hide="1" className="overflow-x-auto">
         {catsUsed.length > 1 && (
           <>
-            <span className="shrink-0 text-faint">Category</span>
+            <span className="shrink-0 text-faint">{t('panel.category')}</span>
             {catsUsed.map((c) => {
               const { Icon, text } = entityVisual(c)
               const on = cat === c
@@ -183,7 +185,7 @@ export function EntityPanel(): JSX.Element {
         )}
         {effectiveCat && facetsUsed.length > 0 && (
           <>
-            <span className={cn('shrink-0 text-faint', catsUsed.length > 1 && 'ml-2 border-l border-border pl-3')}>Highlight</span>
+            <span className={cn('shrink-0 text-faint', catsUsed.length > 1 && 'ml-2 border-l border-border pl-3')}>{t('panel.highlight')}</span>
             {facetsUsed.map((f) => {
               const v = palette.get(f)!
               return (
@@ -198,9 +200,9 @@ export function EntityPanel(): JSX.Element {
             })}
           </>
         )}
-        {catsUsed.length === 0 && <span className="text-faint">— no journeys recorded yet</span>}
+        {catsUsed.length === 0 && <span className="text-faint">{t('panel.noJourneys')}</span>}
         {(facet || cat) && (
-          <button onClick={() => { setFacet(null); setCat(null) }} className="ml-1 shrink-0 text-faint hover:text-foreground">clear</button>
+          <button onClick={() => { setFacet(null); setCat(null) }} className="ml-1 shrink-0 text-faint hover:text-foreground">{t('panel.clear')}</button>
         )}
       </RailHeader>
       <LifecycleGantt
@@ -224,23 +226,23 @@ export function EntityPanel(): JSX.Element {
           onReset: win.range ? () => win.setRange(null) : undefined,
           title: `${sceneCols[win.lo]?.title ?? '?'} → ${sceneCols[win.hi]?.title ?? '?'}`
         }}
-        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: 'entities', page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
+        page={{ from: scoped.from, to: scoped.to, total: scoped.total, noun: t('panel.entitiesNoun'), page: scoped.page, pageCount: scoped.pageCount, onPage: setPage }}
         metric={{
-          label: 'Range',
+          label: t('panel.range'),
           min: 1,
           max: maxCh,
           value: [loCh, hiCh],
           onChange: setChWin,
-          readout: chAll ? 'all' : `${loCh}${loCh !== hiCh ? `–${hiCh}` : ''}`,
+          readout: chAll ? t('panel.all') : `${loCh}${loCh !== hiCh ? `–${hiCh}` : ''}`,
           onReset: chAll ? undefined : () => setChWin(null),
-          title: 'Trim entities by change count — drag the low thumb up to hide barely-tracked items and focus the busiest journeys.'
+          title: t('panel.trimTip')
         }}
       />
       <RailChrome
         region="entityPanel"
-        name="Entity journey"
+        name={t('panel.railName')}
         layers={['chapters']}
-        export={{ file: 'entity-rail', caption: () => 'Entity journey' }}
+        export={{ file: 'entity-rail', caption: () => t('panel.railName') }}
         help={EntityHelp}
       />
       {preview && <PageReadDialog path={preview.path} kind="scene" title={preview.title} onClose={() => setPreview(null)} />}
@@ -267,38 +269,21 @@ function ChangeDots({ events, width, facet }: { events: ArcWindow['events']; wid
 
 // ── Help ────────────────────────────────────────────────────────────────────────
 function EntityHelp({ open, onClose }: { open: boolean; onClose: () => void }): JSX.Element {
+  const { t } = useTranslation('entity')
   return (
-    <Dialog open={open} onClose={onClose} title="Entity journeys — how to read them" size="detail">
+    <Dialog open={open} onClose={onClose} title={t('help.title')} size="detail">
       <div className="space-y-5">
-        <HelpSection title="The grid">
-          <HelpList
-            items={[
-              <>Each <b className="text-foreground/80">row</b> is a tracked thing (item · faction · …); <b className="text-foreground/80">columns</b> are scenes in reading order.</>,
-              <>The <b className="text-foreground/80">bands</b> group scenes into chapters — a thing's changes are accumulated per chapter, like a character's.</>,
-              <>A band's <b className="text-foreground/80">dots</b> are the changes in that chapter, colored by direction; click a row to read the journey.</>
-            ]}
-          />
+        <HelpSection title={t('help.grid.title')}>
+          <HelpList items={t('help.grid.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="How it moved (every change is one of four)">
-          <HelpTable
-            rows={[
-              ['● gain', 'it strengthens / is acquired / rises'],
-              ['● loss', 'it weakens / is destroyed / falls'],
-              ['● shift', 'a lateral move — changes hands, is altered, realigns'],
-              ['● reveal', 'it becomes known — exposed or discovered']
-            ]}
-          />
+        <HelpSection title={t('help.moved.title')}>
+          <HelpTable rows={Object.entries(t('help.moved.rows', { returnObjects: true }) as Record<string, string>)} />
         </HelpSection>
-        <HelpSection title="What changed (the facet)">
-          <HelpList
-            items={[
-              <>Facets are <b className="text-foreground/80">per category</b>: an item moves along custody · state · location · function; a faction along power · standing · allegiance · territory.</>,
-              <>Only <b className="text-foreground/80">arc-worthy</b> things get journeys: it has a world page, recurs across scenes, or the analysis flagged it major.</>
-            ]}
-          />
+        <HelpSection title={t('help.facet.title')}>
+          <HelpList items={t('help.facet.items', { returnObjects: true }) as string[]} />
         </HelpSection>
-        <HelpSection title="Provenance">
-          <HelpList items={[<>The journey is the analysis agent's reading of the scenes — its understanding, not authored truth. Re-running analysis refreshes it.</>]} />
+        <HelpSection title={t('help.provenance.title')}>
+          <HelpList items={t('help.provenance.items', { returnObjects: true }) as string[]} />
         </HelpSection>
       </div>
     </Dialog>
@@ -311,6 +296,7 @@ function EntityHelp({ open, onClose }: { open: boolean; onClose: () => void }): 
  *  when authored), facet-filter chips shared with the panel (store `entityFacet`), the chapter-railway journey
  *  with character names linked, and the presence trail as clickable scene previews. */
 export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrack; arc: CharacterArc | null; onClose: () => void; focus?: string | null }): JSX.Element {
+  const { t } = useTranslation('entity')
   const storyTree = useWorkspace((s) => s.storyTree)
   const worldPages = useWorkspace((s) => s.worldPages)
   const scenes = useWorkspace((s) => s.scenes)
@@ -369,27 +355,8 @@ export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrac
     [orderedScenes, weightOf, chapterIndex, sceneById]
   )
 
-  // Span endpoints — first & last scene THIS entity appears in, reading order (the shared SPAN⇄APPEARS slot).
-  const presence = useMemo(
-    () => [...track.scenes].sort((a, b) => (graph.scenes[a.sceneId]?.linearPos ?? 1e9) - (graph.scenes[b.sceneId]?.linearPos ?? 1e9)),
-    [track, graph]
-  )
-  const firstApp = presence[0]
-  const lastApp = presence[presence.length - 1]
-  const sceneRef = (s: { sceneId: string; title: string } | undefined): ReactNode => {
-    if (!s) return <span className="text-faint">—</span>
-    const sc = sceneById.get(s.sceneId)
-    return (
-      <button onClick={() => sc && setPreview({ path: sc.path, title: sc.title, kind: 'scene' })} title={s.title} className={cn('block max-w-full truncate text-left hover:underline', text)}>
-        {s.title}
-      </button>
-    )
-  }
-  const endpoints: DetailEndpoint[] = [
-    { k: 'First appears', v: sceneRef(firstApp) },
-    { k: 'Last appears', v: sceneRef(lastApp) },
-    { k: 'Appears in', v: `${track.scenes.length} scene${track.scenes.length === 1 ? '' : 's'}` }
-  ]
+  // An entity is FACT-LIKE: its span (first/last/count) is already visible in the appearance strip, so no
+  // endpoints grid — the strip is the one pinned main view (no RESOLVES⇄APPEARS toggle; threads keep theirs).
 
   // Journey feed — one event per chapter WINDOW: its synthesis + the facet/change table (the old EntityWindowCard).
   const allWindows = useMemo(() => (arc?.windows ?? []).filter((w) => w.events.length > 0), [arc])
@@ -403,7 +370,7 @@ export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrac
       {w.summary && <p className="text-[12px] leading-relaxed text-foreground/85">{w.summary}</p>}
       {w.events.length > 0 && (
         <div>
-          <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">Changes</div>
+          <div className="mb-1 text-[9.5px] font-medium uppercase tracking-wide text-faint">{t('detail.changesHeading')}</div>
           <div className="grid grid-cols-[auto_auto_1fr] items-start gap-x-3 gap-y-1.5 rounded-md border border-border/60 px-3 py-2 text-[11.5px]">
             {w.events.map((e, k) => {
               const v = entityChangeVisual(e.change)
@@ -435,9 +402,9 @@ export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrac
       chapterKey: chKey,
       pos: posOf.get(chKey) ?? 1e9,
       title: chapterIndex.chapters.get(chKey)?.title ?? w.title,
-      summary: w.summary || `${w.events.length} change${w.events.length === 1 ? '' : 's'} this chapter`,
+      summary: w.summary || t('detail.changesThisChapter', { count: w.events.length }),
       detail: windowDetail(w),
-      kind: `${w.events.length} change${w.events.length === 1 ? '' : 's'}`,
+      kind: t('changes', { count: w.events.length }),
       onOpen: sc ? () => setPreview({ path: sc.path, title: sc.title, kind: 'scene' }) : undefined
     }
   })
@@ -450,7 +417,7 @@ export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrac
         icon={<Icon className={cn('size-4 shrink-0', text)} />}
         title={
           page ? (
-            <button onClick={() => void openPage({ path: page.path, title: page.name, kind: page.kind })} className={cn('inline-flex items-center gap-1 hover:underline', text)} title={`Open ${track.type} page`}>
+            <button onClick={() => void openPage({ path: page.path, title: page.name, kind: page.kind })} className={cn('inline-flex items-center gap-1 hover:underline', text)} title={t('detail.openPage', { type: track.type })}>
               {track.name} <ExternalLink className="size-3 shrink-0" />
             </button>
           ) : (
@@ -465,10 +432,9 @@ export function EntityDetail({ track, arc, onClose, focus }: { track: EntityTrac
             )}
           </>
         }
-        meta={`${total} change${total === 1 ? '' : 's'} · ${track.scenes.length} scene${track.scenes.length === 1 ? '' : 's'}`}
-        endpoints={endpoints}
+        meta={`${t('changes', { count: total })} · ${t('sceneCount', { count: track.scenes.length })}`}
         heatmap={<AppearanceHeatStrip cells={heatCells} accentClass={text} />}
-        tabs={[{ id: 'feed', label: 'Journey', icon: <Rows3 className="size-3.5" />, count: allWindows.length }]}
+        tabs={[{ id: 'feed', label: t('detail.journey'), icon: <Rows3 className="size-3.5" />, count: allWindows.length }]}
         tab="feed"
         onTab={() => {}}
         chapters={chapters}

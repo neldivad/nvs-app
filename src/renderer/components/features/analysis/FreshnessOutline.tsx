@@ -13,6 +13,7 @@
  * level-of-detail), plus a hard per-folder render cap so a 1000-scene book never paints 1000 nodes.
  */
 import { useMemo, useState, type JSX } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import type { AnalysisDepth } from '@shared/ipc'
 import { useWorkspace } from '@/stores/workspace'
@@ -29,17 +30,14 @@ export const STATE_COLOR: Record<SceneState, string> = {
   read: 'var(--ok)', // history: this run read it
   notRun: 'var(--faint)' // history: this run did not touch it
 }
-export const STATE_LABEL: Record<SceneState, string> = {
-  willRead: 'will read', fresh: 'up to date', draft: 'draft', offVariant: 'off timeline', read: 'read', notRun: 'not run'
-}
-
 const COLLAPSE_OVER = 30 // a folder with more descendant scenes than this starts collapsed (drill to open)
 const SCENE_CAP = 60 // max scene rows painted under one folder — the backstop against a giant flat chapter
 
 function StateBar({ counts, order }: { counts: Counts; order: SceneState[] }): JSX.Element | null {
+  const { t } = useTranslation('freshnessOutline')
   if (!counts.total) return null
   return (
-    <div className="flex h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-panel-soft" title={order.filter((k) => counts[k]).map((k) => `${counts[k]} ${STATE_LABEL[k]}`).join(' · ')}>
+    <div className="flex h-1.5 w-24 shrink-0 overflow-hidden rounded-full bg-panel-soft" title={order.filter((k) => counts[k]).map((k) => `${counts[k]} ${t(`state.${k}`)}`).join(' · ')}>
       {order.map((k) => (counts[k] > 0 ? <div key={k} style={{ flex: counts[k], backgroundColor: STATE_COLOR[k] }} /> : null))}
     </div>
   )
@@ -51,6 +49,7 @@ function lead(counts: Counts, order: SceneState[]): SceneState | null {
 }
 
 function Row({ n, depth, order, open, toggle }: { n: OutlineNode; depth: number; order: SceneState[]; open: Record<string, boolean>; toggle: (rel: string) => void }): JSX.Element {
+  const { t } = useTranslation('freshnessOutline')
   const isOpen = open[n.node.relPath] ?? n.counts.total <= COLLAPSE_OVER // big folders collapse by default
   const primary = lead(n.counts, order)
   return (
@@ -61,7 +60,7 @@ function Row({ n, depth, order, open, toggle }: { n: OutlineNode; depth: number;
         {n.node.containerType && <span className="shrink-0 rounded bg-panel-soft px-1 text-[9px] uppercase tracking-wide text-faint">{n.node.containerType}</span>}
         {primary && (
           <span className="shrink-0 text-[10px] tabular-nums" style={{ color: STATE_COLOR[primary] }}>
-            {n.counts[primary]} {STATE_LABEL[primary]}
+            {n.counts[primary]} {t(`state.${primary}`)}
           </span>
         )}
         <StateBar counts={n.counts} order={order} />
@@ -73,11 +72,11 @@ function Row({ n, depth, order, open, toggle }: { n: OutlineNode; depth: number;
           ))}
           {n.scenes.slice(0, SCENE_CAP).map(({ node, state }) => (
             <div key={node.relPath} className="flex items-center gap-1.5 py-0.5 text-[11px]" style={{ paddingLeft: (depth + 1) * 12 + 16 }}>
-              <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: STATE_COLOR[state] }} title={STATE_LABEL[state]} />
+              <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: STATE_COLOR[state] }} title={t(`state.${state}`)} />
               <span className={cn('min-w-0 flex-1 truncate', order[0] === state ? 'text-foreground/90' : 'text-faint')}>{node.title || node.name}</span>
             </div>
           ))}
-          {n.scenes.length > SCENE_CAP && <div className="py-0.5 text-[10px] text-faint" style={{ paddingLeft: (depth + 1) * 12 + 16 }}>+{n.scenes.length - SCENE_CAP} more scenes</div>}
+          {n.scenes.length > SCENE_CAP && <div className="py-0.5 text-[10px] text-faint" style={{ paddingLeft: (depth + 1) * 12 + 16 }}>{t('moreScenes', { count: n.scenes.length - SCENE_CAP })}</div>}
         </div>
       )}
     </div>
@@ -85,17 +84,18 @@ function Row({ n, depth, order, open, toggle }: { n: OutlineNode; depth: number;
 }
 
 /** The feed-agnostic render: a built roll-up + the state order/palette to show. Reused by the history dialog. */
-export function OutlineTree({ root, order, empty = 'No scenes to preview yet.' }: { root: OutlineNode; order: SceneState[]; empty?: string }): JSX.Element {
+export function OutlineTree({ root, order, empty }: { root: OutlineNode; order: SceneState[]; empty?: string }): JSX.Element {
+  const { t } = useTranslation('freshnessOutline')
   const [open, setOpen] = useState<Record<string, boolean>>({})
   const toggle = (rel: string): void => setOpen((o) => ({ ...o, [rel]: !(o[rel] ?? true) }))
-  if (root.counts.total === 0) return <div className="px-1 py-3 text-[11px] text-muted-foreground">{empty}</div>
+  if (root.counts.total === 0) return <div className="px-1 py-3 text-[11px] text-muted-foreground">{empty ?? t('empty')}</div>
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] text-faint">
         {order.filter((k) => root.counts[k]).map((k) => (
           <span key={k} className="flex items-center gap-1">
             <span className="size-1.5 rounded-full" style={{ backgroundColor: STATE_COLOR[k] }} />
-            {root.counts[k]} {STATE_LABEL[k]}
+            {root.counts[k]} {t(`state.${k}`)}
           </span>
         ))}
       </div>
@@ -105,7 +105,7 @@ export function OutlineTree({ root, order, empty = 'No scenes to preview yet.' }
         ))}
         {root.scenes.slice(0, SCENE_CAP).map(({ node, state }) => (
           <div key={node.relPath} className="flex items-center gap-1.5 py-0.5 pl-4 text-[11px]">
-            <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: STATE_COLOR[state] }} title={STATE_LABEL[state]} />
+            <span className="size-1.5 shrink-0 rounded-full" style={{ backgroundColor: STATE_COLOR[state] }} title={t(`state.${state}`)} />
             <span className={cn('min-w-0 flex-1 truncate', order[0] === state ? 'text-foreground/90' : 'text-faint')}>{node.title || node.name}</span>
           </div>
         ))}
